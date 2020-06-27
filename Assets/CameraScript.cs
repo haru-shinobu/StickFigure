@@ -4,10 +4,9 @@ using UnityEngine;
 
 public class CameraScript : MonoBehaviour
 {
-    PlayerController player;
+    StageManager SManager;
     GameObject wall;
     Vector3 Wall_Cam_distance;
-    [SerializeField, Header("カメラ振り角度")]
     private float SwingWidth = 15f;
     float Rotangle;
     float BaseAngle;
@@ -17,9 +16,12 @@ public class CameraScript : MonoBehaviour
 
     void Start()
     {
-        player = GameObject.FindWithTag("Player").GetComponent<PlayerController>();
+        SManager = GameObject.FindWithTag("Manager").GetComponent<StageManager>();
         ReTarget();
     }
+    //==================================================================
+    // カメラの先にコライダのついた壁があるか
+    //==================================================================
     void ReTarget()
     {
         RaycastHit hit;
@@ -29,14 +31,19 @@ public class CameraScript : MonoBehaviour
         if (Physics.Raycast(ray, out hit, LayerMask.GetMask("room")))
         {
             wall = hit.collider.gameObject;
-            player.WallScript = wall.GetComponent<RelayWallScript>();
             //壁とカメラの距離
             Wall_Cam_distance = Camera.main.transform.localPosition - wall.transform.localPosition;
+            //StageManagerの壁登録
+            SManager.WallStageChange();
         }
     }
+    //==================================================================
+    //プレイヤーの移動
+    //==================================================================
     void Update()
     {
-        Debug.DrawLine(Camera.main.transform.position, Camera.main.transform.position + Camera.main.transform.forward * 8, Color.red);
+        //ただの確認用（消去予定）
+        Debug.DrawLine(Camera.main.transform.position, Camera.main.transform.position + Camera.main.transform.forward * 10, Color.red);
 
         if (CamAction)
         {
@@ -45,7 +52,6 @@ public class CameraScript : MonoBehaviour
             Camroll = Mathf.RoundToInt(Camroll);
             if (Inputway != Camroll)
                 timer = 0;
-            Debug.Log(BaseAngle);
             if (Camroll < 0)
             {
                 Rotangle = BaseAngle + SwingWidth;
@@ -62,25 +68,26 @@ public class CameraScript : MonoBehaviour
 
             timer += Time.deltaTime;
             float angle = Mathf.LerpAngle(Camera.main.transform.localRotation.eulerAngles.y, Rotangle, timer);
-            Debug.Log(angle);
             transform.eulerAngles = new Vector3(15, angle, 0);
             Inputway = Camroll;
         }
     }
-
+    //==================================================================
+    //カメラの壁移り
+    //------------------------------------------------------------------
     public void UpdateTargetWall(GameObject obj)
     {
-        CamAction = false;
-        StartCoroutine(CamTargetChange(obj));       
+        StartCoroutine(CamTargetChange(obj));
     }
     IEnumerator CamTargetChange(GameObject obj)
-    {
-        
+    {   
         float camtimer = 0;
         //カメラ現在位置
         var pos = Camera.main.transform.localPosition;
         //カメラと対象の距離
-        var dis = Quaternion.Euler(0, obj.transform.localRotation.eulerAngles.y, 0) * Wall_Cam_distance;
+        var angle = obj.transform.localRotation.eulerAngles.y - Camera.main.transform.localRotation.eulerAngles.y;
+        ;
+        var dis = Quaternion.Euler(0, angle, 0) * Wall_Cam_distance;
         //カメラの移動先位置
         var ReCamPos = obj.transform.localPosition + dis;
         
@@ -102,6 +109,30 @@ public class CameraScript : MonoBehaviour
         Camera.main.transform.LookAt(obj.transform);
         BaseAngle = Camera.main.transform.localRotation.eulerAngles.y;
         ReTarget();
-        CamAction = true;
+        //コントロール許可願い
+        SManager.MoveReStart(0);// 0はカメラ用
     }
+    //------------------------------------------------------------------
+    //==================================================================
+
+    //==================================================================
+    //以下設定受け渡し
+    //==================================================================
+    //カメラスイング幅を取得
+    // StageManager Awake() ->
+    public void SetCamSwing(float val)
+    {
+        SwingWidth = val;
+    }
+    //現在の壁
+    public GameObject GetNowWall()
+    {
+        return wall;
+    }
+    //コントロール
+    public void SetControllJudge(bool flag)
+    {
+        CamAction = flag;
+    }
+    
 }
