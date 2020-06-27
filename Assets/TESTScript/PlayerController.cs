@@ -23,15 +23,15 @@ public class PlayerController : MonoBehaviour
     }
     WAY way = WAY.NORMAL;
 
+    Vector3 MoveAriaLeftTop, MoveAriaRightBottom;
 
-    public GameObject PrevWall;
-
+    public RelayWallScript WallScript;
+    
     void Start()
     {
         player = this.gameObject.transform;
         rb = player.GetComponent<Rigidbody>();
         m_bJump = false;
-
     }
 
     // Update is called once per frame
@@ -62,8 +62,13 @@ public class PlayerController : MonoBehaviour
             }
             else
             if (rb.velocity.y == 0) m_bJump = false;
-
         }
+    }
+
+    void SetPlayerMoveLimit()
+    {
+        MoveAriaLeftTop = WallScript.GetWallAriaLT();
+        MoveAriaRightBottom = WallScript.GetWallAriaRB();
     }
 
     public void ControllJudge(bool flag)
