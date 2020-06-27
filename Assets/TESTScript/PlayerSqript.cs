@@ -14,13 +14,12 @@ public class PlayerSqript : MonoBehaviour
 
     bool PlayerRotateFlag = false;
     string afterwallname;
-    roomController roomer;
+    
     void Start()
     {
         player = this.gameObject.transform;
         rb = player.GetComponent<Rigidbody>();
         m_bJump = false;
-        roomer = GameObject.Find("roomContoller").GetComponent<roomController>();
     }
     
     void Update()
