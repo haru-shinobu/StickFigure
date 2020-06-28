@@ -29,7 +29,8 @@ public class PlayerController : MonoBehaviour
     [Header("付けなくていい")]
     public RelayWallScript WallScript;
     StageManager stage;
-    
+    float ChangeWallSpeed;
+
     void Start()
     {
         player = this.gameObject.transform;
@@ -181,7 +182,7 @@ public class PlayerController : MonoBehaviour
         {
             yield return new WaitForEndOfFrame();
         
-            timer += Time.deltaTime;
+            timer += Time.deltaTime * ChangeWallSpeed;
         
             //プレイヤーのポジション移動
             player.position = Vector3.Lerp(pos,movePos,timer);
@@ -209,5 +210,9 @@ public class PlayerController : MonoBehaviour
     public int Getways()
     {
         return (int)way;
+    }
+    public void SetChangeWallSpeed(float val)
+    {
+        ChangeWallSpeed = val;
     }
 }

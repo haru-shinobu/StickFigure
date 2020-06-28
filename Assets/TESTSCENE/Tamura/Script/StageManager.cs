@@ -6,8 +6,8 @@ public class StageManager : MonoBehaviour
 {
     [SerializeField, Header("カメラの振り角度"), Range(0, 20)]
     float SwingWidth = 15f;
-    [SerializeField, Header("壁移り速度"), Range(1, 10)]
-    float WallChageSpeed = 10;
+    [SerializeField, Header("壁移り速度"), Range(0.5f, 5)]
+    float WallChageSpeed = 1;
 
     //壁移り終わり判定用
     bool CamChangeEnd = false;
@@ -28,6 +28,10 @@ public class StageManager : MonoBehaviour
         NowWall = camSc.GetNowWall();
 
         Player = GameObject.FindWithTag("Player").GetComponent<PlayerController>();
+
+        //壁→壁への切り替え速度
+        camSc.SetChangeWallSpeed(WallChageSpeed);
+        Player.SetChangeWallSpeed(WallChageSpeed);
     }
     //==================================================================
     // 壁が変更されたとき

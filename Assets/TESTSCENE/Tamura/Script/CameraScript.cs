@@ -13,6 +13,7 @@ public class CameraScript : MonoBehaviour
     float timer = 0;
     float Inputway = 0;
     bool CamAction = true;
+    float ChangeWallSpeed;
 
     void Start()
     {
@@ -95,7 +96,7 @@ public class CameraScript : MonoBehaviour
         {
             yield return new WaitForEndOfFrame();
 
-            camtimer += Time.deltaTime;
+            camtimer += Time.deltaTime * ChangeWallSpeed;
          
             //カメラのポジション移動
             Camera.main.transform.localPosition = Vector3.Lerp(pos, ReCamPos, camtimer);
@@ -134,5 +135,8 @@ public class CameraScript : MonoBehaviour
     {
         CamAction = flag;
     }
-    
+    public void SetChangeWallSpeed(float val)
+    {
+        ChangeWallSpeed = val;
+    }
 }
