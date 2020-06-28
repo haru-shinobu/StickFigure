@@ -8,11 +8,22 @@ public class RelayWallScript : MonoBehaviour
     GameObject LeftWall;
     [SerializeField, Header("右壁")]
     GameObject RightWall;
-
+    
     Vector3 LeftTop;
     Vector3 RightBottom;
+
     float Sprite_half_DistanceX;
-    
+
+
+
+    [SerializeField, Header("奥壁")]
+    GameObject InsideWall;
+
+    Vector3 Inside_LeftTop;
+    Vector3 Inside_RightBottom;
+
+    float Inside_Sprite_half_DistanceX;
+
     void Awake()
     {
         var Sr = GetComponent<SpriteRenderer>();
@@ -31,10 +42,25 @@ public class RelayWallScript : MonoBehaviour
         //壁の原点から壁の端の距離を算出
         var LeftLine = LeftTop;
         var RightLine = RightBottom;
-        LeftLine.y = 0;
-        RightLine.y = 0;
+        LeftLine.y = RightLine.y = 0;
         Sprite_half_DistanceX = Vector3.Distance(LeftLine, RightLine) * 0.5f;
-        
+        if (InsideWall)
+        {
+            var InsideSr = InsideWall.GetComponent<SpriteRenderer>();
+            var Inside_sprite = InsideSr.sprite;
+            var Inside_halfX = Inside_sprite.bounds.extents.x;
+            var Inside_halfY = Inside_sprite.bounds.extents.y;
+            //裏壁のLeftTopを記録
+            _vec = new Vector3(-Inside_halfX, Inside_halfY, 0f);
+            _pos = InsideSr.transform.TransformPoint(_vec);
+            //裏壁のRightBottomを記録
+            _vec2 = new Vector3(Inside_halfX, -Inside_halfY, 0f);
+            _pos2 = Sr.transform.TransformPoint(_vec2);
+            LeftLine = LeftTop;
+            RightLine = RightBottom;
+            LeftLine.y = RightLine.y = 0;
+            Inside_Sprite_half_DistanceX = Vector3.Distance(LeftLine, RightLine) * 0.5f;
+        }
     }
 
     //==================================================================
