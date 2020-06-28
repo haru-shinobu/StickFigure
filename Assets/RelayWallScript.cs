@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class RelayWallScript : MonoBehaviour
 {
-    [SerializeField,Header("左壁")]
+    //各壁がNoneのとき、Playerは壁範囲内に行動制限
+    
     GameObject LeftWall;
-    [SerializeField, Header("右壁")]
+    [SerializeField, Header("表右壁")]
     GameObject RightWall;
     
     Vector3 LeftTop;
@@ -15,7 +16,7 @@ public class RelayWallScript : MonoBehaviour
     float Sprite_half_DistanceX;
 
 
-
+    bool InsideFind = false;
     [SerializeField, Header("奥壁")]
     GameObject InsideWall;
 
@@ -23,6 +24,10 @@ public class RelayWallScript : MonoBehaviour
     Vector3 Inside_RightBottom;
 
     float Inside_Sprite_half_DistanceX;
+    [SerializeField, Header("表左壁")]
+    GameObject Inside_LeftWall;
+    [SerializeField, Header("表右壁")]
+    GameObject Inside_RightWall;
 
     void Awake()
     {
@@ -46,6 +51,7 @@ public class RelayWallScript : MonoBehaviour
         Sprite_half_DistanceX = Vector3.Distance(LeftLine, RightLine) * 0.5f;
         if (InsideWall)
         {
+            InsideFind = true;
             var InsideSr = InsideWall.GetComponent<SpriteRenderer>();
             var Inside_sprite = InsideSr.sprite;
             var Inside_halfX = Inside_sprite.bounds.extents.x;
@@ -53,9 +59,12 @@ public class RelayWallScript : MonoBehaviour
             //裏壁のLeftTopを記録
             _vec = new Vector3(-Inside_halfX, Inside_halfY, 0f);
             _pos = InsideSr.transform.TransformPoint(_vec);
+            Inside_LeftTop = _pos;
             //裏壁のRightBottomを記録
             _vec2 = new Vector3(Inside_halfX, -Inside_halfY, 0f);
             _pos2 = Sr.transform.TransformPoint(_vec2);
+            Inside_RightBottom = _pos2;
+
             LeftLine = LeftTop;
             RightLine = RightBottom;
             LeftLine.y = RightLine.y = 0;
@@ -64,8 +73,9 @@ public class RelayWallScript : MonoBehaviour
     }
 
     //==================================================================
-    //以下設定受け渡し
-    //==================================================================
+    // 以下設定受け渡し
+    //  表壁
+    //----------------------------------------------
     public Vector3 GetWallAriaLT()
     {
         return LeftTop;
@@ -101,4 +111,54 @@ public class RelayWallScript : MonoBehaviour
         }
         return flag;
     }
+    //----------------------------------------------
+    //==================================================================
+
+
+    //==================================================================
+    // 以下設定受け渡し
+    // 裏壁
+    //----------------------------------------------
+    public bool GetFindInsideWall()
+    {
+        return InsideFind;
+    }
+
+    public Vector3 GetInsideWallAriaLT()
+    {
+        return Inside_LeftTop;
+    }
+    public Vector3 GetInsideWallAriaRB()
+    {
+        return Inside_RightBottom;
+    }
+    public GameObject GetInsideLeftWall()
+    {
+        return Inside_LeftWall;
+    }
+    public GameObject GetInsideRightWall()
+    {
+        return Inside_RightWall;
+    }
+    public float GetInsideHalfX()
+    {
+        return Inside_Sprite_half_DistanceX;
+    }
+    public bool FindInsideWall(bool side)
+    {
+        bool flag = false;
+        if (side)
+        {
+            if (Inside_RightWall)
+                flag = true;
+        }
+        else
+        {
+            if (Inside_LeftWall)
+                flag = true;
+        }
+        return flag;
+    }
+    //----------------------------------------------
+    //==================================================================
 }
