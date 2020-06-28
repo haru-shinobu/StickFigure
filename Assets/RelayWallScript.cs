@@ -5,7 +5,7 @@ using UnityEngine;
 public class RelayWallScript : MonoBehaviour
 {
     //各壁がNoneのとき、Playerは壁範囲内に行動制限
-    
+    [SerializeField, Header("表左壁")]
     GameObject LeftWall;
     [SerializeField, Header("表右壁")]
     GameObject RightWall;

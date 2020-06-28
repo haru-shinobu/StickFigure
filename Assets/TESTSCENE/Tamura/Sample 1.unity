@@ -304,6 +304,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   LeftWall: {fileID: 0}
   RightWall: {fileID: 937163997}
+  InsideWall: {fileID: 0}
+  Inside_LeftWall: {fileID: 0}
+  Inside_RightWall: {fileID: 0}
 --- !u!65 &708513240
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -492,6 +495,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   LeftWall: {fileID: 708513237}
   RightWall: {fileID: 1492918123}
+  InsideWall: {fileID: 0}
+  Inside_LeftWall: {fileID: 0}
+  Inside_RightWall: {fileID: 0}
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -621,6 +627,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   LeftWall: {fileID: 937163997}
   RightWall: {fileID: 0}
+  InsideWall: {fileID: 0}
+  Inside_LeftWall: {fileID: 0}
+  Inside_RightWall: {fileID: 0}
 --- !u!65 &1492918126
 BoxCollider:
   m_ObjectHideFlags: 0
