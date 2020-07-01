@@ -17,43 +17,33 @@ public class CameraScript : MonoBehaviour
     [SerializeField, Header("カメラ-壁間距離"), Range(0.5f, 1)]
     float Cam_Range = 1;
 
-    void Start()
+    void Awake()
     {
         SManager = GameObject.FindWithTag("Manager").GetComponent<StageManager>();
-        RaycastHit hit;
-        Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
-        if (Physics.Raycast(ray, out hit, LayerMask.GetMask("room")))
-        {
-            wall = hit.collider.gameObject;
-            //壁とカメラの距離
-            Wall_Cam_distance = Camera.main.transform.localPosition - wall.transform.localPosition;
-        }
+        wall = SManager.GetStartWall();
+
+        //壁からカメラの距離
+        Wall_Cam_distance = Camera.main.transform.localPosition - wall.transform.localPosition;
+        
         var range = Wall_Cam_distance;
         Wall_Cam_distance *= Cam_Range;
         Camera.main.transform.localPosition -= range - Wall_Cam_distance;
-
-        ReTarget();
+        ReTarget(wall);
     }
     //==================================================================
-    // カメラの先にコライダのついた壁があるか
+    // カメラ先の壁登録と
     //==================================================================
-    void ReTarget()
+    void ReTarget(GameObject obj)
     {
-        RaycastHit hit;
-
-        Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
-
-        if (Physics.Raycast(ray, out hit, LayerMask.GetMask("room")))
-        {
-            wall = hit.collider.gameObject;
-            //壁とカメラの距離
-            Wall_Cam_distance = Camera.main.transform.localPosition - wall.transform.localPosition;
-            //StageManagerの壁登録
-            SManager.WallStageChange();
-        }
+        wall = obj;
+        //壁とカメラの距離
+        Wall_Cam_distance = Camera.main.transform.localPosition - wall.transform.localPosition;
+        //StageManagerの壁登録
+        SManager.WallStageChange();
+     
     }
     //==================================================================
-    //プレイヤーの移動
+    // カメラの移動
     //==================================================================
     void Update()
     {
@@ -95,16 +85,25 @@ public class CameraScript : MonoBehaviour
         StartCoroutine(CamTargetChange(obj));
     }
     IEnumerator CamTargetChange(GameObject obj)
-    {   
+    {
         float camtimer = 0;
         //カメラ現在位置
         var pos = Camera.main.transform.localPosition;
-        //カメラと対象の距離
-        var angle = obj.transform.localRotation.eulerAngles.y - Camera.main.transform.localRotation.eulerAngles.y;
-        ;
+        //カメラと対象の角度
+        var angle = obj.transform.localRotation.eulerAngles.y - BaseAngle;//Camera.main.transform.localRotation.eulerAngles.y;
         var dis = Quaternion.Euler(0, angle, 0) * Wall_Cam_distance;
         //カメラの移動先位置
         var ReCamPos = obj.transform.localPosition + dis;
+
+        //カメラ現在視点先
+        //カメラから壁の距離
+        var Cam_Wall_dis = wall.transform.localPosition - Camera.main.transform.localPosition;
+        //ベースとカメラ角差
+        var Nowangle = Camera.main.transform.localRotation.eulerAngles.y - BaseAngle;
+        var dist = Quaternion.Euler(0, Nowangle, 0) * Cam_Wall_dis;
+        var lookpos = Camera.main.transform.localPosition + dist;
+
+        Debug.DrawLine(Camera.main.transform.localPosition, lookpos, Color.blue,10);
         
         while (camtimer < 1)
         {
@@ -116,14 +115,18 @@ public class CameraScript : MonoBehaviour
             Camera.main.transform.localPosition = Vector3.Lerp(pos, ReCamPos, camtimer);
 
             //元の対象と先の対象の間を補完
-            var target = Vector3.Lerp(wall.transform.position, obj.transform.position, camtimer);
-
+            var target = Vector3.Lerp(
+                //wall.transform.position
+                lookpos
+                , obj.transform.position, camtimer);
+            Debug.DrawLine(target, Camera.main.transform.localPosition, Color.green, 4);
             //補完先を向く回転
             Camera.main.transform.LookAt(target);
         }
+        Camera.main.transform.localPosition = ReCamPos;
         Camera.main.transform.LookAt(obj.transform);
         BaseAngle = Camera.main.transform.localRotation.eulerAngles.y;
-        ReTarget();
+        ReTarget(obj);
         //コントロール許可願い
         SManager.MoveReStart(0);// 0はカメラ用
     }
@@ -138,6 +141,10 @@ public class CameraScript : MonoBehaviour
     public void SetCamSwing(float val)
     {
         SwingWidth = val;
+    }
+    public void SetNowWall(GameObject obj)
+    {
+        wall = obj;
     }
     //現在の壁
     public GameObject GetNowWall()

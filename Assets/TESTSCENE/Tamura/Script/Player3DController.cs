@@ -2,26 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class Player3DController : MonoBehaviour
 {
     Transform player;
     Rigidbody rb;
 
     [SerializeField, Range(1, 5)]
     float Speed = 3;
-    
+
     bool m_bJump = false;
     bool m_bControll = true;
 
     bool m_bWallSide = false;
-
-    enum WAY // simadawallで現在使用
-    {
-        RIGHT = -1,
-        NORMAL = 0,
-        LEFT = 1,
-    }
-    WAY way = WAY.NORMAL;
+    
     float DistanceLimit;
     Vector3 MoveAriaLeftTop, MoveAriaRightBottom;
     Vector3 m_Vec;
@@ -29,15 +22,18 @@ public class PlayerController : MonoBehaviour
     public RelayWallScript WallScript;
     StageManager stage;
     float ChangeWallSpeed;
+    float FloorDepth;
 
     void Start()
     {
         player = this.gameObject.transform;
-        rb = player.GetComponent<Rigidbody>();
+        rb = player.GetChild(0).GetComponent<Rigidbody>();
         m_bJump = false;
+
         player.transform.forward = WallScript.transform.forward;
         stage = GameObject.FindWithTag("Manager").GetComponent<StageManager>();
-        DistanceLimit = WallScript.GetHalfX();
+        FloorDepth = WallScript.GetDepth();
+        DistanceLimit = WallScript.GetHalfX() - FloorDepth;
     }
     //==================================================================
     //プレイヤーの移動
@@ -50,13 +46,11 @@ public class PlayerController : MonoBehaviour
             if (leftright > 0)
             {
                 player.localPosition += m_Vec * Speed * 0.01f;
-                way = WAY.RIGHT;
             }
             else
                 if (leftright < 0)
             {
                 player.localPosition -= m_Vec * Speed * 0.01f;
-                way = WAY.LEFT;
             }
 
             if (Input.GetButton("Jump"))
@@ -73,12 +67,13 @@ public class PlayerController : MonoBehaviour
             PlayerOnStage();
         }
     }
-    
+
     //==================================================================
     //プレイヤーの壁移りの判定
     //==================================================================
     void PlayerOnStage()
     {
+        var depth = WallScript.GetDepth();
         //プレイヤーと壁の水平距離を計算
         var Ppos = player.transform.position;
         var wallpos = WallScript.transform.position;
@@ -86,11 +81,11 @@ public class PlayerController : MonoBehaviour
         var distance = Vector3.Distance(Ppos, wallpos);
 
         //壁の端を超えていた場合
-        if (distance >= DistanceLimit) 
+        if (distance >= DistanceLimit)
         {
             //行動禁止命令
             stage.MovePermit(false);
-            
+
             //壁から見て左右判定  right = true 
             var diff = player.transform.position - WallScript.transform.position;
             var axis = Vector3.Cross(WallScript.transform.forward, diff);
@@ -98,21 +93,22 @@ public class PlayerController : MonoBehaviour
 
             //現在の左右
             m_bWallSide = Sideflag;
-            
-            
-            //移動先の壁が終端のとき
+
+
+            //移動先の壁が終端かどうか
             var findwall = WallScript.FindWall(Sideflag);
             //先が存在するとき
             if (findwall)
                 stage.WallEnd(m_bWallSide);
+            //先がないとき
             else
             {
                 //ステージ範囲を超えた部分を戻す
                 Vector3 pos;
                 if (m_bWallSide)
-                    pos = WallScript.GetWallAriaRB();
+                    pos = WallScript.GetWallAriaRB() - WallScript.transform.right * WallScript.GetDepth();
                 else
-                    pos = WallScript.GetWallAriaLT();
+                    pos = WallScript.GetWallAriaLT() + WallScript.transform.right * WallScript.GetDepth();
                 pos.y = player.position.y;
                 player.transform.position = pos;
 
@@ -133,7 +129,7 @@ public class PlayerController : MonoBehaviour
     {
         MoveAriaLeftTop = WallScript.GetWallAriaLT();
         MoveAriaRightBottom = WallScript.GetWallAriaRB();
-        DistanceLimit = WallScript.GetHalfX();
+        DistanceLimit = WallScript.GetHalfX() - WallScript.GetDepth();
         m_Vec = WallScript.transform.right;
     }
 
@@ -144,7 +140,7 @@ public class PlayerController : MonoBehaviour
     {
         StartCoroutine(PlayerOnStageChange(TargetWall));
     }
-    IEnumerator PlayerOnStageChange(GameObject Target)
+    IEnumerator PlayerOnStageChange(GameObject Target)//3DVerのときを書くこと！
     {
         //判定前にステージ範囲を超えた部分を戻す
         Vector3 Ppos;
@@ -154,7 +150,7 @@ public class PlayerController : MonoBehaviour
             Ppos = WallScript.GetWallAriaLT();
         Ppos.y = player.position.y;
         player.transform.position = Ppos;
-        
+
         //rigidbody
         rb.isKinematic = true;
         //プレイヤー現在位置
@@ -177,14 +173,14 @@ public class PlayerController : MonoBehaviour
         movePos = Target.transform.position + movePos;
 
         float timer = 0;
-        while (timer < 1) 
+        while (timer < 1)
         {
             yield return new WaitForEndOfFrame();
-        
+
             timer += Time.deltaTime * ChangeWallSpeed;
-        
+
             //プレイヤーのポジション移動
-            player.position = Vector3.Lerp(pos,movePos,timer);
+            player.position = Vector3.Lerp(pos, movePos, timer);
             //移動先壁の向きを合わせる
             player.localRotation = Quaternion.Lerp(Quaternion.Euler(0, rot, 0), Quaternion.Euler(0, RotY, 0), timer);
         }
@@ -198,6 +194,15 @@ public class PlayerController : MonoBehaviour
     //==================================================================
 
     //==================================================================
+    // アクティブ化したとき呼び出される
+    //==================================================================
+    void OnEnable()
+    {
+        //stage.SetNow(this.gameObject);
+    }
+    
+
+    //==================================================================
     //以下設定受け渡し
     //==================================================================
     //コントロール
@@ -205,11 +210,7 @@ public class PlayerController : MonoBehaviour
     {
         m_bControll = flag;
     }
-    //移動の向き
-    public int Getways()
-    {
-        return (int)way;
-    }
+
     public void SetChangeWallSpeed(float val)
     {
         ChangeWallSpeed = val;

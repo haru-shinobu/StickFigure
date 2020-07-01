@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Wall
   - Manager
+  - Player3D
   layers:
   - Default
   - TransparentFX
