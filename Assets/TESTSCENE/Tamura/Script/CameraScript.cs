@@ -14,10 +14,24 @@ public class CameraScript : MonoBehaviour
     float Inputway = 0;
     bool CamAction = true;
     float ChangeWallSpeed;
+    [SerializeField, Header("カメラ-壁間距離"), Range(0.7f, 1)]
+    float Cam_Range = 1;
 
     void Start()
     {
         SManager = GameObject.FindWithTag("Manager").GetComponent<StageManager>();
+        RaycastHit hit;
+        Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
+        if (Physics.Raycast(ray, out hit, LayerMask.GetMask("room")))
+        {
+            wall = hit.collider.gameObject;
+            //壁とカメラの距離
+            Wall_Cam_distance = Camera.main.transform.localPosition - wall.transform.localPosition;
+        }
+        var range = Wall_Cam_distance;
+        Wall_Cam_distance *= Cam_Range;
+        Camera.main.transform.localPosition -= range - Wall_Cam_distance;
+
         ReTarget();
     }
     //==================================================================
