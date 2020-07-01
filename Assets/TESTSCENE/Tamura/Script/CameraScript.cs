@@ -14,7 +14,7 @@ public class CameraScript : MonoBehaviour
     float Inputway = 0;
     bool CamAction = true;
     float ChangeWallSpeed;
-    [SerializeField, Header("カメラ-壁間距離"), Range(0.7f, 1)]
+    [SerializeField, Header("カメラ-壁間距離"), Range(0.5f, 1)]
     float Cam_Range = 1;
 
     void Start()
