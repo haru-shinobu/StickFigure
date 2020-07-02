@@ -15,20 +15,25 @@ public class RelayWallScript : MonoBehaviour
 
     float Sprite_half_DistanceX;
 
-
+    public bool RearOn;
+/*
     bool InsideFind = false;
     [SerializeField, Header("奥壁")]
     GameObject InsideWall;
-
+    
     Vector3 Inside_LeftTop;
     Vector3 Inside_RightBottom;
-
+    
     float Inside_Sprite_half_DistanceX;
-    [SerializeField, Header("表左壁")]
+    [SerializeField, Header("奥左壁")]
     GameObject Inside_LeftWall;
-    [SerializeField, Header("表右壁")]
+    [SerializeField, Header("奥右壁")]
     GameObject Inside_RightWall;
+*/
 
+    [SerializeField]
+    GameObject PrimitiveCube;
+    
     void Awake()
     {
         var Sr = GetComponent<SpriteRenderer>();
@@ -49,6 +54,7 @@ public class RelayWallScript : MonoBehaviour
         var RightLine = RightBottom;
         LeftLine.y = RightLine.y = 0;
         Sprite_half_DistanceX = Vector3.Distance(LeftLine, RightLine) * 0.5f;
+/*
         if (InsideWall)
         {
             InsideFind = true;
@@ -64,12 +70,23 @@ public class RelayWallScript : MonoBehaviour
             _vec2 = new Vector3(Inside_halfX, -Inside_halfY, 0f);
             _pos2 = Sr.transform.TransformPoint(_vec2);
             Inside_RightBottom = _pos2;
-
+        
             LeftLine = LeftTop;
             RightLine = RightBottom;
             LeftLine.y = RightLine.y = 0;
             Inside_Sprite_half_DistanceX = Vector3.Distance(LeftLine, RightLine) * 0.5f;
         }
+*/
+
+        //プリミティブ(原型)のCube生成 -> 床に加工
+        PrimitiveCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        PrimitiveCube.AddComponent<BoxCollider>();
+        PrimitiveCube.transform.forward = transform.forward;
+        
+        var PrimitiveCubepos = transform.position - transform.forward * PrimitiveCube.transform.lossyScale.z * 0.5f;
+        PrimitiveCubepos.y = RightBottom.y;
+        PrimitiveCube.transform.localPosition = PrimitiveCubepos;
+        PrimitiveCube.transform.localScale = new Vector3(Sprite_half_DistanceX * 2, 1, 1);
     }
 
     //==================================================================
@@ -112,9 +129,14 @@ public class RelayWallScript : MonoBehaviour
         return flag;
     }
     //----------------------------------------------
+    // 床
+    public float GetDepth()
+    {
+        return PrimitiveCube.transform.localScale.z * 0.5f;
+    }
     //==================================================================
 
-
+/*
     //==================================================================
     // 以下設定受け渡し
     // 裏壁
@@ -123,7 +145,7 @@ public class RelayWallScript : MonoBehaviour
     {
         return InsideFind;
     }
-
+    
     public Vector3 GetInsideWallAriaLT()
     {
         return Inside_LeftTop;
@@ -161,4 +183,5 @@ public class RelayWallScript : MonoBehaviour
     }
     //----------------------------------------------
     //==================================================================
+*/
 }
