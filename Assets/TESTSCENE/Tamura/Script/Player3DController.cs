@@ -34,6 +34,7 @@ public class Player3DController : MonoBehaviour
         stage = GameObject.FindWithTag("Manager").GetComponent<StageManager>();
         FloorDepth = WallScript.GetDepth();
         DistanceLimit = WallScript.GetHalfX() - FloorDepth;
+        player.transform.position = WallScript.transform.position + -WallScript.transform.forward * FloorDepth;
     }
     //==================================================================
     //プレイヤーの移動
@@ -110,7 +111,7 @@ public class Player3DController : MonoBehaviour
                 else
                     pos = WallScript.GetWallAriaLT() + WallScript.transform.right * WallScript.GetDepth();
                 pos.y = player.position.y;
-                player.transform.position = pos;
+                player.transform.position = pos + -WallScript.transform.forward * WallScript.GetDepth();
 
                 if (m_bWallSide)
                     player.localPosition -= m_Vec * Speed * 0.1f;
@@ -145,11 +146,11 @@ public class Player3DController : MonoBehaviour
         //判定前にステージ範囲を超えた部分を戻す
         Vector3 Ppos;
         if (m_bWallSide)
-            Ppos = WallScript.GetWallAriaRB();
+            Ppos = WallScript.GetWallAriaRB() - WallScript.transform.right * WallScript.GetDepth();
         else
-            Ppos = WallScript.GetWallAriaLT();
+            Ppos = WallScript.GetWallAriaLT() + WallScript.transform.right * WallScript.GetDepth();
         Ppos.y = player.position.y;
-        player.transform.position = Ppos;
+        player.transform.position = Ppos - WallScript.transform.forward * WallScript.GetDepth();
 
         //rigidbody
         rb.isKinematic = true;
@@ -170,7 +171,7 @@ public class Player3DController : MonoBehaviour
         else
             movePos = Target.transform.right * DistanceLimit * 0.98f;
         movePos.y = player.transform.position.y;
-        movePos = Target.transform.position + movePos;
+        movePos = Target.transform.position + movePos - Target.transform.forward * targetscript.GetDepth();
 
         float timer = 0;
         while (timer < 1)
