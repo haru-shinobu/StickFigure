@@ -18,34 +18,50 @@ public class DoorScript : MonoBehaviour
     StageManager stage;
     void Start()
     {
-        tag = "Door";
         if (_bDimention)
+        {
             LayerMask.NameToLayer("3D");
+        }
         else
+        {   
             LayerMask.NameToLayer("2D");
+        }
 
         stage = GameObject.FindWithTag("Manager").GetComponent<StageManager>();
         //テレサドアの場合
         if (_bFakeDoor)
         {
             //テレサドアの移動先が3Dの場合 移動先をランダム取得
+            //※現在移動先次元判別は行っていない
             if (_bTargetDimention)
             {
                 GameObject[] objs = GameObject.FindGameObjectsWithTag("Door");
-                var num = Random.Range(0, objs.Length);
-                DoorAdress = objs[num].GetComponent<DoorScript>().GetDoorAdress();
+                do
+                {
+                    var num = Random.Range(0, objs.Length);
+                    DoorAdress = objs[num].GetComponent<DoorScript>().GetDoorAdress();
+                } while (DoorAdress == null && objs.Length > 1);
             }
             //テレサドアの移動先が2Dの場合 移動先をランダム取得
             else
             {
-                GameObject[] objs = GameObject.FindGameObjectsWithTag("Door3D");
-                var num = Random.Range(0, objs.Length);
-                DoorAdress = objs[num].GetComponent<DoorScript>().GetDoorAdress();
+                GameObject[] objs = GameObject.FindGameObjectsWithTag("Door");
+                do
+                {
+                    var num = Random.Range(0, objs.Length);
+                    DoorAdress = objs[num].GetComponent<DoorScript>().GetDoorAdress();
+                } while (DoorAdress == null && objs.Length > 1);
             }
+
+            if (DoorAdress.layer == LayerMask.NameToLayer("3D"))
+                _bTargetDimention = true;
+            else
+                _bTargetDimention = false;
         }
         //テレサドアでない場合
         else
         {
+            _bTargetDimention = !_bDimention;
             if (DoorAdress)
             {
                 //相手側ドアに対応ドアセットし忘れ対策
@@ -61,9 +77,41 @@ public class DoorScript : MonoBehaviour
 
     public void DoorAccess(bool bDimention)
     {
-        stage.SetNowWallAcsess(bDimention,DoorAdress);
-    }
+        if (_bDimention == _bTargetDimention)
+            bDimention = !bDimention;
 
+        stage.SetNowWallAcsess(bDimention,DoorAdress);
+        //テレサ再配置
+        if (_bFakeDoor)
+        {
+            RePositionTERESA();
+        }
+    }
+    //==================================================================
+    // 再配置・再設定
+    // 
+    //==================================================================
+    void RePositionTERESA()
+    {
+        var walls = GameObject.FindGameObjectsWithTag("Wall");
+        var oldwall = FrontWall;
+        do
+        {
+            var num = Random.Range(0, walls.Length);
+            FrontWall = walls[num];
+
+        } while (FrontWall == oldwall);
+
+        
+        var pos = FrontWall.transform.position;
+        pos.y = transform.position.y;
+        transform.position = pos;
+        transform.forward = FrontWall.transform.forward;
+        Start();
+        if (_bDimention)
+            transform.position -= FrontWall.transform.forward*FrontWall.GetComponent<RelayWallScript>().GetDepth();
+
+    }
     //==================================================================
     //以下設定受け渡し
     //==================================================================

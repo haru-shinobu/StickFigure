@@ -86,46 +86,47 @@ public class CameraScript : MonoBehaviour
     }
     IEnumerator CamTargetChange(GameObject obj)
     {
-        float camtimer = 0;
-        //カメラ現在位置
-        var pos = Camera.main.transform.localPosition;
-        //カメラと対象の角度
-        var angle = obj.transform.localRotation.eulerAngles.y - BaseAngle;
-        var dis = Quaternion.Euler(0, angle, 0) * Wall_Cam_distance;
-        //カメラの移動先位置
-        var ReCamPos = obj.transform.localPosition + dis;
-
-        //カメラ現在視点先
-        //カメラから壁の距離
-        var Cam_Wall_dis = wall.transform.localPosition - Camera.main.transform.localPosition;
-        //ベースとカメラ角差
-        var Nowangle = Camera.main.transform.localRotation.eulerAngles.y - BaseAngle;
-        var dist = Quaternion.Euler(0, Nowangle, 0) * Cam_Wall_dis;
-        var lookpos = Camera.main.transform.localPosition + dist;
-
-        Debug.DrawLine(Camera.main.transform.localPosition, lookpos, Color.blue,10);
-        
-        while (camtimer < 1)
+        if (wall != obj)
         {
-            yield return new WaitForEndOfFrame();
+            float camtimer = 0;
+            //カメラ現在位置
+            var pos = Camera.main.transform.localPosition;
+            //カメラと対象の角度
+            var angle = obj.transform.localRotation.eulerAngles.y - BaseAngle;
+            var dis = Quaternion.Euler(0, angle, 0) * Wall_Cam_distance;
+            //カメラの移動先位置
+            var ReCamPos = obj.transform.localPosition + dis;
 
-            camtimer += Time.deltaTime * ChangeWallSpeed;
-         
-            //カメラのポジション移動
-            Camera.main.transform.localPosition = Vector3.Lerp(pos, ReCamPos, camtimer);
+            //カメラ現在視点先
+            //カメラから壁の距離
+            var Cam_Wall_dis = wall.transform.localPosition - Camera.main.transform.localPosition;
+            //ベースとカメラ角差
+            var Nowangle = Camera.main.transform.localRotation.eulerAngles.y - BaseAngle;
+            var dist = Quaternion.Euler(0, Nowangle, 0) * Cam_Wall_dis;
+            var lookpos = Camera.main.transform.localPosition + dist;
 
-            //元の対象と先の対象の間を補完
-            var target = Vector3.Lerp(
-                //wall.transform.position
-                lookpos
-                , obj.transform.position, camtimer);
-            Debug.DrawLine(target, Camera.main.transform.localPosition, Color.green, 4);
-            //補完先を向く回転
-            Camera.main.transform.LookAt(target);
+            Debug.DrawLine(Camera.main.transform.localPosition, lookpos, Color.blue, 10);
+
+            while (camtimer < 1)
+            {
+                yield return new WaitForEndOfFrame();
+
+                camtimer += Time.deltaTime * ChangeWallSpeed;
+
+                //カメラのポジション移動
+                Camera.main.transform.localPosition = Vector3.Lerp(pos, ReCamPos, camtimer);
+
+                //元の対象と先の対象の間を補完
+                var target = Vector3.Lerp(
+                    lookpos, obj.transform.position, camtimer);
+                Debug.DrawLine(target, Camera.main.transform.localPosition, Color.green, 4);
+                //補完先を向く回転
+                Camera.main.transform.LookAt(target);
+            }
+            Camera.main.transform.localPosition = ReCamPos;
+            Camera.main.transform.LookAt(obj.transform);
+            BaseAngle = Camera.main.transform.localRotation.eulerAngles.y;
         }
-        Camera.main.transform.localPosition = ReCamPos;
-        Camera.main.transform.LookAt(obj.transform);
-        BaseAngle = Camera.main.transform.localRotation.eulerAngles.y;
         ReTarget(obj);
         //コントロール許可願い
         SManager.MoveReStart(0);// 0はカメラ用
