@@ -130,7 +130,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 605085733}
-  - component: {fileID: 605085732}
   - component: {fileID: 605085731}
   m_Layer: 0
   m_Name: GameManager
@@ -154,18 +153,6 @@ MonoBehaviour:
   SwingWidth: 15
   WallChageSpeed: 0.5
   StartWall: {fileID: 937163997}
---- !u!114 &605085732
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 605085730}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f7189f30b0a86244791401c94102d5fe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &605085733
 Transform:
   m_ObjectHideFlags: 0
