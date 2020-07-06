@@ -159,18 +159,19 @@ public class StageManager : MonoBehaviour
         m_bDimention = bDimen;
 
         var nextwall = nextDoor.GetComponent<DoorScript>().GetWall();
-
+        
         //ドアが壁から浮いていた場合のため、ドアの壁への垂線の交点を求める
         var pointA = nextwall.transform.position;
         var pointB = nextwall.transform.right;
         var pointP = nextDoor.transform.position;
         var point = pointA + Vector3.Project(pointP - pointA, pointB - pointA);
         Transform Target;
-
+        
         //移動先の壁面上ポジションをセット
         //3Dドア//Player 2D -> 3D
         if (m_bDimention)
         {
+            
             Target = Player3D.transform.root;
             var Mr = nextDoor.GetComponent<MeshRenderer>();
             var halfY = Mr.bounds.extents.y;
@@ -179,7 +180,12 @@ public class StageManager : MonoBehaviour
 
             var ThalfY = Target.GetChild(0).GetComponent<MeshRenderer>().bounds.extents.y;
 
-            point.y = top.y + ThalfY;
+            point.y = 0;
+
+            var depth = nextwall.GetComponent<RelayWallScript>().GetDepth();
+
+            point = point - nextwall.transform.forward * depth;
+            
         }
         //2Dドア//Player 3D -> 2D
         else
@@ -197,14 +203,11 @@ public class StageManager : MonoBehaviour
 
         //壁との向きを統一
         Target.transform.forward = nextwall.transform.forward;
-
-
-        var depth = nextwall.GetComponent<RelayWallScript>().GetDepth();
-        //2D -> 3Dのとき 3DPlayerを-forward方向へ移動
         if (m_bDimention)
-            Target.position -= nextwall.transform.forward * depth;
-
-
+        {
+            Debug.Log(Target.transform.position);
+            Debug.Log(Target.GetChild(0).transform.localPosition);
+        }
         //Stage変更カメラ用
         camSc.UpdateTargetWall(nextwall);
         if (m_bDimention)

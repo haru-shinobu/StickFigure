@@ -34,7 +34,7 @@ public class Player3DController : MonoBehaviour
         stage = GameObject.FindWithTag("Manager").GetComponent<StageManager>();
         FloorDepth = WallScript.GetDepth();
         DistanceLimit = WallScript.GetHalfX() - FloorDepth;
-        player.transform.position = WallScript.transform.position + -WallScript.transform.forward * FloorDepth;
+        player.transform.position = WallScript.transform.position - WallScript.transform.forward * FloorDepth;
     }
     //==================================================================
     //プレイヤーの移動
@@ -59,7 +59,7 @@ public class Player3DController : MonoBehaviour
                 if (!m_bJump)
                 {
                     m_bJump = true;
-                    rb.AddForce(new Vector2(0, 5), ForceMode.Impulse);
+                    rb.AddForce(Vector3.up * 5, ForceMode.Impulse);
                 }
             }
             else
@@ -108,11 +108,11 @@ public class Player3DController : MonoBehaviour
                 //ステージ範囲を超えた部分を戻す
                 Vector3 pos;
                 if (m_bWallSide)
-                    pos = WallScript.GetWallAriaRB() - WallScript.transform.right * WallScript.GetDepth();
+                    pos = WallScript.GetWallAriaRB() - WallScript.transform.right * depth;
                 else
-                    pos = WallScript.GetWallAriaLT() + WallScript.transform.right * WallScript.GetDepth();
+                    pos = WallScript.GetWallAriaLT() + WallScript.transform.right * depth;
                 pos.y = player.position.y;
-                player.transform.position = pos + -WallScript.transform.forward * WallScript.GetDepth();
+                player.transform.position = pos + -WallScript.transform.forward * depth;
 
                 if (m_bWallSide)
                     player.localPosition -= m_Vec * Speed * 0.1f;
@@ -158,7 +158,7 @@ public class Player3DController : MonoBehaviour
         //プレイヤー現在位置
         var pos = player.transform.position;
         //プレイヤー現在角度
-        var rot = player.localRotation.eulerAngles.y;
+        var rot = player.root.localRotation.eulerAngles.y;
         //移動先角度
         var RotY = Target.transform.localRotation.eulerAngles.y;
 
@@ -167,10 +167,10 @@ public class Player3DController : MonoBehaviour
         var targetscript = Target.transform.GetComponent<RelayWallScript>();
         // 元の壁の右端から入った場合
         if (m_bWallSide)
-            movePos = Target.transform.right * -DistanceLimit * 0.98f;
+            movePos = Target.transform.right * -(targetscript.GetHalfX() - targetscript.GetDepth()) * 0.98f;
         // 元の壁の左端から入った場合
         else
-            movePos = Target.transform.right * DistanceLimit * 0.98f;
+            movePos = Target.transform.right * (targetscript.GetHalfX() - targetscript.GetDepth()) * 0.98f;
         movePos.y = player.transform.position.y;
         movePos = Target.transform.position + movePos - Target.transform.forward * targetscript.GetDepth();
 
@@ -184,10 +184,10 @@ public class Player3DController : MonoBehaviour
             //プレイヤーのポジション移動
             player.position = Vector3.Lerp(pos, movePos, timer);
             //移動先壁の向きを合わせる
-            player.localRotation = Quaternion.Lerp(Quaternion.Euler(0, rot, 0), Quaternion.Euler(0, RotY, 0), timer);
+            player.root.localRotation = Quaternion.Lerp(Quaternion.Euler(0, rot, 0), Quaternion.Euler(0, RotY, 0), timer);
         }
         player.position = movePos;
-        player.localRotation = Quaternion.Euler(0, RotY, 0);
+        player.root.localRotation = Quaternion.Euler(0, RotY, 0);
         //コントロール許可願い
         stage.MoveReStart(1);//プレイヤーは1を渡すこと
         rb.isKinematic = false;
@@ -201,7 +201,7 @@ public class Player3DController : MonoBehaviour
     void OnEnable()
     {
         //stage.SetNow(this.gameObject);
-        Debug.Log("3DPlayer!");
+        //Debug.Log("3DPlayer!");
     }
 
     //==================================================================
@@ -215,8 +215,8 @@ public class Player3DController : MonoBehaviour
     }
     void OnTriggerExit(Collider other)
     {
-        if (other.tag == "Door")
-            Debug.Log("出た");
+       //if (other.tag == "Door")
+       //    Debug.Log("出た");
     }
     //==================================================================
     //以下設定受け渡し

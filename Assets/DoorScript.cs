@@ -85,18 +85,18 @@ public class DoorScript : MonoBehaviour
             bDimention = !bDimention;
 
         stage.SetNowWallAcsess(bDimention,DoorAdress);
-        //テレサ再配置
+        //テレサ再配置へ
         if (_bFakeDoor)
         {
             RePositionTERESA();
         }
     }
     //==================================================================
-    // 再配置・再設定
-    // 
+    // TERESA再配置・再設定
     //==================================================================
     void RePositionTERESA()
     {
+        //前回とは違う壁をターゲット
         var walls = GameObject.FindGameObjectsWithTag("Wall");
         var oldwall = FrontWall;
         do
@@ -105,14 +105,10 @@ public class DoorScript : MonoBehaviour
             FrontWall = walls[num];
 
         } while (FrontWall == oldwall);
-
-
-
-        if (_bDimention)
-            transform.position -= FrontWall.transform.forward*FrontWall.GetComponent<RelayWallScript>().GetDepth();
+        
         StartCoroutine("TeresaFade");
     }
-
+    // TERESAフェードアウト->再配置->フェードイン
     IEnumerator TeresaFade()
     {
         float timer = 0;
@@ -139,7 +135,9 @@ public class DoorScript : MonoBehaviour
             material.color = color;
         } while (timer > 1);
         transform.position = pos;
-
+        if (_bDimention)
+            transform.position -= FrontWall.transform.forward * FrontWall.GetComponent<RelayWallScript>().GetDepth();
+        //初期再設定
         Start();
     }
     //==================================================================

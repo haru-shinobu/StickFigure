@@ -64,7 +64,7 @@ public class PlayerController : MonoBehaviour
                 if (!m_bJump)
                 {
                     m_bJump = true;
-                    rb.AddForce(new Vector2(0, 5), ForceMode.Impulse);
+                    rb.AddForce(Vector3.up * 5, ForceMode.Impulse);
                 }
             }
             else
@@ -204,7 +204,7 @@ public class PlayerController : MonoBehaviour
     void OnEnable()
     {
         //stage.SetNow(this.gameObject);
-        Debug.Log("2DPlayer!");
+        //Debug.Log("2DPlayer!");
     }
 
     //==================================================================
@@ -218,8 +218,8 @@ public class PlayerController : MonoBehaviour
     }
     void OnTriggerExit(Collider other)
     {
-        if (other.tag == "Door")
-            Debug.Log("出た");
+        //if (other.tag == "Door")
+        //    Debug.Log("出た");
     }
 
     //==================================================================
