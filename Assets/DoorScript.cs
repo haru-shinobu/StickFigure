@@ -16,6 +16,7 @@ public class DoorScript : MonoBehaviour
     [SerializeField,Header("テレサ移動先次元 : 2D = FALSE,3D = TRUE")]
     bool _bTargetDimention = false;
     StageManager stage;
+
     void Start()
     {
         if (_bDimention)
@@ -75,6 +76,9 @@ public class DoorScript : MonoBehaviour
         transform.forward = FrontWall.transform.forward;
     }
 
+    //==================================================================
+    // Player用ドア挙動
+    //==================================================================
     public void DoorAccess(bool bDimention)
     {
         if (_bDimention == _bTargetDimention)
@@ -102,14 +106,47 @@ public class DoorScript : MonoBehaviour
 
         } while (FrontWall == oldwall);
 
-        
-        var pos = FrontWall.transform.position;
-        pos.y = transform.position.y;
-        transform.position = pos;
-        transform.forward = FrontWall.transform.forward;
-        Start();
+
+
         if (_bDimention)
             transform.position -= FrontWall.transform.forward*FrontWall.GetComponent<RelayWallScript>().GetDepth();
+        StartCoroutine("TeresaFade");
+    }
+
+    IEnumerator TeresaFade()
+    {
+        float timer = 0;
+        transform.forward = FrontWall.transform.forward;
+        var pos = FrontWall.transform.position;
+        pos.y = transform.position.y;
+        var material = transform.GetComponent<MeshRenderer>().material;
+        Color color = material.color;
+        do
+        {
+            yield return new WaitForEndOfFrame();
+            timer += Time.deltaTime * 2;
+            color.a = 255 - (timer * 255);
+            material.color = color;
+
+        } while (timer > 1);
+        timer = 0;
+        transform.position = pos;
+        do
+        {
+            yield return new WaitForEndOfFrame();
+            timer += Time.deltaTime * 2;
+            color.a = timer * 255;
+            material.color = color;
+        } while (timer > 1);
+        transform.position = pos;
+
+        Start();
+    }
+    //==================================================================
+    // Enemy用ドア挙動
+    //==================================================================
+    public void EnemyDoorAccess()
+    {
 
     }
     //==================================================================

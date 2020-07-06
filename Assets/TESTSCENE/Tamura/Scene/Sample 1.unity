@@ -204,6 +204,7 @@ MonoBehaviour:
   _bDimention: 1
   _bFakeDoor: 1
   _bTargetDimention: 0
+  mat: {fileID: 2100000, guid: fc2f265807293754193168194f86ee8e, type: 2}
 --- !u!65 &699273138
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -235,7 +236,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -3033667219593020291, guid: a675cc0c07d326e41a692bbd41cb7d0d, type: 3}
+  - {fileID: 2100000, guid: fc2f265807293754193168194f86ee8e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -419,6 +420,7 @@ MonoBehaviour:
   _bDimention: 1
   _bFakeDoor: 0
   _bTargetDimention: 0
+  mat: {fileID: 0}
 --- !u!65 &970064022
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -593,6 +595,7 @@ MonoBehaviour:
   _bDimention: 0
   _bFakeDoor: 0
   _bTargetDimention: 0
+  mat: {fileID: 0}
 --- !u!135 &1138749815
 SphereCollider:
   m_ObjectHideFlags: 0
