@@ -53,7 +53,7 @@ public class CameraScript : MonoBehaviour
         if (CamAction)
         {
             //一時的にカメラ左右を覗く
-            var Camroll = Input.GetAxis("Vertical");
+            var Camroll = Input.GetAxis("CamRoll");
             Camroll = Mathf.RoundToInt(Camroll);
             if (Inputway != Camroll)
                 timer = 0;
@@ -90,7 +90,7 @@ public class CameraScript : MonoBehaviour
         //カメラ現在位置
         var pos = Camera.main.transform.localPosition;
         //カメラと対象の角度
-        var angle = obj.transform.localRotation.eulerAngles.y - BaseAngle;//Camera.main.transform.localRotation.eulerAngles.y;
+        var angle = obj.transform.localRotation.eulerAngles.y - BaseAngle;
         var dis = Quaternion.Euler(0, angle, 0) * Wall_Cam_distance;
         //カメラの移動先位置
         var ReCamPos = obj.transform.localPosition + dis;

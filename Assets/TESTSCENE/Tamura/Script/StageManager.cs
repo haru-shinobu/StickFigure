@@ -34,7 +34,7 @@ public class StageManager : MonoBehaviour
         camSc.SetNowWall(StartWall);
         NowWall = StartWall;
         Player = GameObject.FindWithTag("Player").GetComponent<PlayerController>();
-        Player3D = GameObject.FindWithTag("Player3D").GetComponent<Player3DController>();
+        Player3D = GameObject.FindWithTag("Player3D").transform.GetChild(0).GetComponent<Player3DController>();
         
         //壁→壁への切り替え速度
         camSc.SetChangeWallSpeed(WallChageSpeed);
@@ -122,14 +122,11 @@ public class StageManager : MonoBehaviour
         }
         if (CamChangeEnd && PlayerChangeEnd)
         {
-            if (m_bDimention)
-                Player3D.ControllJudge(true);
-            else
-                Player.ControllJudge(true);
-            camSc.SetControllJudge(true);
+            MovePermit(true);
             CamChangeEnd = PlayerChangeEnd = false;
         }
     }
+    //
     //==================================================================
     // 現在2Dか3Dか
     //==================================================================
@@ -151,12 +148,81 @@ public class StageManager : MonoBehaviour
     {
         return StartWall;
     }
-    //==================================================================
-    // プレイヤーセット
-    //==================================================================
-    public void SetNow(GameObject playerobj)
-    {
-        ;
-    }
 
+    //==================================================================
+    // Player2D・3D切り替え  bDimen = true(2D->3D)：false(3D->2D)
+    //==================================================================
+    // DoorScript DoorAccess(bool bDimention,GameObject DoorAdress)->
+    public void SetNowWallAcsess(bool bDimen, GameObject nextDoor)
+    {
+        MovePermit(false);
+        m_bDimention = bDimen;
+        MovePermit(false);
+        
+        var nextwall = nextDoor.GetComponent<DoorScript>().GetWall();
+        
+        Transform Target;
+        //Player 2D -> 3D
+        if (m_bDimention)
+        {   
+            Target = Player3D.transform;
+        }
+        //Player 3D -> 2D
+        else
+        {
+            Target = Player.transform;
+        }
+        //ドアが壁から浮いていた場合のため、ドアの壁への垂線の交点を求める
+        var pointA = nextwall.transform.position;
+        var pointB = nextwall.transform.right;
+        var pointP = nextDoor.transform.position;
+        var point = pointA + Vector3.Project(pointP - pointA, pointB - pointA);
+        //移動先の壁面上ポジションをセット
+        //3Dドア
+        if (m_bDimention)
+        {
+            var Mr = nextDoor.GetComponent<MeshRenderer>();
+            var halfY = Mr.bounds.extents.y;
+            var vec = new Vector3(0, -halfY, 0);
+            var top = Mr.transform.TransformPoint(vec);
+            
+            var ThalfY = Target.GetComponent<MeshRenderer>().bounds.extents.y;
+
+            point.y = top.y + ThalfY;
+        }
+        //2Dドア
+        else
+        {
+            var Sr = nextDoor.GetComponent<SpriteRenderer>();
+            var halfY = Sr.sprite.bounds.extents.y;
+            var vec = new Vector3(0, -halfY, 0);
+            var top = Sr.transform.TransformPoint(vec);
+
+            var ThalfY = Target.GetComponent<SpriteRenderer>().sprite.bounds.extents.y;
+            point.y = top.y + ThalfY;
+        }
+        Target.position = point;
+
+        //壁との向きを統一
+        Target.transform.forward = nextwall.transform.forward;
+
+        
+        var depth = nextwall.GetComponent<RelayWallScript>().GetDepth();
+        //2D -> 3Dのとき 3DPlayerを-forward方向へ移動
+        if (m_bDimention)
+            Target.position -= nextwall.transform.forward * depth;
+
+        
+        //Stage変更カメラ用
+        camSc.UpdateTargetWall(nextwall);
+        if (m_bDimention)
+            Player3D.WallScript = nextwall.GetComponent<RelayWallScript>();
+        else
+            Player.WallScript = nextwall.GetComponent<RelayWallScript>();
+        //アクティブ切り替え
+        Player.gameObject.SetActive(!m_bDimention);
+        Player3D.gameObject.SetActive(m_bDimention);
+        //プレイヤーの分の行動許可
+        MoveReStart(1);
+    }
 }
