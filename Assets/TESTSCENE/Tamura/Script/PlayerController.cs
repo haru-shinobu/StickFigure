@@ -14,7 +14,7 @@ public class PlayerController : MonoBehaviour
     bool m_bControll = true;
 
     bool m_bWallSide = false;
-
+    
     enum WAY // simadawallで現在使用
     {
         RIGHT = -1,
@@ -71,6 +71,7 @@ public class PlayerController : MonoBehaviour
             if (rb.velocity.y == 0) m_bJump = false;
 
             PlayerOnStage();
+
         }
     }
     
@@ -196,6 +197,30 @@ public class PlayerController : MonoBehaviour
     }
     //-----------------------------------------------------
     //==================================================================
+
+    //=================================================================
+    // アクティブ化したとき呼び出される
+    //==================================================================
+    void OnEnable()
+    {
+        //stage.SetNow(this.gameObject);
+        Debug.Log("2DPlayer!");
+    }
+
+    //==================================================================
+    // コライダ(主にドア、階段)
+    //==================================================================
+    void OnTriggerEnter(Collider other)
+    {
+        if (m_bControll)
+            if (other.tag == "Door")
+                other.SendMessage("DoorAccess", true);//3D->2D
+    }
+    void OnTriggerExit(Collider other)
+    {
+        if (other.tag == "Door")
+            Debug.Log("出た");
+    }
 
     //==================================================================
     //以下設定受け渡し

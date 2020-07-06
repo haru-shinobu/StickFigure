@@ -26,7 +26,7 @@ public class Player3DController : MonoBehaviour
 
     void Start()
     {
-        player = this.gameObject.transform;
+        player = this.gameObject.transform.root.transform;
         rb = player.GetChild(0).GetComponent<Rigidbody>();
         m_bJump = false;
 
@@ -66,6 +66,7 @@ public class Player3DController : MonoBehaviour
             if (rb.velocity.y == 0) m_bJump = false;
 
             PlayerOnStage();
+            
         }
     }
 
@@ -194,15 +195,29 @@ public class Player3DController : MonoBehaviour
     //-----------------------------------------------------
     //==================================================================
 
-    //==================================================================
+    //=================================================================
     // アクティブ化したとき呼び出される
     //==================================================================
     void OnEnable()
     {
         //stage.SetNow(this.gameObject);
+        Debug.Log("3DPlayer!");
     }
-    
 
+    //==================================================================
+    // コライダ(主にドア、階段)
+    //==================================================================
+    void OnTriggerEnter(Collider other)
+    {
+        if (m_bControll)
+            if (other.tag == "Door")
+                other.SendMessage("DoorAccess", false);//3D->2D
+    }
+    void OnTriggerExit(Collider other)
+    {
+        if (other.tag == "Door")
+            Debug.Log("出た");
+    }
     //==================================================================
     //以下設定受け渡し
     //==================================================================
