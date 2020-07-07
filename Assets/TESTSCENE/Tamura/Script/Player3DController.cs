@@ -24,6 +24,9 @@ public class Player3DController : MonoBehaviour
     float ChangeWallSpeed;
     float FloorDepth;
 
+    bool _bAccess = false;
+    GameObject Access;
+
     void Start()
     {
         player = this.gameObject.transform.root.transform;
@@ -66,7 +69,16 @@ public class Player3DController : MonoBehaviour
             if (rb.velocity.y == 0) m_bJump = false;
 
             PlayerOnStage();
-            
+
+            if (_bAccess)
+            {
+                if (Access)
+                    if (Input.GetButton("Access"))
+                    {
+                        if (Access.tag == "Door")
+                            Access.SendMessage("DoorAccess", false);
+                    }
+            }
         }
     }
 
@@ -211,12 +223,17 @@ public class Player3DController : MonoBehaviour
     {
         if (m_bControll)
             if (other.tag == "Door")
-                other.SendMessage("DoorAccess", false);//3D->2D
+            {
+                _bAccess = true;
+                Access = other.gameObject;
+            }
+                //other.SendMessage("DoorAccess", false);//3D->2D
     }
     void OnTriggerExit(Collider other)
     {
-       //if (other.tag == "Door")
-       //    Debug.Log("出た");
+        _bAccess = false;
+        //if (other.tag == "Door")
+        //    Debug.Log("出た");
     }
     //==================================================================
     //以下設定受け渡し

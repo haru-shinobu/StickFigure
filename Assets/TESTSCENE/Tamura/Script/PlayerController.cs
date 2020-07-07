@@ -30,6 +30,9 @@ public class PlayerController : MonoBehaviour
     StageManager stage;
     float ChangeWallSpeed;
 
+    bool _bAccess = false;
+    GameObject Access;
+
     void Start()
     {
         player = this.gameObject.transform;
@@ -71,7 +74,17 @@ public class PlayerController : MonoBehaviour
             if (rb.velocity.y == 0) m_bJump = false;
 
             PlayerOnStage();
-
+            if (Input.GetButton("Access"))
+                if (Access)
+                {
+                    if (_bAccess)
+                    {
+                        if (Access.tag == "Door")
+                            Access.SendMessage("DoorAccess", true);
+                        //if(Access.tag == "Step")
+                        //    Access.SendMessage("DoorAccess", true);   
+                    }
+                }
         }
     }
     
@@ -214,12 +227,17 @@ public class PlayerController : MonoBehaviour
     {
         if (m_bControll)
             if (other.tag == "Door")
-                other.SendMessage("DoorAccess", true);//3D->2D
+            {
+                _bAccess = true;
+                Access = other.gameObject;
+            }
+        //other.SendMessage("DoorAccess", true);//3D->2D
     }
     void OnTriggerExit(Collider other)
     {
         //if (other.tag == "Door")
         //    Debug.Log("出た");
+        _bAccess = false;
     }
 
     //==================================================================
