@@ -14,7 +14,8 @@ public class PlayerController : MonoBehaviour
     bool m_bControll = true;
 
     bool m_bWallSide = false;
-    
+    [SerializeField]
+    bool UseJump = true;
     enum WAY // simadawallで現在使用
     {
         RIGHT = -1,
@@ -61,17 +62,32 @@ public class PlayerController : MonoBehaviour
                 player.localPosition -= m_Vec * Speed * 0.01f;
                 way = WAY.LEFT;
             }
-
-            if (Input.GetButton("Jump"))
+            if (UseJump)
             {
-                if (!m_bJump)
+                if (Input.GetButton("Jump"))
                 {
-                    m_bJump = true;
-                    rb.AddForce(Vector3.up * 5, ForceMode.Impulse);
+                    if (!m_bJump)
+                    {
+                        m_bJump = true;
+                        rb.AddForce(Vector3.up * 5, ForceMode.Impulse);
+                    }
                 }
+                else
+            if (rb.velocity.y == 0) m_bJump = false;
             }
             else
-            if (rb.velocity.y == 0) m_bJump = false;
+            {
+                var updown = Input.GetAxis("Vertical");
+                if (updown > 0)
+                {
+                    player.localPosition += Vector3.up * Speed * 0.01f;
+                }
+                else
+                    if (updown < 0)
+                {
+                    player.localPosition -= Vector3.up * Speed * 0.01f;
+                }
+            }
 
             PlayerOnStage();
             if (Input.GetButton("Access"))
