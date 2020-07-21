@@ -16,6 +16,7 @@ public class PlayerController : MonoBehaviour
     bool m_bWallSide = false;
     [SerializeField]
     bool UseJump = true;
+    /*
     enum WAY // simadawallで現在使用
     {
         RIGHT = -1,
@@ -23,6 +24,7 @@ public class PlayerController : MonoBehaviour
         LEFT = 1,
     }
     WAY way = WAY.NORMAL;
+    */
     float DistanceLimit;
     Vector3 MoveAriaLeftTop, MoveAriaRightBottom;
     Vector3 m_Vec;
@@ -54,13 +56,13 @@ public class PlayerController : MonoBehaviour
             if (leftright > 0)
             {
                 player.localPosition += m_Vec * Speed * 0.01f;
-                way = WAY.RIGHT;
+                //way = WAY.RIGHT;
             }
             else
                 if (leftright < 0)
             {
                 player.localPosition -= m_Vec * Speed * 0.01f;
-                way = WAY.LEFT;
+                //way = WAY.LEFT;
             }
             if (UseJump)
             {
@@ -264,11 +266,13 @@ public class PlayerController : MonoBehaviour
     {
         m_bControll = flag;
     }
+    /*
     //移動の向き
     public int Getways()
     {
         return (int)way;
     }
+    */
     public void SetChangeWallSpeed(float val)
     {
         ChangeWallSpeed = val;

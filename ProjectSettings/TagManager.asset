@@ -8,6 +8,7 @@ TagManager:
   - Manager
   - Player3D
   - Door
+  - BoxManager
   layers:
   - Default
   - TransparentFX
