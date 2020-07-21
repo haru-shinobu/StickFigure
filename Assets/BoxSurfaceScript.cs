@@ -17,16 +17,17 @@ public class BoxSurfaceScript : MonoBehaviour
 
     SpriteRenderer Sr;
     Vector2 extentsHalfPos;
+    BoxScript boxroot;
     //==================================================================
-    // 
+    // 画像の縦横の半分計算
     //==================================================================
-    void Start()
+    void Awake()
     {
         Sr = GetComponent<SpriteRenderer>();
         var _sprite = Sr.sprite;
         var _halfX = _sprite.bounds.extents.x;
         var _halfY = _sprite.bounds.extents.y;
-        
+
         extentsHalfPos = new Vector2(_halfX, _halfY);
 
         //壁の原点から壁の端の距離を算出
@@ -40,20 +41,23 @@ public class BoxSurfaceScript : MonoBehaviour
         Sprite_half_DistanceX = Vector3.Distance(LeftLine, RightLine) * 0.5f;
         sLeftLine.x = sRightLine.x = 0;
         Sprite_half_DistanceY = Vector3.Distance(sLeftLine, sRightLine) * 0.5f;
+
+        boxroot = transform.root.GetComponent<BoxScript>();
     }
 
-    
+
     void Update()
     {
-        
+
     }
     //==================================================================
     // その面が正面に来た時に位置を記録
     //==================================================================
-    void came_to_front()
+    public void came_to_front()
     {
         //面が回転しているときとしていないときの違いで処理が変わる…
-        if (transform.root.up == Vector3.up || transform.root.up == -Vector3.up) {
+        if (transform.root.up == Vector3.up || transform.root.up == -Vector3.up)
+        {
             //各壁のLeftTopを記録
             var _vec = new Vector3(-extentsHalfPos.x, extentsHalfPos.y, 0f);
             LeftTop = Sr.transform.TransformPoint(_vec);
@@ -68,17 +72,18 @@ public class BoxSurfaceScript : MonoBehaviour
             LeftTop = Sr.transform.TransformPoint(_vec);
 
             //各壁のRightBottomを記録
-            var _vec2 = new Vector3(-extentsHalfPos.y, extentsHalfPos.x, 0f);
+            var _vec2 = new Vector3(extentsHalfPos.y, -extentsHalfPos.x, 0f);
             RightBottom = Sr.transform.TransformPoint(_vec2);
         }
     }
     //==================================================================
     // ターゲットが範囲内かどうか判定
     //==================================================================
+    //Box_PlayerController Update()->
     public bool CheckPPos(Vector3 Ppos)
     {
         //範囲内のとき
-        if(LeftTop.x < Ppos.x && Ppos.x < RightBottom.x)
+        if (LeftTop.x < Ppos.x && Ppos.x < RightBottom.x)
             if (RightBottom.y < Ppos.y && Ppos.y < LeftTop.y)
                 return true;
         return false;
@@ -86,44 +91,148 @@ public class BoxSurfaceScript : MonoBehaviour
     //==================================================================
     // ターゲットがどの位置か判定
     //==================================================================
+    //Box_PlayerController Update()->
     public void ChangeWalls(Transform Ptrs)
     {
         var Ppos = Ptrs.position;
         var playSc = Ptrs.GetComponent<Box_PlayerController>();
-        
-        if(transform.up == Vector3.up)
+
+        var rollways = 0;
+        GameObject nextwalls = null;
+        if (transform.up == Vector3.up)
         {
             //上下左右
-            if (Ppos.y > LeftTop.y) playSc.MoveWall(TopWall);
-            if (Ppos.y < RightBottom.y) playSc.MoveWall(BottomWall);
-            if (Ppos.x < LeftTop.x) playSc.MoveWall(LeftWall);
-            if (Ppos.x > RightBottom.x) playSc.MoveWall(RightWall);
+            if (Ppos.y >= LeftTop.y)
+            {
+                nextwalls = TopWall;
+                rollways = 1;
+            }
+            if (Ppos.y <= RightBottom.y)
+            {
+                nextwalls = BottomWall;
+                rollways = 2;
+            }
+            if (Ppos.x <= LeftTop.x)
+            {
+                nextwalls = LeftWall;
+                rollways = 3;
+            }
+            if (Ppos.x >= RightBottom.x)
+            {
+                nextwalls = RightWall;
+                rollways = 4;
+            }
         }
         if (transform.up == Vector3.right)
         {
             //上下左右
-            if (Ppos.y > LeftTop.y) playSc.MoveWall(RightWall);
-            if (Ppos.y < RightBottom.y) playSc.MoveWall(LeftWall);
-            if (Ppos.x < LeftTop.x) playSc.MoveWall(TopWall);
-            if (Ppos.x > RightBottom.x) playSc.MoveWall(BottomWall);
+            if (Ppos.y >= LeftTop.y)
+            {
+                nextwalls = RightWall;
+                rollways = 1;
+            }
+            if (Ppos.y <= RightBottom.y)
+            {
+                nextwalls = LeftWall;
+                rollways = 2;
+            }
+            if (Ppos.x <= LeftTop.x)
+            {
+                nextwalls = TopWall;
+                rollways = 3;
+            }
+            if (Ppos.x >= RightBottom.x)
+            {
+                nextwalls = BottomWall;
+                rollways = 4;
+            }
         }
         if (transform.up == Vector3.left)
         {
             //上下左右
-            if (Ppos.y > LeftTop.y) playSc.MoveWall(LeftWall);
-            if (Ppos.y < RightBottom.y) playSc.MoveWall(RightWall);
-            if (Ppos.x < LeftTop.x) playSc.MoveWall(BottomWall);
-            if (Ppos.x > RightBottom.x) playSc.MoveWall(TopWall);
+            if (Ppos.y >= LeftTop.y)
+            {
+                nextwalls = LeftWall;
+                rollways = 1;
+            }
+            if (Ppos.y <= RightBottom.y)
+            {
+                nextwalls = RightWall;
+                rollways = 2;
+            }
+            if (Ppos.x <= LeftTop.x)
+            {
+                nextwalls = BottomWall;
+                rollways = 3;
+            }
+            if (Ppos.x >= RightBottom.x)
+            {
+                nextwalls = TopWall;
+                rollways = 4;
+            }
         }
         if (transform.up == Vector3.down)
         {
             //上下左右
-            if (Ppos.y > LeftTop.y) playSc.MoveWall(BottomWall);
-            if (Ppos.y < RightBottom.y) playSc.MoveWall(TopWall);
-            if (Ppos.x < LeftTop.x) playSc.MoveWall(RightWall);
-            if (Ppos.x > RightBottom.x) playSc.MoveWall(LeftWall);
+            if (Ppos.y >= LeftTop.y)
+            {
+                nextwalls = BottomWall;
+                rollways = 1;
+            }
+            if (Ppos.y <= RightBottom.y)
+            {
+                nextwalls = TopWall;
+                rollways = 2;
+            }
+            if (Ppos.x <= LeftTop.x)
+            {
+                nextwalls = RightWall;
+                rollways = 3;
+            }
+            if (Ppos.x >= RightBottom.x)
+            {
+
+                nextwalls = LeftWall;
+                rollways = 4;
+            }
+        }
+        if (nextwalls != null)
+        {
+            Debug.Log(transform.name);
+            Debug.Log(nextwalls.name);
+            playSc.SetNextWall(nextwalls.GetComponent<BoxSurfaceScript>());
+            Ptrs.SetParent(nextwalls.transform);
+            //壁の回転
+            boxroot.RollBlocks(rollways,nextwalls);
+//            nextwalls.GetComponent<BoxSurfaceScript>().came_to_front();
         }
     }
+    //==================================================================
+    // 範囲内に強制的に収める
+    //==================================================================
+    //Box_PlayerController IEnumerator BlockRoller(Vector3 way_vec)->
+    public void PosInWall(Transform player_Trs)
+    {
+        var Ppos = player_Trs.position;
+        int a = 0;
+        Debug.Log(Ppos);
+        Debug.Log(LeftTop);
+        Debug.Log(RightBottom);
+        while (!CheckPPos(Ppos))
+        {
+            if (a++ > 40) break;
+            if (LeftTop.x >= Ppos.x)
+                Ppos.x = LeftTop.x + 0.1f;
+            if (Ppos.x >= RightBottom.x)
+                Ppos.x = RightBottom.x - 0.1f;
+            if (RightBottom.y >= Ppos.y)
+                Ppos.y = RightBottom.y + 0.1f;
+            if (Ppos.y >= LeftTop.y)
+                Ppos.y = LeftTop.y - 0.1f;
+            player_Trs.position = Ppos;
+        }
+    }
+
     //==================================================================
     // 以下設定受け渡し
     //  表壁
