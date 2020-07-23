@@ -4,10 +4,24 @@ using UnityEngine;
 
 public class BoxManager : MonoBehaviour
 {
-    // Start is called before the first frame update
+    [SerializeField, Header("スタートの壁")]
+    GameObject StartWall;
+
+    //==================================================================
+    // ゲームスタート時のプレイヤーの開始壁をセット
+    //==================================================================
+    void Awake()
+    {
+        Box_PlayerController BoxPlayer = GameObject.FindWithTag("Player").GetComponent<Box_PlayerController>();
+        BoxPlayer.SetNextWall(StartWall.GetComponent<BoxSurfaceScript>());
+        BoxPlayer.transform.position = StartWall.transform.position;
+    }
+    //==================================================================
+    // スタート正面に来た時に位置を記録させる
+    //==================================================================
     void Start()
     {
-        
+        StartWall.GetComponent<BoxSurfaceScript>().came_to_front();
     }
 
     // Update is called once per frame

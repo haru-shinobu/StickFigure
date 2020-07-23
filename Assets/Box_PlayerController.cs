@@ -19,10 +19,6 @@ public class Box_PlayerController : MonoBehaviour
     //移動判定するための接触壁
     GameObject decision_object;
 
-    //壁移動時の切り替え速度
-    ///(他スクリプトから値を渡す事。カメラや物体の変化速度と合わせるため)
-    [Header("壁切替速度")]
-    private float ChangeSpeed;
 
     BoxManager BManager;
     Vector3 m_Vec;
@@ -36,9 +32,8 @@ public class Box_PlayerController : MonoBehaviour
         BManager = GameObject.FindWithTag("BoxManager").GetComponent<BoxManager>();
         Player_verticalhorizontal = transform.GetComponent<SpriteRenderer>().bounds.extents;
     }
-
     
-    //基本的に操作を主に置く。判定系は別のブロックで行うようにしている
+    //基本的に操作を主に置く。判定系は別のブロックで行う
     void Update()
     {
         if(_bControll)
@@ -46,11 +41,12 @@ public class Box_PlayerController : MonoBehaviour
             float horizontal = Input.GetAxis("Horizontal");
             float vartical = Input.GetAxis("Vertical");
             var Ppos = transform.position;
-            // プレイヤー移動範囲
+            // プレイヤー移動範囲チェック
             if (boxwall.CheckPPos(Ppos))
-                this.Move(horizontal, vartical);
+                this.Move(horizontal, vartical);//移動
             else
             {
+                Debug.Log(2);
                 _bControll = false;
                 boxwall.ChangeWalls(this.transform);
             }
@@ -72,11 +68,11 @@ public class Box_PlayerController : MonoBehaviour
     {
         if (horizontal > 0)
         {
-            transform.localPosition += m_Vec * Speed * 0.01f;
+            transform.localPosition += Vector3.right * Speed * 0.01f;
         }
         if (horizontal < 0)
         {
-            transform.localPosition -= m_Vec * Speed * 0.01f;
+            transform.localPosition -= Vector3.right * Speed * 0.01f;
         }
         if (vartical > 0)
         {
@@ -87,13 +83,6 @@ public class Box_PlayerController : MonoBehaviour
             transform.localPosition -= Vector3.up * Speed * 0.01f;
         }
     }
-    //=======================================================================
-    // 壁移動コルーチンへ
-    //=======================================================================
-    public void MoveWall(GameObject nextwall)
-    {
-        StartCoroutine("WallShifter", nextwall);
-    }
 
     //=======================================================================
     // 橋
@@ -103,16 +92,27 @@ public class Box_PlayerController : MonoBehaviour
         //vec2 (BridgeSpace)
     }
 
-    //=======================================================================
-    //壁移動時の切り替え速度
-    //=======================================================================
-    void SetChangeSpeed(float speed)
+    //BoxScript WallInAria()->
+    public void WallInAria()
     {
-        ChangeSpeed = speed;
+        boxwall.came_to_front();
+        var Ppos = transform.position;
+        if (!boxwall.CheckPPos(Ppos))
+        {
+            Debug.Log("外");
+            boxwall.PosInWall(transform);
+        }
     }
-    IEnumerator WallShifter(GameObject nextwall)
+    
+    //=======================================================================
+    // 各種設定受け渡し
+    //=======================================================================
+    public void SetNextWall(BoxSurfaceScript nextwall)
     {
-        yield return new WaitForEndOfFrame();
-
+        boxwall = nextwall;
+    }
+    public void SetMoving(bool flag)
+    {
+        _bControll = flag;
     }
 }
