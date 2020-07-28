@@ -46,34 +46,56 @@ public class BoxSurfaceScript : MonoBehaviour
     }
 
 
-    void Update()
-    {
-
-    }
     //==================================================================
     // その面が正面に来た時に位置を記録
     //==================================================================
     public void came_to_front()
     {
         //面が回転しているときとしていないときの違いで処理が変わる…
-        if (transform.root.up == Vector3.up || transform.root.up == -Vector3.up)
+        if (transform.root.up == Vector3.up || transform.root.up == -Vector3.up ||
+            transform.root.right == Vector3.right || transform.root.right == Vector3.left)
         {
+            Debug.Log("上下");
             //各壁のLeftTopを記録
-            var _vec = new Vector3(-extentsHalfPos.x, extentsHalfPos.y, 0f);
+
+            var _vec = new Vector3(-extentsHalfPos.x, extentsHalfPos.y, transform.position.z);
             LeftTop = Sr.transform.TransformPoint(_vec);
 
             //各壁のRightBottomを記録
-            var _vec2 = new Vector3(extentsHalfPos.x, -extentsHalfPos.y, 0f);
+            var _vec2 = new Vector3(extentsHalfPos.x, -extentsHalfPos.y, transform.position.z);
             RightBottom = Sr.transform.TransformPoint(_vec2);
+            if (LeftTop.x > RightBottom.x && LeftTop.y < RightBottom.y)
+            {
+                var ins = LeftTop;
+                LeftTop = RightBottom;
+                RightBottom = ins;
+            }
         }
         else
         {
+            Debug.Log("左右");
             var _vec = new Vector3(-extentsHalfPos.y, extentsHalfPos.x, 0f);
             LeftTop = Sr.transform.TransformPoint(_vec);
 
             //各壁のRightBottomを記録
             var _vec2 = new Vector3(extentsHalfPos.y, -extentsHalfPos.x, 0f);
             RightBottom = Sr.transform.TransformPoint(_vec2);
+            if (LeftTop.x > RightBottom.x && LeftTop.y < RightBottom.y)
+            {
+                var ins = LeftTop;
+                LeftTop = RightBottom;
+                RightBottom = ins;
+            }
+        }
+        if (LeftTop.x > RightBottom.x)
+        {
+            Debug.Log("Left＞Right");
+            UnityEditor.EditorApplication.isPaused = true;
+        }
+        if (LeftTop.y < RightBottom.y)
+        {
+            Debug.Log("Top＜Bottom");
+            UnityEditor.EditorApplication.isPaused = true;
         }
     }
     //==================================================================
@@ -99,107 +121,17 @@ public class BoxSurfaceScript : MonoBehaviour
 
         var rollways = 0;
         GameObject nextwalls = null;
-        if (transform.up == Vector3.up)
-        {
-            //上下左右
-            if (Ppos.y >= LeftTop.y)
-            {
-                nextwalls = TopWall;
-                rollways = 1;
-            }
-            if (Ppos.y <= RightBottom.y)
-            {
-                nextwalls = BottomWall;
-                rollways = 2;
-            }
-            if (Ppos.x <= LeftTop.x)
-            {
-                nextwalls = LeftWall;
-                rollways = 3;
-            }
-            if (Ppos.x >= RightBottom.x)
-            {
-                nextwalls = RightWall;
-                rollways = 4;
-            }
-        }
-        if (transform.up == Vector3.right)
-        {
-            //上下左右
-            if (Ppos.y >= LeftTop.y)
-            {
-                nextwalls = RightWall;
-                rollways = 1;
-            }
-            if (Ppos.y <= RightBottom.y)
-            {
-                nextwalls = LeftWall;
-                rollways = 2;
-            }
-            if (Ppos.x <= LeftTop.x)
-            {
-                nextwalls = TopWall;
-                rollways = 3;
-            }
-            if (Ppos.x >= RightBottom.x)
-            {
-                nextwalls = BottomWall;
-                rollways = 4;
-            }
-        }
-        if (transform.up == Vector3.left)
-        {
-            //上下左右
-            if (Ppos.y >= LeftTop.y)
-            {
-                nextwalls = LeftWall;
-                rollways = 1;
-            }
-            if (Ppos.y <= RightBottom.y)
-            {
-                nextwalls = RightWall;
-                rollways = 2;
-            }
-            if (Ppos.x <= LeftTop.x)
-            {
-                nextwalls = BottomWall;
-                rollways = 3;
-            }
-            if (Ppos.x >= RightBottom.x)
-            {
-                nextwalls = TopWall;
-                rollways = 4;
-            }
-        }
-        if (transform.up == Vector3.down)
-        {
-            //上下左右
-            if (Ppos.y >= LeftTop.y)
-            {
-                nextwalls = BottomWall;
-                rollways = 1;
-            }
-            if (Ppos.y <= RightBottom.y)
-            {
-                nextwalls = TopWall;
-                rollways = 2;
-            }
-            if (Ppos.x <= LeftTop.x)
-            {
-                nextwalls = RightWall;
-                rollways = 3;
-            }
-            if (Ppos.x >= RightBottom.x)
-            {
-
-                nextwalls = LeftWall;
-                rollways = 4;
-            }
-        }
+        //上下左右
+        if (Ppos.y >= LeftTop.y) rollways = 1;
+        if (Ppos.y <= RightBottom.y) rollways = 2;
+        if (Ppos.x <= LeftTop.x) rollways = 3;
+        if (Ppos.x >= RightBottom.x) rollways = 4;
+        if (transform.name == "Surface (0)")
+            Debug.Log(LeftTop + "と" + RightBottom);
+        nextwalls = boxroot.WallLocation(this.gameObject,rollways);
         if (nextwalls != null)
         {
-            Debug.Log(transform.name);
-            Debug.Log(nextwalls.name);
+            Debug.Log(transform.name+" -> "+nextwalls.name);
             playSc.SetNextWall(nextwalls.GetComponent<BoxSurfaceScript>());
             Ptrs.SetParent(nextwalls.transform);
             //壁の回転
@@ -215,9 +147,12 @@ public class BoxSurfaceScript : MonoBehaviour
     {
         var Ppos = player_Trs.position;
         int a = 0;
-        Debug.Log(Ppos);
-        Debug.Log(LeftTop);
-        Debug.Log(RightBottom);
+        if (LeftTop.x > RightBottom.x || LeftTop.y < RightBottom.y)
+        {
+            Debug.Log(LeftTop);
+            Debug.Log(RightBottom);
+            Debug.Log(transform.name);
+        }
         while (!CheckPPos(Ppos))
         {
             if (a++ > 40) break;

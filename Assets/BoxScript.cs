@@ -80,12 +80,6 @@ public class BoxScript : MonoBehaviour
 
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     //======================================================
     // ブロックの回転
     //======================================================
@@ -97,10 +91,10 @@ public class BoxScript : MonoBehaviour
         {
             default: break;
             case 1://up
-                _vec = -Vector3.right; 
+                _vec = Vector3.right; 
                 break;
             case 2://down
-                _vec = Vector3.right;
+                _vec = -Vector3.right;
                 break;
             case 3://left
                 _vec = -Vector3.up;
@@ -117,16 +111,19 @@ public class BoxScript : MonoBehaviour
         float minAngle = 0.0f;
         float maxAngle = 90.0f;
         float timer = 0;
+        var nowrot = transform.eulerAngles;
+
         while (true)
         {
             timer += Time.deltaTime * ChangeSpeed;
             float angle = Mathf.LerpAngle(minAngle, maxAngle, timer);
-            transform.eulerAngles = angle * way_vec;
+            Debug.Log(transform.eulerAngles);
+            transform.eulerAngles = nowrot + angle * way_vec;
             
             yield return new WaitForEndOfFrame();
             if (timer >= 1) break;
         }
-        
+
         //親子関係解除
         var wa = player.transform.parent.transform;
         player.transform.SetParent(null);
@@ -137,13 +134,73 @@ public class BoxScript : MonoBehaviour
         player.transform.position = pos;
         
         var PSc = player.GetComponent<Box_PlayerController>();
-
+        
         yield return new WaitForEndOfFrame();
         //箱範囲内に収めさせる
         PSc.WallInAria();
         yield return new WaitForEndOfFrame();
 
         PSc.SetMoving(true);
+    }
+    //BoxSurfaceScript ChangeWalls(Transform Ptrs)->
+    public GameObject WallLocation(GameObject wall,int ways)
+    {
+        GameObject returnObj = wall;
+        int num = 5;
+        while (wall != faces[num].gameObject)
+        {
+            num--;
+        }
+        int val = 0;
+        if (num % 2 == 0)
+            val = num + 1;
+        else
+            val = num - 1;
+        
+        num = 5;
+        //way上下左右
+        switch (ways)
+        {
+            case 1:
+                while (0 <= num)
+                {
+                    if (faces[num].position.y > transform.position.y)//よりも上
+                        if (faces[num] != faces[val])
+                            returnObj = faces[num].gameObject;
+                    num--;
+                }
+                break;
+            case 2:
+                while (0 <= num)
+                {
+                    if (faces[num].position.y < transform.position.y)//よりも下
+                        if (faces[num] != faces[val])
+                            returnObj = faces[num].gameObject;
+                    num--;
+                }
+                break;
+            case 3:
+                while (0 <= num)
+                {
+                    if (faces[num].position.x < transform.position.x)//よりも左
+                        if (faces[num] != faces[val])
+                            returnObj = faces[num].gameObject;
+                    num--;
+                }
+                break;
+            case 4:
+                while (0 <= num)
+                {
+                    if (faces[num].position.x > transform.position.x)//よりも右
+                        if (faces[num] != faces[val])
+                            returnObj = faces[num].gameObject;
+                    num--;
+                }
+                break;
+        }
+        Debug.Log("nowwall:" + wall.name + "=>" + returnObj);
+        Debug.Log("repos"+returnObj.transform.position);
+        return returnObj;
     }
     //=======================================================================
     //壁移動時の切り替え速度
