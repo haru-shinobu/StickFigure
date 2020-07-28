@@ -10,7 +10,8 @@ public class BoxScript : MonoBehaviour
     ///(他スクリプトから値を渡す事。カメラや物体の変化速度と合わせるため)
     [Header("壁切替速度"),Range(0.5f,2)]
     private float ChangeSpeed = 1;
-    
+
+    GameObject frontwall;
     //============================================
     // スケール次第で色変更
     //============================================
@@ -47,68 +48,24 @@ public class BoxScript : MonoBehaviour
         faces[4].GetComponent<BoxSurfaceScript>(),
         faces[5].GetComponent<BoxSurfaceScript>()
         };
-        boxsp[0].SetFourWall(
-            faces[4].gameObject,
-            faces[5].gameObject,
-            faces[2].gameObject,
-            faces[3].gameObject);
-        boxsp[1].SetFourWall(
-            faces[4].gameObject,
-            faces[5].gameObject,
-            faces[3].gameObject,
-            faces[2].gameObject);
-        boxsp[2].SetFourWall(
-            faces[4].gameObject,
-            faces[5].gameObject,
-            faces[1].gameObject,
-            faces[0].gameObject);
-        boxsp[3].SetFourWall(
-            faces[4].gameObject,
-            faces[5].gameObject,
-            faces[0].gameObject,
-            faces[1].gameObject);
-        boxsp[4].SetFourWall(
-            faces[0].gameObject,
-            faces[1].gameObject,
-            faces[3].gameObject,
-            faces[2].gameObject);
-        boxsp[5].SetFourWall(
-            faces[1].gameObject,
-            faces[0].gameObject,
-            faces[3].gameObject,
-            faces[2].gameObject);
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 
     //======================================================
     // ブロックの回転
     //======================================================
     //BoxSurfaceScript ChangeWalls(Transform Ptrs)->
-    public void RollBlocks(int nextwall,GameObject nextwalls)
+    public void RollBlocks(int rollways, GameObject nowwalls, GameObject nextwalls)
     {
-        Vector3 _vec = new Vector3(0, 0, 0);
-        switch (nextwall)
-        {
-            default: break;
-            case 1://up
-                _vec = -Vector3.right; 
-                break;
-            case 2://down
-                _vec = Vector3.right;
-                break;
-            case 3://left
-                _vec = -Vector3.up;
-                break;
-            case 4://right
-                _vec = Vector3.up; 
-                break;
-        }
+        frontwall = nextwalls;
+        
+        Vector3 a = transform.position; 
+        Vector3 b = nowwalls.transform.position; 
+        Vector3 c = nextwalls.transform.position;
+        var side1 = b - a;
+        var side2 = c - a;
+        Vector3 _vec = Vector3.Cross(side1, side2);
+        _vec /= _vec.magnitude;
+        Debug.Log(_vec);
         StartCoroutine("BlockRoller",_vec);
     }
     IEnumerator BlockRoller(Vector3 way_vec)
@@ -117,16 +74,20 @@ public class BoxScript : MonoBehaviour
         float minAngle = 0.0f;
         float maxAngle = 90.0f;
         float timer = 0;
+        var nowrot = transform.eulerAngles;
+        if (nowrot.x < 0 || nowrot.z < 0 || nowrot.y < 0)
+            way_vec = -way_vec;
+
         while (true)
         {
             timer += Time.deltaTime * ChangeSpeed;
             float angle = Mathf.LerpAngle(minAngle, maxAngle, timer);
-            transform.eulerAngles = angle * way_vec;
-            
+            transform.eulerAngles = nowrot + angle * way_vec;
+//            Debug.Log(transform.eulerAngles);
             yield return new WaitForEndOfFrame();
             if (timer >= 1) break;
         }
-        
+
         //親子関係解除
         var wa = player.transform.parent.transform;
         player.transform.SetParent(null);
@@ -137,13 +98,74 @@ public class BoxScript : MonoBehaviour
         player.transform.position = pos;
         
         var PSc = player.GetComponent<Box_PlayerController>();
-
+        
         yield return new WaitForEndOfFrame();
         //箱範囲内に収めさせる
         PSc.WallInAria();
         yield return new WaitForEndOfFrame();
 
         PSc.SetMoving(true);
+        frontwall.GetComponent<BoxSurfaceScript>().came_to_front();
+    }
+    //BoxSurfaceScript ChangeWalls(Transform Ptrs)->
+    public GameObject WallLocation(GameObject wall, int ways)
+    {
+        GameObject returnObj = wall;
+        int num = 5;
+        while (wall != faces[num].gameObject)
+        {
+            num--;
+            if (num < -1)
+                break;
+        }
+        int val = 0;
+        if (num % 2 == 0)
+            val = num + 1;
+        else
+            val = num - 1;
+        
+        num = 5;
+        //way上下左右
+        while (returnObj == wall)
+        {
+            while (0 <= num)
+            {
+                int subnum = 5;
+                while (0 <= subnum)
+                {
+                    Debug.Log(faces[subnum].name + " " + faces[subnum].transform.position);
+                    if (faces[subnum].gameObject != wall)//同じでない
+                        if (faces[subnum] != faces[val])//反対側の壁でない
+                        {
+                            if (ways == 1)
+                                if (faces[num].position.y < faces[subnum].position.y)//最高部
+                                    returnObj = faces[subnum].gameObject;
+                            if (ways == 2)
+                                if (faces[num].position.y > faces[subnum].position.y)//最低部
+                                    returnObj = faces[subnum].gameObject;
+                            if (ways == 3)
+                                if (faces[num].position.x > faces[subnum].position.x)//最左部
+                                    returnObj = faces[subnum].gameObject;
+                            if (ways == 4)
+                                if (faces[num].position.x < faces[subnum].position.x)//最右部
+                                    returnObj = faces[subnum].gameObject;
+                        }
+                    subnum--;
+                }
+                num--;
+            }
+
+            if(returnObj == wall)
+            {
+                Debug.Log("STOP");
+                UnityEditor.EditorApplication.isPaused = true;
+                break;
+            }
+        }
+        
+        Debug.Log("roll:" + ways + " " + wall.name + "=>" + returnObj);
+        
+        return returnObj;
     }
     //=======================================================================
     //壁移動時の切り替え速度
