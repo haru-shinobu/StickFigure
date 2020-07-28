@@ -46,6 +46,7 @@ public class Box_PlayerController : MonoBehaviour
                 this.Move(horizontal, vartical);//移動
             else
             {
+                Debug.Log("out");
                 _bControll = false;
                 boxwall.ChangeWalls(this.transform);
             }
@@ -98,7 +99,6 @@ public class Box_PlayerController : MonoBehaviour
         var Ppos = transform.position;
         if (!boxwall.CheckPPos(Ppos))
         {
-            Debug.Log("外");
             boxwall.PosInWall(transform);
         }
     }

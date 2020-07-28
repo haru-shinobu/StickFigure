@@ -4,12 +4,6 @@ using UnityEngine;
 [DefaultExecutionOrder(-1)]
 public class BoxSurfaceScript : MonoBehaviour
 {
-    //各壁がNoneのとき、Playerは壁範囲内に行動制限
-    GameObject TopWall;
-    GameObject BottomWall;
-    GameObject LeftWall;
-    GameObject RightWall;
-
     Vector3 LeftTop;
     Vector3 RightBottom;
     float Sprite_half_DistanceX;
@@ -18,6 +12,7 @@ public class BoxSurfaceScript : MonoBehaviour
     SpriteRenderer Sr;
     Vector2 extentsHalfPos;
     BoxScript boxroot;
+    bool b_side = true;
     //==================================================================
     // 画像の縦横の半分計算
     //==================================================================
@@ -43,6 +38,7 @@ public class BoxSurfaceScript : MonoBehaviour
         Sprite_half_DistanceY = Vector3.Distance(sLeftLine, sRightLine) * 0.5f;
 
         boxroot = transform.root.GetComponent<BoxScript>();
+        
     }
 
 
@@ -52,8 +48,9 @@ public class BoxSurfaceScript : MonoBehaviour
     public void came_to_front()
     {
         //面が回転しているときとしていないときの違いで処理が変わる…
-        if (transform.root.up == Vector3.up || transform.root.up == -Vector3.up ||
-            transform.root.right == Vector3.right || transform.root.right == Vector3.left)
+        //if (transform.root.up == Vector3.up || transform.root.up == -Vector3.up ||
+        //    transform.root.right == Vector3.right || transform.root.right == Vector3.left)
+        if(transform.up == Vector3.up || transform.up == -Vector3.up)
         {
             Debug.Log("上下");
             //各壁のLeftTopを記録
@@ -64,12 +61,6 @@ public class BoxSurfaceScript : MonoBehaviour
             //各壁のRightBottomを記録
             var _vec2 = new Vector3(extentsHalfPos.x, -extentsHalfPos.y, transform.position.z);
             RightBottom = Sr.transform.TransformPoint(_vec2);
-            if (LeftTop.x > RightBottom.x && LeftTop.y < RightBottom.y)
-            {
-                var ins = LeftTop;
-                LeftTop = RightBottom;
-                RightBottom = ins;
-            }
         }
         else
         {
@@ -80,22 +71,22 @@ public class BoxSurfaceScript : MonoBehaviour
             //各壁のRightBottomを記録
             var _vec2 = new Vector3(extentsHalfPos.y, -extentsHalfPos.x, 0f);
             RightBottom = Sr.transform.TransformPoint(_vec2);
-            if (LeftTop.x > RightBottom.x && LeftTop.y < RightBottom.y)
-            {
-                var ins = LeftTop;
-                LeftTop = RightBottom;
-                RightBottom = ins;
-            }
         }
         if (LeftTop.x > RightBottom.x)
         {
-            Debug.Log("Left＞Right");
-            UnityEditor.EditorApplication.isPaused = true;
+//            Debug.Log("Left＞Right");
+            var sub = RightBottom.x;
+            RightBottom.x = LeftTop.x;
+            LeftTop.x = sub;
+            //UnityEditor.EditorApplication.isPaused = true;
         }
         if (LeftTop.y < RightBottom.y)
         {
-            Debug.Log("Top＜Bottom");
-            UnityEditor.EditorApplication.isPaused = true;
+//            Debug.Log("Top＜Bottom");
+            var sub = RightBottom.y;
+            RightBottom.y = LeftTop.y;
+            LeftTop.y = sub;
+            //UnityEditor.EditorApplication.isPaused = true;
         }
     }
     //==================================================================
@@ -117,25 +108,24 @@ public class BoxSurfaceScript : MonoBehaviour
     public void ChangeWalls(Transform Ptrs)
     {
         var Ppos = Ptrs.position;
-        var playSc = Ptrs.GetComponent<Box_PlayerController>();
-
+        
         var rollways = 0;
         GameObject nextwalls = null;
         //上下左右
-        if (Ppos.y >= LeftTop.y) rollways = 1;
-        if (Ppos.y <= RightBottom.y) rollways = 2;
-        if (Ppos.x <= LeftTop.x) rollways = 3;
-        if (Ppos.x >= RightBottom.x) rollways = 4;
-        if (transform.name == "Surface (0)")
-            Debug.Log(LeftTop + "と" + RightBottom);
+        if (Ppos.y > LeftTop.y) rollways = 1;
+        if (Ppos.y < RightBottom.y) rollways = 2;
+        if (Ppos.x < LeftTop.x) rollways = 3;
+        if (Ppos.x > RightBottom.x) rollways = 4;
+
+        Debug.Log("roll" + rollways +" "+ LeftTop + "と" + RightBottom);
         nextwalls = boxroot.WallLocation(this.gameObject,rollways);
+        
         if (nextwalls != null)
         {
-            Debug.Log(transform.name+" -> "+nextwalls.name);
-            playSc.SetNextWall(nextwalls.GetComponent<BoxSurfaceScript>());
+            Ptrs.GetComponent<Box_PlayerController>().SetNextWall(nextwalls.GetComponent<BoxSurfaceScript>());
             Ptrs.SetParent(nextwalls.transform);
             //壁の回転
-            boxroot.RollBlocks(rollways,nextwalls);
+            boxroot.RollBlocks(rollways, this.gameObject, nextwalls);
 //            nextwalls.GetComponent<BoxSurfaceScript>().came_to_front();
         }
     }
@@ -147,12 +137,7 @@ public class BoxSurfaceScript : MonoBehaviour
     {
         var Ppos = player_Trs.position;
         int a = 0;
-        if (LeftTop.x > RightBottom.x || LeftTop.y < RightBottom.y)
-        {
-            Debug.Log(LeftTop);
-            Debug.Log(RightBottom);
-            Debug.Log(transform.name);
-        }
+        
         while (!CheckPPos(Ppos))
         {
             if (a++ > 40) break;
@@ -172,18 +157,6 @@ public class BoxSurfaceScript : MonoBehaviour
     // 以下設定受け渡し
     //  表壁
     //----------------------------------------------
-    //壁をセット
-    /// <summary>
-    /// top, bottom ,left ,right
-    /// </summary>
-    public void SetFourWall(GameObject top,GameObject bottom,GameObject left,GameObject right)
-    {
-        TopWall = top;
-        BottomWall = bottom;
-        LeftWall = left;
-        RightWall = right;
-    }
-
     //ワールド座標での画像の左上位置
     public Vector3 GetWallAriaLT()
     {
@@ -194,30 +167,7 @@ public class BoxSurfaceScript : MonoBehaviour
     {
         return RightBottom;
     }
-    //上の面
-    /// <returns>GameObject</returns>
-    public GameObject GetTopWall()
-    {
-        return TopWall;
-    }
-    //下の面
-    /// <returns>GameObject</returns>
-    public GameObject GetBottomWall()
-    {
-        return BottomWall;
-    }
-    //左の面
-    /// <returns>GameObject</returns>
-    public GameObject GetLeftWall()
-    {
-        return LeftWall;
-    }
-    //右の面
-    /// <returns>GameObject</returns>
-    public GameObject GetRightWall()
-    {
-        return RightWall;
-    }
+    
     //画像の中心から左右の端までの距離
     public float GetHalfX()
     {
@@ -227,33 +177,6 @@ public class BoxSurfaceScript : MonoBehaviour
     public float GetHalfY()
     {
         return Sprite_half_DistanceY;
-    }
-    ///<summary>
-    ///移動先の壁の有無確認
-    ///int 0=top,1=bottom,2=left,3=right
-    ///</summary> 
-    public bool FindWall(int direction)
-    {
-        switch (direction)
-        {
-            case 0:
-                if (TopWall)
-                    return true;
-                break;
-            case 1:
-                if (BottomWall)
-                    return true;
-                break;
-            case 2:
-                if (LeftWall)
-                    return true;
-                break;
-            case 3:
-                if (RightWall)
-                    return true;
-                break;
-        }
-        return false;
     }
     //==================================================================
 }
