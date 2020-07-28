@@ -39,17 +39,17 @@
             // put more per-instance properties here
         //UNITY_INSTANCING_BUFFER_END(Props)
 
-		fixed4 LightingToonRamp(surfaceOutput s, fixed3 lightDir, fixed atten) 
+		fixed4 LightingToonRamp(SurfaceOutput s, fixed3 lightDir, fixed atten) 
 		{
-			half d = dot(s.Normal, lighDir)*0.5 + 0.5;
-			fixed3 rmap = text2D(_RampTex, fixed2(d, 0.5)).rgb;
+			half d = dot(s.Normal, lightDir)*0.5 + 0.5;
+			fixed3 rmap = tex2D(_RampTex, fixed2(d, 0.5)).rgb;
 			fixed4 c;
-			c.rgb = s.Aledo*_LightColor0.rgb*rmap;
+			c.rgb = s.Albedo * _LightColor0.rgb * rmap;
 			c.a = 0;
 			return c;
 		}
 
-        void surf (Input IN, inout SurfaceOutputStandard o)
+        void surf (Input IN, inout SurfaceOutput o)
         {
             // Albedo comes from a texture tinted by color
             fixed4 c = tex2D (_MainTex, IN.uv_MainTex) * _Color;
