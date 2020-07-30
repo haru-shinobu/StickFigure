@@ -125,37 +125,48 @@ public class BoxScript : MonoBehaviour
             val = num - 1;
         
         num = 5;
-        //way上下左右
+        
         while (returnObj == wall)
         {
-            while (0 <= num)
+            for(num = 5; num >= 0; num--)
             {
-                int subnum = 5;
-                while (0 <= subnum)
+                //同じでなく、反対側の壁でない
+                if (faces[num].gameObject == wall || faces[num] == faces[val])
+                    continue;
+                for (int subnum = 5; subnum >= 0; subnum--)
                 {
-                    Debug.Log(faces[subnum].name + " " + faces[subnum].transform.position);
-                    if (faces[subnum].gameObject != wall)//同じでない
-                        if (faces[subnum] != faces[val])//反対側の壁でない
-                        {
-                            if (ways == 1)
-                                if (faces[num].position.y < faces[subnum].position.y)//最高部
-                                    returnObj = faces[subnum].gameObject;
-                            if (ways == 2)
-                                if (faces[num].position.y > faces[subnum].position.y)//最低部
-                                    returnObj = faces[subnum].gameObject;
-                            if (ways == 3)
-                                if (faces[num].position.x > faces[subnum].position.x)//最左部
-                                    returnObj = faces[subnum].gameObject;
-                            if (ways == 4)
-                                if (faces[num].position.x < faces[subnum].position.x)//最右部
-                                    returnObj = faces[subnum].gameObject;
-                        }
-                    subnum--;
+                    //同じでなく、反対側の壁でない
+                    if (faces[subnum].gameObject == wall || faces[subnum] == faces[val])
+                        continue;
+                    //way上下左右
+                    if (ways == 1)
+                    {
+                        if (faces[num].position.y < faces[subnum].position.y)//最高部
+                            returnObj = faces[subnum].gameObject;
+                    }
+                    else
+                    if (ways == 2)
+                    {
+                        if (faces[num].position.y > faces[subnum].position.y)//最低部
+                            returnObj = faces[subnum].gameObject;
+                    }
+                    else
+                    if (ways == 3)
+                    {
+                        if (faces[num].position.x > faces[subnum].position.x)//最左部
+                            returnObj = faces[subnum].gameObject;
+                    }
+                    else
+                    if (ways == 4)
+                    {
+                        if (faces[num].position.x < faces[subnum].position.x)//最右部
+                            returnObj = faces[subnum].gameObject;
+                    }
+
                 }
-                num--;
             }
 
-            if(returnObj == wall)
+            if (returnObj == wall)
             {
                 Debug.Log("STOP");
                 UnityEditor.EditorApplication.isPaused = true;
