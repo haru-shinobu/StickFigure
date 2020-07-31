@@ -37,7 +37,7 @@ public class BoxSurfaceScript : MonoBehaviour
         sLeftLine.x = sRightLine.x = 0;
         Sprite_half_DistanceY = Vector3.Distance(sLeftLine, sRightLine) * 0.5f;
 
-        boxroot = transform.root.GetComponent<BoxScript>();
+        boxroot = transform.parent.GetComponent<BoxScript>();
         
     }
 
@@ -48,8 +48,6 @@ public class BoxSurfaceScript : MonoBehaviour
     public void came_to_front()
     {
         //面が回転しているときとしていないときの違いで処理が変わる…
-        //if (transform.root.up == Vector3.up || transform.root.up == -Vector3.up ||
-        //    transform.root.right == Vector3.right || transform.root.right == Vector3.left)
         if(transform.up == Vector3.up || transform.up == -Vector3.up)
         {
             Debug.Log("上下");
@@ -117,7 +115,7 @@ public class BoxSurfaceScript : MonoBehaviour
         if (Ppos.x < LeftTop.x) rollways = 3;
         if (Ppos.x > RightBottom.x) rollways = 4;
 
-        Debug.Log("roll" + rollways +" "+ LeftTop + "と" + RightBottom);
+        Debug.Log("roll" + rollways +" "+ LeftTop + ":" + RightBottom);
         nextwalls = boxroot.WallLocation(this.gameObject,rollways);
         
         if (nextwalls != null)

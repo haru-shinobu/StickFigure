@@ -12,6 +12,7 @@ public class BoxScript : MonoBehaviour
     private float ChangeSpeed = 1;
 
     GameObject frontwall;
+    int rollway;
     //============================================
     // スケール次第で色変更
     //============================================
@@ -57,7 +58,7 @@ public class BoxScript : MonoBehaviour
     public void RollBlocks(int rollways, GameObject nowwalls, GameObject nextwalls)
     {
         frontwall = nextwalls;
-        
+        rollway = rollways;
         Vector3 a = transform.position; 
         Vector3 b = nowwalls.transform.position; 
         Vector3 c = nextwalls.transform.position;
@@ -65,7 +66,7 @@ public class BoxScript : MonoBehaviour
         var side2 = c - a;
         Vector3 _vec = Vector3.Cross(side1, side2);
         _vec /= _vec.magnitude;
-        Debug.Log(_vec);
+        Debug.DrawLine(transform.position,transform.position + _vec　*　100 , Color.red,100);
         StartCoroutine("BlockRoller",_vec);
     }
     IEnumerator BlockRoller(Vector3 way_vec)
@@ -74,20 +75,39 @@ public class BoxScript : MonoBehaviour
         float minAngle = 0.0f;
         float maxAngle = 90.0f;
         float timer = 0;
-        var nowrot = transform.eulerAngles;
-        if (nowrot.x < 0 || nowrot.z < 0 || nowrot.y < 0)
-            way_vec = -way_vec;
-
-        while (true)
+        var nowrot = transform.root.localEulerAngles;
+        way_vec = -way_vec;
+        while (true)//問題の箇所
         {
             timer += Time.deltaTime * ChangeSpeed;
             float angle = Mathf.LerpAngle(minAngle, maxAngle, timer);
-            transform.eulerAngles = nowrot + angle * way_vec;
-//            Debug.Log(transform.eulerAngles);
+            transform.root.localEulerAngles = nowrot + angle * way_vec;
             yield return new WaitForEndOfFrame();
-            if (timer >= 1) break;
+            if (timer >= 1)
+            {
+                transform.root.localEulerAngles = nowrot + maxAngle * way_vec;
+                break;
+            }
         }
+        var euAngle = transform.root.localEulerAngles;
+        
+        if (euAngle.x != 0)
+            if (euAngle.x % 90 != 0)
+                euAngle.x -= euAngle.x % 90;
+        if (euAngle.z != 0)
+            if (euAngle.y % 90 != 0)
+                euAngle.y -= euAngle.y % 90;
+        if (euAngle.z != 0)
+            if (euAngle.z % 90 != 0)
+                euAngle.z -= euAngle.z % 90;
+        
+        transform.root.localEulerAngles = euAngle;
+        var rootTrs = transform.root;
+        transform.SetParent(null);
+        rootTrs.eulerAngles = nowrot;
+        transform.SetParent(rootTrs);
 
+        
         //親子関係解除
         var wa = player.transform.parent.transform;
         player.transform.SetParent(null);
@@ -110,7 +130,10 @@ public class BoxScript : MonoBehaviour
     //BoxSurfaceScript ChangeWalls(Transform Ptrs)->
     public GameObject WallLocation(GameObject wall, int ways)
     {
+        //現在プレイヤーのいる面
         GameObject returnObj = wall;
+        //-----------------------------------------------------
+        //現在プレイヤーのいる反対側の面を取得
         int num = 5;
         while (wall != faces[num].gameObject)
         {
@@ -123,7 +146,8 @@ public class BoxScript : MonoBehaviour
             val = num + 1;
         else
             val = num - 1;
-        
+        //-----------------------------------------------------
+
         num = 5;
         
         while (returnObj == wall)
@@ -141,25 +165,25 @@ public class BoxScript : MonoBehaviour
                     //way上下左右
                     if (ways == 1)
                     {
-                        if (faces[num].position.y < faces[subnum].position.y)//最高部
+                        if (returnObj.transform.position.y < faces[subnum].position.y)//最高部
                             returnObj = faces[subnum].gameObject;
                     }
                     else
                     if (ways == 2)
                     {
-                        if (faces[num].position.y > faces[subnum].position.y)//最低部
+                        if (returnObj.transform.position.y > faces[subnum].position.y)//最低部
                             returnObj = faces[subnum].gameObject;
                     }
                     else
                     if (ways == 3)
                     {
-                        if (faces[num].position.x > faces[subnum].position.x)//最左部
+                        if (returnObj.transform.position.x > faces[subnum].position.x)//最左部
                             returnObj = faces[subnum].gameObject;
                     }
                     else
                     if (ways == 4)
                     {
-                        if (faces[num].position.x < faces[subnum].position.x)//最右部
+                        if (returnObj.transform.position.x < faces[subnum].position.x)//最右部
                             returnObj = faces[subnum].gameObject;
                     }
 
