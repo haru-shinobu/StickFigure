@@ -104,7 +104,6 @@ public class Box_PlayerController : MonoBehaviour
     /// <summary>
     /// 次の壁を指定
     /// </summary>
-    /// <param name="nextwall"></param>
     public void SetNextWall(BoxSurfaceScript nextwall)
     {
         boxwall = nextwall;
@@ -112,7 +111,6 @@ public class Box_PlayerController : MonoBehaviour
     /// <summary>
     /// プレイヤー行動許可
     /// </summary>
-    /// <param name="flag"></param>
     public void SetMoving(bool flag)
     {
         _bControll = flag;
@@ -120,7 +118,6 @@ public class Box_PlayerController : MonoBehaviour
     /// <summary>
     /// 箱を移ったとき
     /// </summary>
-    /// <param name="nextBox"></param>
     public void SetNextBox(BoxScript nextBox)
     {
         camM.SetNextBox(nextBox);

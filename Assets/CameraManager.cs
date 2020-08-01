@@ -20,7 +20,7 @@ public class CameraManager : MonoBehaviour
     void Start()
     {
         Player = GameObject.FindWithTag("Player");
-        Player.GetComponent<Box_PlayerController>().SetMoving(false);
+        //Player.GetComponent<Box_PlayerController>().SetMoving(false);
         Camera_Distance = new Vector3(0, 0, -10);//仮
         if (GoalObj && StartObj)
         {
@@ -101,7 +101,6 @@ public class CameraManager : MonoBehaviour
     /// <summary>
     /// プレイヤーが箱の端にいるかどうか
     /// </summary>
-    /// <param name="flag"></param>
     public void SetSideEdge(bool flag)
     {
         bSide_edge = flag;
@@ -109,11 +108,13 @@ public class CameraManager : MonoBehaviour
     /// <summary>
     /// プレイヤーが渡っているかどうか
     /// </summary>
-    /// <param name="flag"></param>
     public void SetOn_Bridge(bool flag)
     {
         bBridge = false;
     }
+    /// <summary>
+    /// プレイヤーが次の箱に移ったとき
+    /// </summary>
     public void SetNextBox(BoxScript nextboxSc)
     {
         boxSc = nextboxSc;

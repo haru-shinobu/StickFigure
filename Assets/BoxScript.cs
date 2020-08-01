@@ -58,9 +58,6 @@ public class BoxScript : MonoBehaviour
     /// GameObject 現在のプレイヤーのいる壁,
     /// GameObject 次にプレイヤーのいく壁)
     /// </summary>
-    /// <param name="rollways"></param>
-    /// <param name="nowwalls"></param>
-    /// <param name="nextwalls"></param>
     //======================================================
     //BoxSurfaceScript ChangeWalls(Transform Ptrs)->
     public void RollBlocks(int rollways, GameObject nowwalls, GameObject nextwalls)
@@ -146,9 +143,6 @@ public class BoxScript : MonoBehaviour
     /// GameObject現在いる壁,
     /// int 1~4(各上下左右))
     /// </summary>
-    /// <param name="wall"></param>
-    /// <param name="ways"></param>
-    /// <returns></returns>
     //BoxSurfaceScript ChangeWalls(Transform Ptrs)->
     public GameObject WallLocation(GameObject wall, int ways)
     {
