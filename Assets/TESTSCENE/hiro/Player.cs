@@ -20,7 +20,6 @@ public class Player : MonoBehaviour
     GameObject decision_object;
 
 
-    BoxManager BManager;
     Vector3 m_Vec;
     BoxSurfaceScript boxwall;
 
@@ -29,7 +28,6 @@ public class Player : MonoBehaviour
     //=======================================================================
     void Start()
     {
-        BManager = GameObject.FindWithTag("BoxManager").GetComponent<BoxManager>();
         Player_verticalhorizontal = transform.GetComponent<SpriteRenderer>().bounds.extents;
     }
     
