@@ -134,7 +134,7 @@ public class BoxScript : MonoBehaviour
         PSc.WallInAria();
         yield return new WaitForEndOfFrame();
         //行動許可・移動範囲計算
-        PSc.SetMoving(true);
+        PSc.Moving = true;
         frontwall.GetComponent<BoxSurfaceScript>().came_to_front();
     }
 

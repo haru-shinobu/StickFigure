@@ -17,14 +17,12 @@ public class Box_PlayerController : MonoBehaviour
     Vector2 BridgeSpace;
 
     CameraManager camM;
-    BoxManager BManager;
     Vector3 m_Vec;
     BoxSurfaceScript boxwall;
 
 
     void Start()
     {
-        BManager = GameObject.FindWithTag("BoxManager").GetComponent<BoxManager>();
         Player_verticalhorizontal = transform.GetComponent<SpriteRenderer>().bounds.extents;
         camM = Camera.main.GetComponent<CameraManager>();
     }
@@ -111,9 +109,10 @@ public class Box_PlayerController : MonoBehaviour
     /// <summary>
     /// プレイヤー行動許可
     /// </summary>
-    public void SetMoving(bool flag)
+    public bool Moving
     {
-        _bControll = flag;
+        get { return _bControll; }
+        set { _bControll = value; }
     }
     /// <summary>
     /// 箱を移ったとき

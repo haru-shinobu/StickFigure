@@ -41,15 +41,18 @@ public class CameraManager : MonoBehaviour
             //プレイヤーが壁の端か否か
             if (bSide_edge)
             {
-                var pos = Player.transform.position;
-                pos.x = 0;
-                pos.z = 0;
-                pos += Camera_Distance;
-                transform.position = pos;
                 //プレイヤーが橋の上か否か
                 if (bBridge)
                 {
 
+                }
+                else
+                {
+                    var pos = Player.transform.position;
+                    pos.x = 0;
+                    pos.z = 0;
+                    pos += Camera_Distance;
+                    transform.position = pos;
                 }
             }
         }
@@ -92,7 +95,7 @@ public class CameraManager : MonoBehaviour
             yield return new WaitForEndOfFrame();
         }
         bMoveOK = true;
-        Player.GetComponent<Box_PlayerController>().SetMoving(true);
+        Player.GetComponent<Box_PlayerController>().Moving = true;
     }
 
     //===========================================================
@@ -101,16 +104,18 @@ public class CameraManager : MonoBehaviour
     /// <summary>
     /// プレイヤーが箱の端にいるかどうか
     /// </summary>
-    public void SetSideEdge(bool flag)
+    public bool Side
     {
-        bSide_edge = flag;
+        get { return bSide_edge; }
+        set { bSide_edge = value; }
     }
     /// <summary>
     /// プレイヤーが渡っているかどうか
     /// </summary>
-    public void SetOn_Bridge(bool flag)
+    public bool Bridge
     {
-        bBridge = false;
+        get { return bBridge; }
+        set { bBridge = value; }
     }
     /// <summary>
     /// プレイヤーが次の箱に移ったとき
