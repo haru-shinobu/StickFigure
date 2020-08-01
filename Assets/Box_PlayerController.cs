@@ -6,7 +6,7 @@ public class Box_PlayerController : MonoBehaviour
 {
     [SerializeField, Range(1, 5)]
     float Speed = 3;
-    bool _bControll = true;
+    bool _bControll = false;
 
     //プレイヤーの縦横の半分を記録
     Vector2 Player_verticalhorizontal;
@@ -16,24 +16,20 @@ public class Box_PlayerController : MonoBehaviour
     [SerializeField, Header("橋の長さ,橋の幅")]
     Vector2 BridgeSpace;
 
-    //移動判定するための接触壁
-    GameObject decision_object;
-
-
+    CameraManager camM;
     BoxManager BManager;
     Vector3 m_Vec;
     BoxSurfaceScript boxwall;
 
-    //=======================================================================
-    //初期設定
-    //=======================================================================
+
     void Start()
     {
         BManager = GameObject.FindWithTag("BoxManager").GetComponent<BoxManager>();
         Player_verticalhorizontal = transform.GetComponent<SpriteRenderer>().bounds.extents;
+        camM = Camera.main.GetComponent<CameraManager>();
     }
     
-    //基本的に操作を主に置く。判定系は別のブロックで行う
+    
     void Update()
     {
         if(_bControll)
@@ -55,9 +51,7 @@ public class Box_PlayerController : MonoBehaviour
                 //橋の判定など
                 MakeBridge();
             }
-            //壁際の判定など
         }
-
     }
 
     //=======================================================================
@@ -90,7 +84,9 @@ public class Box_PlayerController : MonoBehaviour
     {
         //vec2 (BridgeSpace)
     }
-
+    /// <summary>
+    /// プレイヤー移動範囲計算
+    /// </summary>
     //BoxScript WallInAria()->
     public void WallInAria()
     {
@@ -105,12 +101,28 @@ public class Box_PlayerController : MonoBehaviour
     //=======================================================================
     // 各種設定受け渡し
     //=======================================================================
+    /// <summary>
+    /// 次の壁を指定
+    /// </summary>
+    /// <param name="nextwall"></param>
     public void SetNextWall(BoxSurfaceScript nextwall)
     {
         boxwall = nextwall;
     }
+    /// <summary>
+    /// プレイヤー行動許可
+    /// </summary>
+    /// <param name="flag"></param>
     public void SetMoving(bool flag)
     {
         _bControll = flag;
+    }
+    /// <summary>
+    /// 箱を移ったとき
+    /// </summary>
+    /// <param name="nextBox"></param>
+    public void SetNextBox(BoxScript nextBox)
+    {
+        camM.SetNextBox(nextBox);
     }
 }

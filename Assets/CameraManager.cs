@@ -8,16 +8,19 @@ public class CameraManager : MonoBehaviour
     GameObject GoalObj;
     [SerializeField, Header("スタート")]
     GameObject StartObj;
-    [SerializeField,Range(1,10)]
+    [SerializeField,Range(0.1f,10)]
     float StartCamSpeed = 1;
     GameObject Player;
-    bool bFlag = false;
     bool bMoveOK = false;
+    bool bSide_edge = false;
+    bool bBridge = false;
     Vector3 Camera_Distance;
-
+    BoxScript boxSc;
 
     void Start()
     {
+        Player = GameObject.FindWithTag("Player");
+        Player.GetComponent<Box_PlayerController>().SetMoving(false);
         Camera_Distance = new Vector3(0, 0, -10);//仮
         if (GoalObj && StartObj)
         {
@@ -26,34 +29,34 @@ public class CameraManager : MonoBehaviour
             
             StartCoroutine(Starter(Cam_StartPos, Cam_EndPos));
         }
-        Player = GameObject.FindWithTag("Player");
-
-    }
-
-
-    
-    void Update()
-    {
-        //ステージ見渡しムービー終了・カメラ動作OK時
-        if(bFlag && bMoveOK)
-        {
-            Pchase();
-        }
     }
     //===========================================================
     // プレイヤー移動と共に移動する処理(Y軸のみ追従)
     //===========================================================
-    void Pchase()
+    void Update()
     {
-        var pos = Player.transform.position;
-        pos.x = 0;
-        pos.z = 0;
-        pos += Camera_Distance;
-        transform.position = pos;
+        //ステージ見渡しムービー終了・カメラ動作OK時
+        if (bMoveOK)
+        {
+            //プレイヤーが壁の端か否か
+            if (bSide_edge)
+            {
+                var pos = Player.transform.position;
+                pos.x = 0;
+                pos.z = 0;
+                pos += Camera_Distance;
+                transform.position = pos;
+                //プレイヤーが橋の上か否か
+                if (bBridge)
+                {
+
+                }
+            }
+        }
     }
+    
     //===========================================================
-    // ステージ見渡し処理
-    // 
+    // ステージ見渡し処理　：ゴールからスタートまでをY軸回転しながら見渡す
     // Starter(カメラゲームスタート位置,カメラゲームプレイ位置)
     //===========================================================
     //this.Start()->
@@ -70,22 +73,49 @@ public class CameraManager : MonoBehaviour
         float length = vec.magnitude;// = 5
         
         float timer = 0;
-        var cam_moveSpeed = StartCamSpeed / length;// = 0.2
-        var rotspeed = 1 / cam_moveSpeed;//1/0.2 = 5
-        var variation = 360 / rotspeed;//360/5 = 72
+        //スタートからゴールまでの距離に応じてカメラ動作を遅く
+        var cam_moveSpeed = StartCamSpeed / length;
+        //一度に回転する角度
+        var variation = 360 / (1 / cam_moveSpeed);
         while (true)
         {
-            sphere.transform.position = Vector3.Slerp(epos, spos, timer * cam_moveSpeed);
+            sphere.transform.position = Vector3.Slerp(spos, epos, timer * cam_moveSpeed);
             //カメラの起点となるSphereを回転させる。(timerが１になったときy1回転終わってる状態で)
             sphere.transform.Rotate(0, variation * Time.deltaTime, 0);
             timer += Time.deltaTime;
             if (timer * cam_moveSpeed > 1)
             {
-                sphere.transform.position = spos;
+                sphere.transform.position = epos;
                 sphere.transform.localRotation = Quaternion.Euler(0, 0, 0);
                 break;
             }
             yield return new WaitForEndOfFrame();
         }
+        bMoveOK = true;
+        Player.GetComponent<Box_PlayerController>().SetMoving(true);
+    }
+
+    //===========================================================
+    // 値受け渡し
+    //===========================================================
+    /// <summary>
+    /// プレイヤーが箱の端にいるかどうか
+    /// </summary>
+    /// <param name="flag"></param>
+    public void SetSideEdge(bool flag)
+    {
+        bSide_edge = flag;
+    }
+    /// <summary>
+    /// プレイヤーが渡っているかどうか
+    /// </summary>
+    /// <param name="flag"></param>
+    public void SetOn_Bridge(bool flag)
+    {
+        bBridge = false;
+    }
+    public void SetNextBox(BoxScript nextboxSc)
+    {
+        boxSc = nextboxSc;
     }
 }

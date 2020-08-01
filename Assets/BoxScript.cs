@@ -52,7 +52,15 @@ public class BoxScript : MonoBehaviour
     }
 
     //======================================================
-    // ブロックの回転
+    /// <summary>
+    /// ブロックの回転(
+    /// int 1~4(各上下左右),
+    /// GameObject 現在のプレイヤーのいる壁,
+    /// GameObject 次にプレイヤーのいく壁)
+    /// </summary>
+    /// <param name="rollways"></param>
+    /// <param name="nowwalls"></param>
+    /// <param name="nextwalls"></param>
     //======================================================
     //BoxSurfaceScript ChangeWalls(Transform Ptrs)->
     public void RollBlocks(int rollways, GameObject nowwalls, GameObject nextwalls)
@@ -62,11 +70,8 @@ public class BoxScript : MonoBehaviour
         Vector3 a = transform.position; 
         Vector3 b = nowwalls.transform.position; 
         Vector3 c = nextwalls.transform.position;
-        var side1 = b - a;
-        var side2 = c - a;
-        Vector3 _vec = Vector3.Cross(side1, side2);
+        Vector3 _vec = Vector3.Cross(b - a, c - a);
         _vec /= _vec.magnitude;
-        Debug.DrawLine(transform.position,transform.position + _vec　*　100 , Color.red,100);
         StartCoroutine("BlockRoller",_vec);
     }
     IEnumerator BlockRoller(Vector3 way_vec)
@@ -75,9 +80,11 @@ public class BoxScript : MonoBehaviour
         float minAngle = 0.0f;
         float maxAngle = 90.0f;
         float timer = 0;
+        //ブロックの親の現在角を取得
         var nowrot = transform.root.localEulerAngles;
         way_vec = -way_vec;
-        while (true)//問題の箇所
+        //指定スピードで回転
+        while (true)
         {
             timer += Time.deltaTime * ChangeSpeed;
             float angle = Mathf.LerpAngle(minAngle, maxAngle, timer);
@@ -89,8 +96,9 @@ public class BoxScript : MonoBehaviour
                 break;
             }
         }
+        //僅かにズレたときのため修正
         var euAngle = transform.root.localEulerAngles;
-        
+
         if (euAngle.x != 0)
             if (euAngle.x % 90 != 0)
                 euAngle.x -= euAngle.x % 90;
@@ -102,31 +110,45 @@ public class BoxScript : MonoBehaviour
                 euAngle.z -= euAngle.z % 90;
         
         transform.root.localEulerAngles = euAngle;
+
+        //ブロックの親からブロックを解除
         var rootTrs = transform.root;
         transform.SetParent(null);
+        //解除した元ブロックの親を初期位置へ戻す
         rootTrs.eulerAngles = nowrot;
+        //再びブロックの親に指定
         transform.SetParent(rootTrs);
 
         
-        //親子関係解除
+        //プレイヤーとの親子関係解除
         var wa = player.transform.parent.transform;
         player.transform.SetParent(null);
+        //プレイヤー回転ズレ防止
         player.transform.up = Vector3.up;
         player.transform.forward = Vector3.forward;
+        //プレイヤーと壁のｚ座標一致化
         var pos = player.transform.position;
         pos.z = wa.position.z;
         player.transform.position = pos;
-        
-        var PSc = player.GetComponent<Box_PlayerController>();
-        
-        yield return new WaitForEndOfFrame();
+
+
         //箱範囲内に収めさせる
+        var PSc = player.GetComponent<Box_PlayerController>();
         PSc.WallInAria();
         yield return new WaitForEndOfFrame();
-
+        //行動許可・移動範囲計算
         PSc.SetMoving(true);
         frontwall.GetComponent<BoxSurfaceScript>().came_to_front();
     }
+
+    /// <summary>
+    /// 移動先の壁を取得(
+    /// GameObject現在いる壁,
+    /// int 1~4(各上下左右))
+    /// </summary>
+    /// <param name="wall"></param>
+    /// <param name="ways"></param>
+    /// <returns></returns>
     //BoxSurfaceScript ChangeWalls(Transform Ptrs)->
     public GameObject WallLocation(GameObject wall, int ways)
     {
@@ -189,16 +211,9 @@ public class BoxScript : MonoBehaviour
 
                 }
             }
-
-            if (returnObj == wall)
-            {
-                Debug.Log("STOP");
-                UnityEditor.EditorApplication.isPaused = true;
-                break;
-            }
         }
         
-        Debug.Log("roll:" + ways + " " + wall.name + "=>" + returnObj);
+        //移動方向:現在壁=>次の壁Debug.Log("roll:" + ways + " " + wall.name + "=>" + returnObj);
         
         return returnObj;
     }

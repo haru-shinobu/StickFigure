@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//==================================================================
+// ゲームスタート時のみ使用するスクリプト
+//==================================================================
 public class BoxManager : MonoBehaviour
 {
     [SerializeField, Header("スタートの壁")]
@@ -22,11 +25,6 @@ public class BoxManager : MonoBehaviour
     void Start()
     {
         StartWall.GetComponent<BoxSurfaceScript>().came_to_front();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        Destroy(this.gameObject);
     }
 }
