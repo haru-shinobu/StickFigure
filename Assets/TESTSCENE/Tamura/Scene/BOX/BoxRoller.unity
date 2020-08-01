@@ -538,6 +538,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GoalObj: {fileID: 647350905}
   StartObj: {fileID: 524901504}
+  StartCamSpeed: 1
 --- !u!1001 &1847027580084444970
 PrefabInstance:
   m_ObjectHideFlags: 0
