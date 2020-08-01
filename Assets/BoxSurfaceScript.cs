@@ -38,22 +38,21 @@ public class BoxSurfaceScript : MonoBehaviour
         Sprite_half_DistanceY = Vector3.Distance(sLeftLine, sRightLine) * 0.5f;
 
         boxroot = transform.parent.GetComponent<BoxScript>();
-        
+
     }
 
 
     //==================================================================
-    // その面が正面に来たときの位置を記録
+    // その面が正面に来た時に位置を記録
     //==================================================================
-    /// <summary>
-    /// 指定の面が正面に来たのでプレイヤー移動範囲を計算
-    /// </summary>
     public void came_to_front()
     {
         //面が回転しているときとしていないときの違いで処理が変わる…
-        if(transform.up == Vector3.up || transform.up == -Vector3.up)
+        if (transform.up == Vector3.up || transform.up == -Vector3.up)
         {
+            Debug.Log("上下");
             //各壁のLeftTopを記録
+
             var _vec = new Vector3(-extentsHalfPos.x, extentsHalfPos.y, transform.position.z);
             LeftTop = Sr.transform.TransformPoint(_vec);
 
@@ -63,7 +62,7 @@ public class BoxSurfaceScript : MonoBehaviour
         }
         else
         {
-            //各壁のLeftTopを記録
+            Debug.Log("左右");
             var _vec = new Vector3(-extentsHalfPos.y, extentsHalfPos.x, 0f);
             LeftTop = Sr.transform.TransformPoint(_vec);
 
@@ -73,24 +72,24 @@ public class BoxSurfaceScript : MonoBehaviour
         }
         if (LeftTop.x > RightBottom.x)
         {
+            //            Debug.Log("Left＞Right");
             var sub = RightBottom.x;
             RightBottom.x = LeftTop.x;
             LeftTop.x = sub;
+            //UnityEditor.EditorApplication.isPaused = true;
         }
         if (LeftTop.y < RightBottom.y)
         {
+            //            Debug.Log("Top＜Bottom");
             var sub = RightBottom.y;
             RightBottom.y = LeftTop.y;
             LeftTop.y = sub;
+            //UnityEditor.EditorApplication.isPaused = true;
         }
     }
     //==================================================================
-    /// <summary>
-    /// ターゲットが範囲内かどうか判定
-    /// </summary>
-    /// <param name="Ppos"></param>
-    /// <returns></returns>
-    /// //==================================================================
+    // ターゲットが範囲内かどうか判定
+    //==================================================================
     //Box_PlayerController Update()->
     public bool CheckPPos(Vector3 Ppos)
     {
@@ -101,17 +100,24 @@ public class BoxSurfaceScript : MonoBehaviour
         return false;
     }
     //==================================================================
-    /// <summary>
-    /// ターゲットがどの位置か判定 
-    /// Transform Player
-    /// </summary>
-    /// <param name="Ptrs"></param>
-    /// //==================================================================
+    // ターゲットが範囲内かどうか判定(テキストalpha用)
+    //==================================================================
+    public bool CheckArea(Vector3 Ppos)
+    {
+        //範囲内のとき
+        if (LeftTop.x + 1f < Ppos.x && Ppos.x < RightBottom.x - 1f)
+            if (RightBottom.y + 1f < Ppos.y && Ppos.y < LeftTop.y - 1f)
+                return true;
+        return false;
+    }
+    //==================================================================
+    // ターゲットがどの位置か判定
+    //==================================================================
     //Box_PlayerController Update()->
     public void ChangeWalls(Transform Ptrs)
     {
         var Ppos = Ptrs.position;
-        
+
         var rollways = 0;
         GameObject nextwalls = null;
         //上下左右
@@ -120,30 +126,27 @@ public class BoxSurfaceScript : MonoBehaviour
         if (Ppos.x < LeftTop.x) rollways = 3;
         if (Ppos.x > RightBottom.x) rollways = 4;
 
-        //Debug.Log("roll" + rollways +" "+ LeftTop + ":" + RightBottom);
-        nextwalls = boxroot.WallLocation(this.gameObject,rollways);
-        
+        Debug.Log("roll" + rollways + " " + LeftTop + ":" + RightBottom);
+        nextwalls = boxroot.WallLocation(this.gameObject, rollways);
+
         if (nextwalls != null)
         {
             Ptrs.GetComponent<Box_PlayerController>().SetNextWall(nextwalls.GetComponent<BoxSurfaceScript>());
             Ptrs.SetParent(nextwalls.transform);
             //壁の回転
             boxroot.RollBlocks(rollways, this.gameObject, nextwalls);
-//            nextwalls.GetComponent<BoxSurfaceScript>().came_to_front();
+            //            nextwalls.GetComponent<BoxSurfaceScript>().came_to_front();
         }
     }
     //==================================================================
-    /// <summary>
-    /// プレイヤーを範囲内に強制的に収める
-    /// </summary>
-    /// <param name="player_Trs"></param>
+    // 範囲内に強制的に収める
     //==================================================================
     //Box_PlayerController IEnumerator BlockRoller(Vector3 way_vec)->
     public void PosInWall(Transform player_Trs)
     {
         var Ppos = player_Trs.position;
         int a = 0;
-        
+
         while (!CheckPPos(Ppos))
         {
             if (a++ > 40) break;
@@ -173,7 +176,7 @@ public class BoxSurfaceScript : MonoBehaviour
     {
         return RightBottom;
     }
-    
+
     //画像の中心から左右の端までの距離
     public float GetHalfX()
     {
