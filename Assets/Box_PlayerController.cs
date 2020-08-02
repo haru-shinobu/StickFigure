@@ -19,7 +19,7 @@ public class Box_PlayerController : MonoBehaviour
     CameraManager camM;
     Vector3 m_Vec;
     BoxSurfaceScript boxwall;
-
+    SideColorBoxScript sidebox;
 
     void Start()
     {
@@ -36,12 +36,29 @@ public class Box_PlayerController : MonoBehaviour
             float vartical = Input.GetAxis("Vertical");
             var Ppos = transform.position;
             // プレイヤー移動範囲チェック
+            /*//箱不使用
             if (boxwall.CheckPPos(Ppos))
                 this.Move(horizontal, vartical);//移動
             else
             {
                 _bControll = false;
                 boxwall.ChangeWalls(this.transform);
+            }
+            */
+            // プレイヤー移動範囲チェック
+            if (CheckMoveAria())
+                this.Move(horizontal, vartical);
+            else
+            {
+                Debug.Log("EriaOut");
+                _bControll = false;
+                var rollways = 0;
+                //上下左右
+                if (Ppos.y > Front_LeftTop.y) rollways = 1;
+                if (Ppos.y < Front_RightBottom.y) rollways = 2;
+                if (Ppos.x < Front_LeftTop.x) rollways = 3;
+                if (Ppos.x > Front_RightBottom.x) rollways = 4;
+                sidebox.ChangeBoxRoll(transform, rollways);
             }
 
             if (Input.GetButton("Jump"))
@@ -51,10 +68,19 @@ public class Box_PlayerController : MonoBehaviour
             }
         }
     }
-
+    //移動範囲確認
+    bool CheckMoveAria()
+    {
+        //範囲内のとき
+        if (MoveAriaLeftTop.x <= transform.position.x && transform.position.x <= MoveAriaRightBottom.x)
+            if (MoveAriaRightBottom.y <= transform.position.y && transform.position.y <= MoveAriaLeftTop.y)
+                return true;
+        return false;
+    }
     //=======================================================================
     // プレイヤー移動
     //=======================================================================
+    //this->
     void Move(float horizontal,float vartical)
     {
         if (horizontal > 0)
@@ -78,6 +104,7 @@ public class Box_PlayerController : MonoBehaviour
     //=======================================================================
     // 橋
     //=======================================================================
+    //this->
     void MakeBridge()
     {
         //vec2 (BridgeSpace)
@@ -87,7 +114,7 @@ public class Box_PlayerController : MonoBehaviour
     /// </summary>
     //BoxScript WallInAria()->
     public void WallInAria()
-    {
+    {//箱不使用
         boxwall.came_to_front();
         var Ppos = transform.position;
         if (!boxwall.CheckPPos(Ppos))
@@ -103,8 +130,12 @@ public class Box_PlayerController : MonoBehaviour
     /// 次の壁を指定
     /// </summary>
     public void SetNextWall(BoxSurfaceScript nextwall)
-    {
+    {//箱不使用
         boxwall = nextwall;
+    }
+    public void SetNextBox(SideColorBoxScript nextBox)
+    {
+        sidebox = nextBox;
     }
     /// <summary>
     /// プレイヤー行動許可
@@ -120,5 +151,36 @@ public class Box_PlayerController : MonoBehaviour
     public void SetNextBox(BoxScript nextBox)
     {
         camM.SetNextBox(nextBox);
+    }
+
+    public Vector3 Front_LeftTop
+    {
+        get { return MoveAriaLeftTop; }
+        set
+        {
+            MoveAriaLeftTop = value;
+            var Ppos = transform.position;
+            if (MoveAriaLeftTop.x >= Ppos.x)
+                Ppos.x = MoveAriaLeftTop.x + 0.1f;
+            if (Ppos.y >= MoveAriaLeftTop.y)
+                Ppos.y = MoveAriaLeftTop.y - 0.1f;
+            transform.position = Ppos;
+            Debug.Log("LT" + value +"P"+  Ppos);
+        }
+    }
+    public Vector3 Front_RightBottom
+    {
+        get { return MoveAriaRightBottom; }
+        set
+        {
+            MoveAriaRightBottom = value;
+            var Ppos = transform.position;
+            if (Ppos.x >= MoveAriaRightBottom.x)
+                Ppos.x = MoveAriaRightBottom.x - 0.1f;
+            if (MoveAriaRightBottom.y >= Ppos.y)
+                Ppos.y = MoveAriaRightBottom.y + 0.1f;
+            transform.position = Ppos;
+            Debug.Log("RB" + value + "P" +Ppos);
+        }
     }
 }

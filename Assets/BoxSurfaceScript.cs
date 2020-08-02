@@ -64,11 +64,11 @@ public class BoxSurfaceScript : MonoBehaviour
         else
         {
             //各壁のLeftTopを記録
-            var _vec = new Vector3(-extentsHalfPos.y, extentsHalfPos.x, 0f);
+            var _vec = new Vector3(-extentsHalfPos.y, extentsHalfPos.x, transform.position.z);
             LeftTop = Sr.transform.TransformPoint(_vec);
 
             //各壁のRightBottomを記録
-            var _vec2 = new Vector3(extentsHalfPos.y, -extentsHalfPos.x, 0f);
+            var _vec2 = new Vector3(extentsHalfPos.y, -extentsHalfPos.x, transform.position.z);
             RightBottom = Sr.transform.TransformPoint(_vec2);
         }
         if (LeftTop.x > RightBottom.x)

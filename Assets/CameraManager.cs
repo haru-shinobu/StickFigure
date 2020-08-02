@@ -14,14 +14,13 @@ public class CameraManager : MonoBehaviour
     bool bMoveOK = false;
     bool bSide_edge = false;
     bool bBridge = false;
+    [SerializeField]
     Vector3 Camera_Distance;
     BoxScript boxSc;
 
     void Start()
     {
         Player = GameObject.FindWithTag("Player");
-        //Player.GetComponent<Box_PlayerController>().SetMoving(false);
-        Camera_Distance = new Vector3(0, 0, -10);//仮
         if (GoalObj && StartObj)
         {
             var Cam_StartPos = GoalObj.transform.position;
@@ -70,6 +69,7 @@ public class CameraManager : MonoBehaviour
         Destroy(sphere.GetComponent<MeshRenderer>());
         Destroy(sphere.GetComponent<MeshFilter>());
         sphere.transform.position = epos;
+        Camera.main.transform.position = epos - Camera_Distance;
         transform.SetParent(sphere.transform);
         transform.LookAt(sphere.transform);
         Vector3 vec = epos - spos;
