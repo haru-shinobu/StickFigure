@@ -36,6 +36,12 @@ public class Player : MonoBehaviour
     //基本的に操作を主に置く。判定系は別のブロックで行う
     void Update()
     {
+        //Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        //RaycastHit hit;
+        //if(Physics.Raycast(ray,out hit, 10.0f))
+        //{
+        //    Debug.Log(hit.collider.gameObject.transform.position);
+        //}
         if(_bControll)
         {
             float horizontal = Input.GetAxis("Horizontal");
@@ -73,19 +79,19 @@ public class Player : MonoBehaviour
         {
             transform.localPosition -= Vector3.right * Speed * 0.01f;
         }
-        //if (vartical > 0)
-        //{
-        //    transform.localPosition += Vector3.up * Speed * 0.01f;
-        //}
-        //if (vartical < 0)
-        //{
-        //    transform.localPosition -= Vector3.up * Speed * 0.01f;
-        //}
+        if (vartical > 0)
+        {
+            transform.localPosition += Vector3.up * Speed * 0.01f;
+        }
+        if (vartical < 0)
+        {
+            transform.localPosition -= Vector3.up * Speed * 0.01f;
+        }
     }
 
     // プレイヤー移動範囲チェック
-    void PlayerPosi()
-    {
+    //void PlayerPosi()
+    //{
         //if (boxwall.CheckPPos(Ppos))
         //{
         //    this.Move(horizontal, vartical);//移動
@@ -99,7 +105,7 @@ public class Player : MonoBehaviour
         //    _bControll = false;
         //    boxwall.ChangeWalls(this.transform);
         //}
-    }
+    //}
 //=======================================================================
 // 橋
 //=======================================================================

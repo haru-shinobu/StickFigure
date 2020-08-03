@@ -36,7 +36,7 @@ public class Box_PlayerController : MonoBehaviour
     //基本的に操作を主に置く。判定系は別のブロックで行う
     void Update()
     {
-        if(_bControll)
+        if (_bControll)
         {
             float horizontal = Input.GetAxis("Horizontal");
             float vartical = Input.GetAxis("Vertical");

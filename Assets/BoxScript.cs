@@ -118,7 +118,7 @@ public class BoxScript : MonoBehaviour
         player.transform.position = pos;
         
         var PSc = player.GetComponent<Box_PlayerController>();
-        
+
         yield return new WaitForEndOfFrame();
         //箱範囲内に収めさせる
         PSc.WallInAria();
