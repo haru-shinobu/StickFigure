@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class Box_PlayerController : MonoBehaviour
 {
-    [SerializeField, Range(1, 5)]
-    float Speed = 3;
+    [SerializeField, Range(0.1f, 1)]
+    float Speed = 0.4f;
     bool _bControll = false;
 
     //プレイヤーの縦横の半分を記録
@@ -34,7 +34,7 @@ public class Box_PlayerController : MonoBehaviour
         {
             float horizontal = Input.GetAxis("Horizontal");
             float vartical = Input.GetAxis("Vertical");
-            var Ppos = transform.position;
+            
             // プレイヤー移動範囲チェック
             /*//箱不使用
             if (boxwall.CheckPPos(Ppos))
@@ -50,6 +50,7 @@ public class Box_PlayerController : MonoBehaviour
                 this.Move(horizontal, vartical);
             else
             {
+                var Ppos = transform.position;
                 Debug.Log("EriaOut");
                 _bControll = false;
                 var rollways = 0;
@@ -60,6 +61,11 @@ public class Box_PlayerController : MonoBehaviour
                 if (Ppos.x > Front_RightBottom.x) rollways = 4;
                 sidebox.ChangeBoxRoll(transform, rollways);
             }
+
+            //プレイヤーが箱の色幅にいるときは //camM.Side = true;
+            //プレイヤーが箱の色幅にいないとき //camM.Side = false;
+            //プレイヤーが橋の上にいるときは //camM.Bridge = true;
+            //プレイヤーが橋の上にいないとき //camM.Bridge = false;
 
             if (Input.GetButton("Jump"))
             {
@@ -87,6 +93,7 @@ public class Box_PlayerController : MonoBehaviour
         {
             transform.localPosition += Vector3.right * Speed * 0.01f;
         }
+        else
         if (horizontal < 0)
         {
             transform.localPosition -= Vector3.right * Speed * 0.01f;
@@ -95,6 +102,7 @@ public class Box_PlayerController : MonoBehaviour
         {
             transform.localPosition += Vector3.up * Speed * 0.01f;
         }
+        else
         if (vartical < 0)
         {
             transform.localPosition -= Vector3.up * Speed * 0.01f;
@@ -148,10 +156,10 @@ public class Box_PlayerController : MonoBehaviour
     /// <summary>
     /// 箱を移ったとき
     /// </summary>
-    public void SetNextBox(BoxScript nextBox)
-    {
-        camM.SetNextBox(nextBox);
-    }
+//    public void SetNextBox(BoxScript nextBox)
+//    {
+//        camM.SetNextBox(nextBox);
+//    }
 
     public Vector3 Front_LeftTop
     {
@@ -165,7 +173,7 @@ public class Box_PlayerController : MonoBehaviour
             if (Ppos.y >= MoveAriaLeftTop.y)
                 Ppos.y = MoveAriaLeftTop.y - 0.1f;
             transform.position = Ppos;
-            Debug.Log("LT" + value +"P"+  Ppos);
+            //Debug.Log("LT" + value +"P"+  Ppos);
         }
     }
     public Vector3 Front_RightBottom
@@ -180,7 +188,7 @@ public class Box_PlayerController : MonoBehaviour
             if (MoveAriaRightBottom.y >= Ppos.y)
                 Ppos.y = MoveAriaRightBottom.y + 0.1f;
             transform.position = Ppos;
-            Debug.Log("RB" + value + "P" +Ppos);
+            //Debug.Log("RB" + value + "P" +Ppos);
         }
     }
 }

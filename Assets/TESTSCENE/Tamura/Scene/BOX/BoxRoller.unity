@@ -215,8 +215,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 209792296}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 2}
   m_Children:
   - {fileID: 799647402}
   m_Father: {fileID: 0}
@@ -786,7 +786,8 @@ MonoBehaviour:
   GoalObj: {fileID: 1249638753}
   StartObj: {fileID: 209792296}
   StartCamSpeed: 10
-  Camera_Distance: {x: 0, y: 0, z: 40}
+  StartCamera_Distance: {x: 0, y: 0, z: 40}
+  Camera_Distance: {x: 0, y: 0, z: 20}
 --- !u!1001 &1847027580084444970
 PrefabInstance:
   m_ObjectHideFlags: 0

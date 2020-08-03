@@ -38,10 +38,10 @@ public class SideColorBoxScript : MonoBehaviour
         Vector3 _vec = Vector3.zero;
         switch (rollways)
         {
-            case 1: _vec = -transform.right; break;
-            case 2: _vec = transform.right; break;
-            case 3: _vec = transform.up; break;
-            case 4: _vec = -transform.up; break;
+            case 1: _vec = -Vector3.right; break;
+            case 2: _vec = Vector3.right; break;
+            case 3: _vec = -Vector3.up; break;
+            case 4: _vec = Vector3.up; break;
         }
         StartCoroutine("BlockRoller", _vec);
     }
@@ -122,20 +122,22 @@ public class SideColorBoxScript : MonoBehaviour
         var pos = transform.position;
         pos.z -= mesh.bounds.extents.z;
         PSc.transform.position = pos;
-
+        //Debug.Log(((int)mesh.bounds.extents.x) + ":" +((int)mesh.bounds.extents.y) + ":" +((int)mesh.bounds.extents.z));
         var _vec = new Vector3(
             -Mathf.Abs(mesh.bounds.extents.x),
             Mathf.Abs(mesh.bounds.extents.y),
             Mathf.Abs(mesh.bounds.extents.z));
-        var FLT = transform.TransformPoint(_vec);
-        
+        //transform.TransformPoint(_vec);で取得していたが謎バグってた…
+        var FLT = transform.position + _vec;
+        //Debug.Log(_vec+"-"+FLT+"="+transform.position + _vec);
         _vec = new Vector3(
             Mathf.Abs(mesh.bounds.extents.x),
             -Mathf.Abs(mesh.bounds.extents.y),
             -Mathf.Abs(mesh.bounds.extents.z));
-        var BRB = transform.TransformPoint(_vec);
-        
-            if (FLT.x > BRB.x)
+        //transform.TransformPoint(_vec);で取得していたが謎バグってた…
+        var BRB = transform.position + _vec;
+
+        if (FLT.x > BRB.x)
         {
             var sub = BRB.x;
             BRB.x = FLT.x;

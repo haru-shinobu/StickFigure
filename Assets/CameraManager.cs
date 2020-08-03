@@ -15,11 +15,14 @@ public class CameraManager : MonoBehaviour
     bool bSide_edge = false;
     bool bBridge = false;
     [SerializeField]
+    Vector3 StartCamera_Distance;
+    [SerializeField]
     Vector3 Camera_Distance;
-    BoxScript boxSc;
+    GameObject NowBox;
 
     void Start()
     {
+        NowBox = StartObj;
         Player = GameObject.FindWithTag("Player");
         if (GoalObj && StartObj)
         {
@@ -47,12 +50,15 @@ public class CameraManager : MonoBehaviour
                 }
                 else
                 {
-                    var pos = Player.transform.position;
-                    pos.x = 0;
-                    pos.z = 0;
-                    pos += Camera_Distance;
-                    transform.position = pos;
+                    //カメラ滑らかに移動とかしたほうがいいんだろうけど…めんどk
+                    transform.position = Player.transform.position - Camera_Distance;
                 }
+            }
+            else
+            {
+                //カメラ滑らかに移動とかしたほうがいいんだろうけど…めんどk
+                transform.position = NowBox.transform.root.position - Camera_Distance;
+                //transform.position = Vector3.Lerp(transform.position, NowBox.transform.root.position - Camera_Distance,);
             }
         }
     }
@@ -69,7 +75,7 @@ public class CameraManager : MonoBehaviour
         Destroy(sphere.GetComponent<MeshRenderer>());
         Destroy(sphere.GetComponent<MeshFilter>());
         sphere.transform.position = epos;
-        Camera.main.transform.position = epos - Camera_Distance;
+        Camera.main.transform.position = epos - StartCamera_Distance;
         transform.SetParent(sphere.transform);
         transform.LookAt(sphere.transform);
         Vector3 vec = epos - spos;
@@ -93,6 +99,16 @@ public class CameraManager : MonoBehaviour
                 break;
             }
             yield return new WaitForEndOfFrame();
+        }
+        while (true)
+        {
+            transform.position = Vector3.Slerp(sphere.transform.position - StartCamera_Distance, sphere.transform.position - Camera_Distance, timer * cam_moveSpeed);
+            timer += Time.deltaTime;
+            if(timer*cam_moveSpeed > 1)
+            {
+                transform.position = sphere.transform.position - Camera_Distance;
+                break;
+            }
         }
         bMoveOK = true;
         Player.GetComponent<Box_PlayerController>().Moving = true;
@@ -120,8 +136,8 @@ public class CameraManager : MonoBehaviour
     /// <summary>
     /// プレイヤーが次の箱に移ったとき
     /// </summary>
-    public void SetNextBox(BoxScript nextboxSc)
+    public void SetNextBox(SideColorBoxScript nextboxSc)
     {
-        boxSc = nextboxSc;
+        NowBox = nextboxSc.gameObject;
     }
 }
