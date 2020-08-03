@@ -16,13 +16,12 @@ public class RayTest : MonoBehaviour
 
     void Start()
     {
-             BChecker=gameObject.GetComponent<BoxSurfaceScript>();
+            // BChecker=gameObject.GetComponent<BoxSurfaceScript>();
     }
     void Update()
     {
-        Vector3 fwd = transform.TransformDirection(Vector3.forward);
-
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        Vector3 fwd = transform.TransformDirection(-1,-1,-10f);
+        //Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
         if (Physics.Raycast(transform.position,fwd,out hit,maxDistance))
         {
@@ -32,7 +31,7 @@ public class RayTest : MonoBehaviour
         {
             distance = NOTHING;
         }
-        Debug.DrawRay(ray.origin, ray.direction * 10, Color.red, 5);
+       Debug.DrawRay(transform.position,fwd, Color.red, 5);
         //テキスト消える
         if (distance<=3)
         {
@@ -44,7 +43,7 @@ public class RayTest : MonoBehaviour
             Text.SetActive(true);
             if (Input.GetKey(KeyCode.Space))
             {
-
+//舌の出す
             }
         }
     }
