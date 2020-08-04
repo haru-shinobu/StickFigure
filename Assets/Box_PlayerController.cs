@@ -34,7 +34,7 @@ public class Box_PlayerController : MonoBehaviour
     
     void Update()
     {
-        if(_bControll)
+        if (_bControll)
         {
             float horizontal = Input.GetAxis("Horizontal");
             float vartical = Input.GetAxis("Vertical");
