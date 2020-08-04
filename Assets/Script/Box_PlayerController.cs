@@ -18,14 +18,17 @@ public class Box_PlayerController : MonoBehaviour
 
     CameraManager camM;
     Vector3 m_Vec;
+
     BoxSurfaceScript boxwall;
     SideColorBoxScript sidebox;
+    GameData G_Data;
 
     void Start()
     {
         var sprvec = transform.GetComponent<SpriteRenderer>();
         Player_verticalhorizontal = sprvec.bounds.extents;
         camM = Camera.main.GetComponent<CameraManager>();
+        G_Data = GameObject.FindWithTag("BoxManager").GetComponent<GameData>();
         //以下2文はどのような形の画像でも１＊１の正方形にする処理。
         transform.localScale = new Vector3(1 / Player_verticalhorizontal.x / 2, 1 / Player_verticalhorizontal.y / 2, 1);
         Player_verticalhorizontal = sprvec.bounds.extents;
@@ -97,6 +100,15 @@ public class Box_PlayerController : MonoBehaviour
                 return true;
         return false;
     }
+    //辺の赤範囲判定
+    public bool CheckRedAria()
+    {
+        if (MoveAriaLeftTop.x + G_Data.RedLine <= transform.position.x && transform.position.x <= MoveAriaRightBottom.x - G_Data.RedLine)
+            if (MoveAriaRightBottom.y + G_Data.RedLine <= transform.position.y && transform.position.y <= MoveAriaLeftTop.y - G_Data.RedLine) 
+                return true;
+        return false;
+    }
+
     //=======================================================================
     // プレイヤー移動
     //=======================================================================
