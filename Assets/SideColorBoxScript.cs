@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class SideColorBoxScript : MonoBehaviour
 {
-    [Header("壁切替速度"), Range(0.5f, 2)]
-    private float ChangeSpeed = 1;
+    [SerializeField,Header("壁切替速度"), Range(0.5f, 2)]
+    float ChangeSpeed = 1;
     Vector3 F_LeftTop, F_RightBottom;
     MeshRenderer mesh;
     void Awake()
@@ -97,7 +97,6 @@ public class SideColorBoxScript : MonoBehaviour
         player.transform.up = Vector3.up;
         player.transform.forward = Vector3.forward;
 
-
         //プレイヤーのｚ座標を箱前面と統一、箱範囲内に収めさせる
         var PSc = player.GetComponent<Box_PlayerController>();
         SetAria(PSc);
@@ -118,25 +117,21 @@ public class SideColorBoxScript : MonoBehaviour
         {
             mesh = transform.GetComponent<MeshRenderer>();
         }
-
-        var pos = transform.position;
-        pos.z -= mesh.bounds.extents.z;
-        PSc.transform.position = pos;
-        //Debug.Log(((int)mesh.bounds.extents.x) + ":" +((int)mesh.bounds.extents.y) + ":" +((int)mesh.bounds.extents.z));
-        var _vec = new Vector3(
+        
+        Vector3 _vec = new Vector3(
             -Mathf.Abs(mesh.bounds.extents.x),
             Mathf.Abs(mesh.bounds.extents.y),
             Mathf.Abs(mesh.bounds.extents.z));
         //transform.TransformPoint(_vec);で取得していたが謎バグってた…
-        var FLT = transform.position + _vec;
-        //Debug.Log(_vec+"-"+FLT+"="+transform.position + _vec);
+        Vector3 FLT = transform.position + _vec;
+        
         _vec = new Vector3(
             Mathf.Abs(mesh.bounds.extents.x),
             -Mathf.Abs(mesh.bounds.extents.y),
             -Mathf.Abs(mesh.bounds.extents.z));
         //transform.TransformPoint(_vec);で取得していたが謎バグってた…
-        var BRB = transform.position + _vec;
-
+        Vector3 BRB = transform.position + _vec;
+        
         if (FLT.x > BRB.x)
         {
             var sub = BRB.x;
@@ -154,8 +149,13 @@ public class SideColorBoxScript : MonoBehaviour
         else
             FLT.z = BRB.z;
 
+        var pos = PSc.transform.position;
+        pos.z = -mesh.bounds.extents.z;
+        PSc.transform.position = pos;
+
         PSc.Front_LeftTop = F_LeftTop = FLT;
         PSc.Front_RightBottom = F_RightBottom = BRB;
+        
 
     }
     //==================================================================

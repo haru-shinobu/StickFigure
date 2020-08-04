@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class Box_PlayerController : MonoBehaviour
 {
-    [SerializeField, Range(0.1f, 1)]
+    [SerializeField, Range(0.1f, 10)]
     float Speed = 0.4f;
     bool _bControll = false;
-
+    private float offset = 0.05f;
     //プレイヤーの縦横の半分を記録
     Vector2 Player_verticalhorizontal;
     ///プレイヤーの縦横移動範囲設定、壁移動のたび再記録
@@ -23,8 +23,12 @@ public class Box_PlayerController : MonoBehaviour
 
     void Start()
     {
-        Player_verticalhorizontal = transform.GetComponent<SpriteRenderer>().bounds.extents;
+        var sprvec = transform.GetComponent<SpriteRenderer>();
+        Player_verticalhorizontal = sprvec.bounds.extents;
         camM = Camera.main.GetComponent<CameraManager>();
+        //以下2文はどのような形の画像でも１＊１の正方形にする処理。
+        transform.localScale = new Vector3(1 / Player_verticalhorizontal.x / 2, 1 / Player_verticalhorizontal.y / 2, 1);
+        Player_verticalhorizontal = sprvec.bounds.extents;
     }
     
     
@@ -50,15 +54,20 @@ public class Box_PlayerController : MonoBehaviour
                 this.Move(horizontal, vartical);
             else
             {
-                var Ppos = transform.position;
-                Debug.Log("EriaOut");
+                Debug.Log("AriaOut");
                 _bControll = false;
-                var rollways = 0;
+                var Ppos = transform.position;
+                var T = transform.position.y + Player_verticalhorizontal.y;
+                var B = transform.position.y - Player_verticalhorizontal.y;
+                var L = transform.position.x - Player_verticalhorizontal.x;
+                var R = transform.position.x + Player_verticalhorizontal.x;
+
                 //上下左右
-                if (Ppos.y > Front_LeftTop.y) rollways = 1;
-                if (Ppos.y < Front_RightBottom.y) rollways = 2;
-                if (Ppos.x < Front_LeftTop.x) rollways = 3;
-                if (Ppos.x > Front_RightBottom.x) rollways = 4;
+                var rollways = 0;
+                if (T > Front_LeftTop.y) rollways = 1;
+                if (B < Front_RightBottom.y) rollways = 2;
+                if (L < Front_LeftTop.x) rollways = 3;
+                if (R > Front_RightBottom.x) rollways = 4;
                 sidebox.ChangeBoxRoll(transform, rollways);
             }
 
@@ -77,9 +86,14 @@ public class Box_PlayerController : MonoBehaviour
     //移動範囲確認
     bool CheckMoveAria()
     {
+        var T = transform.position.y + Player_verticalhorizontal.y;
+        var B = transform.position.y - Player_verticalhorizontal.y;
+        var R = transform.position.x + Player_verticalhorizontal.x;
+        var L = transform.position.x - Player_verticalhorizontal.x;
+        
         //範囲内のとき
-        if (MoveAriaLeftTop.x <= transform.position.x && transform.position.x <= MoveAriaRightBottom.x)
-            if (MoveAriaRightBottom.y <= transform.position.y && transform.position.y <= MoveAriaLeftTop.y)
+        if (MoveAriaLeftTop.x <= L && R <= MoveAriaRightBottom.x)
+            if (MoveAriaRightBottom.y <= B && T <= MoveAriaLeftTop.y)
                 return true;
         return false;
     }
@@ -91,21 +105,21 @@ public class Box_PlayerController : MonoBehaviour
     {
         if (horizontal > 0)
         {
-            transform.localPosition += Vector3.right * Speed * 0.01f;
+            transform.localPosition += Vector3.right * Speed;
         }
         else
         if (horizontal < 0)
         {
-            transform.localPosition -= Vector3.right * Speed * 0.01f;
+            transform.localPosition -= Vector3.right * Speed;
         }
         if (vartical > 0)
         {
-            transform.localPosition += Vector3.up * Speed * 0.01f;
+            transform.localPosition += Vector3.up * Speed;
         }
         else
         if (vartical < 0)
         {
-            transform.localPosition -= Vector3.up * Speed * 0.01f;
+            transform.localPosition -= Vector3.up * Speed;
         }
     }
 
@@ -167,13 +181,18 @@ public class Box_PlayerController : MonoBehaviour
         set
         {
             MoveAriaLeftTop = value;
-            var Ppos = transform.position;
-            if (MoveAriaLeftTop.x >= Ppos.x)
-                Ppos.x = MoveAriaLeftTop.x + 0.1f;
-            if (Ppos.y >= MoveAriaLeftTop.y)
-                Ppos.y = MoveAriaLeftTop.y - 0.1f;
-            transform.position = Ppos;
-            //Debug.Log("LT" + value +"P"+  Ppos);
+
+            var PPos = transform.position;
+            var T = PPos.y + Player_verticalhorizontal.y;
+            var L = PPos.x - Player_verticalhorizontal.x;
+
+            if (MoveAriaLeftTop.x >= L)
+                PPos.x = MoveAriaLeftTop.x + Player_verticalhorizontal.x + offset;
+            if (T >= MoveAriaLeftTop.y)
+                PPos.y = MoveAriaLeftTop.y - Player_verticalhorizontal.y - offset;
+
+            transform.position = PPos;
+
         }
     }
     public Vector3 Front_RightBottom
@@ -182,13 +201,16 @@ public class Box_PlayerController : MonoBehaviour
         set
         {
             MoveAriaRightBottom = value;
-            var Ppos = transform.position;
-            if (Ppos.x >= MoveAriaRightBottom.x)
-                Ppos.x = MoveAriaRightBottom.x - 0.1f;
-            if (MoveAriaRightBottom.y >= Ppos.y)
-                Ppos.y = MoveAriaRightBottom.y + 0.1f;
-            transform.position = Ppos;
-            //Debug.Log("RB" + value + "P" +Ppos);
+
+            var PPos = transform.position;
+            var B = PPos.y - Player_verticalhorizontal.y;
+            var R = PPos.x + Player_verticalhorizontal.x;
+            
+            if (R >= MoveAriaRightBottom.x)
+                PPos.x = MoveAriaRightBottom.x - Player_verticalhorizontal.x - offset;
+            if (MoveAriaRightBottom.y >= B)
+                PPos.y = MoveAriaRightBottom.y + Player_verticalhorizontal.y + offset;
+            transform.position = PPos;
         }
     }
 }
