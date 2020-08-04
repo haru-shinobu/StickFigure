@@ -10,7 +10,8 @@ public class CameraManager : MonoBehaviour
     GameObject StartObj;
     [SerializeField,Range(0.1f,10)]
     float StartCamSpeed = 1;
-    GameObject Player;
+    
+    Box_PlayerController PSc;
     bool bMoveOK = false;
     bool bSide_edge = false;
     bool bBridge = false;
@@ -23,7 +24,8 @@ public class CameraManager : MonoBehaviour
     void Start()
     {
         NowBox = StartObj;
-        Player = GameObject.FindWithTag("Player");
+        
+        PSc = GameObject.FindWithTag("Player").transform.GetComponent<Box_PlayerController>();
         if (GoalObj && StartObj)
         {
             var Cam_StartPos = GoalObj.transform.position;
@@ -41,8 +43,9 @@ public class CameraManager : MonoBehaviour
         if (bMoveOK)
         {
             //プレイヤーが壁の端か否か
-            if (bSide_edge)
+            if (PSc.CheckRedAria())
             {
+                Debug.Log("赤枠");
                 //プレイヤーが橋の上か否か
                 if (bBridge)
                 {
@@ -51,18 +54,25 @@ public class CameraManager : MonoBehaviour
                 else
                 {
                     //カメラ滑らかに移動とかしたほうがいいんだろうけど…めんどk
-                    transform.position = Player.transform.position - Camera_Distance;
+                    transform.position = PSc.transform.position - Camera_Distance;
                 }
             }
             else
             {
+                if (PSc.OnRedLine)
+                    transform.position = PSc.transform.position - Camera_Distance;
+                else
                 //カメラ滑らかに移動とかしたほうがいいんだろうけど…めんどk
                 transform.position = NowBox.transform.root.position - Camera_Distance;
                 //transform.position = Vector3.Lerp(transform.position, NowBox.transform.root.position - Camera_Distance,);
             }
         }
     }
-    
+    IEnumerator Cam_RedLine()
+    {
+        yield return new WaitForEndOfFrame();
+    }
+
     //===========================================================
     // ステージ見渡し処理　：ゴールからスタートまでをY軸回転しながら見渡す
     // Starter(カメラゲームスタート位置,カメラゲームプレイ位置)
@@ -111,7 +121,7 @@ public class CameraManager : MonoBehaviour
             }
         }
         bMoveOK = true;
-        Player.GetComponent<Box_PlayerController>().Moving = true;
+        PSc.Moving = true;
     }
 
     //===========================================================

@@ -7,6 +7,7 @@ public class Box_PlayerController : MonoBehaviour
     [SerializeField, Range(0.1f, 10)]
     float Speed = 0.4f;
     bool _bControll = false;
+    bool _bRedLine = false;
     private float offset = 0.05f;
     //プレイヤーの縦横の半分を記録
     Vector2 Player_verticalhorizontal;
@@ -18,14 +19,17 @@ public class Box_PlayerController : MonoBehaviour
 
     CameraManager camM;
     Vector3 m_Vec;
+
     BoxSurfaceScript boxwall;
     SideColorBoxScript sidebox;
+    GameData G_Data;
 
     void Start()
     {
         var sprvec = transform.GetComponent<SpriteRenderer>();
         Player_verticalhorizontal = sprvec.bounds.extents;
         camM = Camera.main.GetComponent<CameraManager>();
+        G_Data = GameObject.FindWithTag("BoxManager").GetComponent<GameData>();
         //以下2文はどのような形の画像でも１＊１の正方形にする処理。
         transform.localScale = new Vector3(1 / Player_verticalhorizontal.x / 2, 1 / Player_verticalhorizontal.y / 2, 1);
         Player_verticalhorizontal = sprvec.bounds.extents;
@@ -90,13 +94,26 @@ public class Box_PlayerController : MonoBehaviour
         var B = transform.position.y - Player_verticalhorizontal.y;
         var R = transform.position.x + Player_verticalhorizontal.x;
         var L = transform.position.x - Player_verticalhorizontal.x;
-        
+
         //範囲内のとき
         if (MoveAriaLeftTop.x <= L && R <= MoveAriaRightBottom.x)
             if (MoveAriaRightBottom.y <= B && T <= MoveAriaLeftTop.y)
+            {
+                OnRedLine = false;
                 return true;
+            }
+        OnRedLine = true;
         return false;
     }
+    //辺の赤範囲判定
+    public bool CheckRedAria()
+    {
+        if (MoveAriaLeftTop.x + G_Data.RedLine <= transform.position.x && transform.position.x <= MoveAriaRightBottom.x - G_Data.RedLine)
+            if (MoveAriaRightBottom.y + G_Data.RedLine <= transform.position.y && transform.position.y <= MoveAriaLeftTop.y - G_Data.RedLine) 
+                return false;
+        return true;
+    }
+
     //=======================================================================
     // プレイヤー移動
     //=======================================================================
@@ -166,6 +183,11 @@ public class Box_PlayerController : MonoBehaviour
     {
         get { return _bControll; }
         set { _bControll = value; }
+    }
+    public bool OnRedLine
+    {
+        get { return _bRedLine; }
+        set { _bRedLine = value; }
     }
     /// <summary>
     /// 箱を移ったとき

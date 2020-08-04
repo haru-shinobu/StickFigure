@@ -10,4 +10,11 @@ public class GameData : MonoBehaviour
         get { return Player_On_NowBox; }
         set { Player_On_NowBox = value; }
     }
+
+    float Box_Offset;
+    public float RedLine
+    {
+        get { return Box_Offset; }
+        set { Box_Offset = value; }
+    }
 }
