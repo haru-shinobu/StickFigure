@@ -5,46 +5,78 @@ using UnityEngine.UI;
 
 public class RayTest : MonoBehaviour
 {
-    public BoxSurfaceScript BChecker;
+    public Box_PlayerController BChecker;
+    public GameData G_Data;
     public GameObject Text;
     public const float NOTHING = -1;
     public float maxDistance = 30;
     public float distance;
+    Vector3 MoveAriaLeftTop, MoveAriaRightBottom;
 
-    //Vector3 LeftTop;
-    //Vector3 RightBottom;
 
     void Start()
     {
-            // BChecker=gameObject.GetComponent<BoxSurfaceScript>();
     }
     void Update()
     {
-        Vector3 fwd = transform.TransformDirection(-1,-1,-10f);
-        //Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-        if (Physics.Raycast(transform.position,fwd,out hit,maxDistance))
+        BChecker.CheckRedAria();
+        if (BChecker.CheckRedAria() == false)
         {
-            distance = hit.distance;
-        }
-        else
-        {
-            distance = NOTHING;
-        }
-       Debug.DrawRay(transform.position,fwd, Color.red, 5);
-        //テキスト消える
-        if (distance<=3)
-        {
-            Text.SetActive(false);
-        }
-        //テキスト出てくる
-        if (distance>=3)
-        {
-            Text.SetActive(true);
-            if (Input.GetKey(KeyCode.Space))
+            Vector3 fwd = transform.TransformDirection(0, 0, -10);
+            //Rayを飛ばすtransform.TransformDirection(x,y,z);
+            //上向き
+            if (MoveAriaRightBottom.y + G_Data.RedLine <= transform.position.y)
             {
-//舌の出す
+                fwd = transform.TransformDirection(0, 10, -10);
+                Debug.Log("上");
+            }
+                //下向き
+                if (MoveAriaLeftTop.y - G_Data.RedLine >= transform.position.y)
+            {
+                fwd = transform.TransformDirection(0, -10, -10);
+                Debug.Log("下");
+            }
+            //右向き
+            if (MoveAriaLeftTop.x + G_Data.RedLine <= transform.position.x)
+            {
+                fwd = transform.TransformDirection(10, 0, -10);
+                Debug.Log("右");
+            }
+            //左向き
+            if (MoveAriaRightBottom.x - G_Data.RedLine >= transform.position.x)
+            {
+                fwd = transform.TransformDirection(-10, 0, -10);
+                Debug.Log("左");
+            }
+
+            //Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+                if (Physics.Raycast(transform.position, fwd, out hit, maxDistance))
+                {
+                    distance = hit.distance;
+                }
+                else
+                {
+                    distance = NOTHING;
+                }
+                Debug.DrawRay(transform.position, fwd, Color.red, 5);
+
+                //テキスト消える
+                if (distance <= 3)
+                {
+                    Text.SetActive(false);
+                    //Debug.Log("Delete");
+                }
+                //テキスト出てくる
+                if (distance >= 3)
+                {
+                    Text.SetActive(true);
+                    Debug.Log("Push");
+                    if (Input.GetKey(KeyCode.Space))
+                    {
+                        //舌を出す
+                        }
+                    }
+                }
             }
         }
-    }
-}
