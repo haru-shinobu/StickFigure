@@ -14,8 +14,12 @@ public class Box_PlayerController : MonoBehaviour
     ///プレイヤーの縦横移動範囲設定、壁移動のたび再記録
     Vector3 MoveAriaLeftTop, MoveAriaRightBottom;
 
-    [SerializeField, Header("橋の長さ,橋の幅")]
-    Vector2 BridgeSpace;
+    [SerializeField, Header("テープ")]
+    GameObject Bridge;
+    [SerializeField, Header("テープの個数"), Range(1, 4)]
+    int BridgeMaxNum;
+    int BridgeNum = 0;
+    GameObject[] Bridges;
 
     CameraManager camM;
     Vector3 m_Vec;
@@ -23,7 +27,12 @@ public class Box_PlayerController : MonoBehaviour
     BoxSurfaceScript boxwall;
     SideColorBoxScript sidebox;
     GameData G_Data;
-
+    
+    enum SideRedLine
+    {
+        T,B,L,R,Non,
+    }
+    SideRedLine RedSide = SideRedLine.Non;
     void Start()
     {
         var sprvec = transform.GetComponent<SpriteRenderer>();
@@ -33,6 +42,8 @@ public class Box_PlayerController : MonoBehaviour
         //以下2文はどのような形の画像でも１＊１の正方形にする処理。
         transform.localScale = new Vector3(1 / Player_verticalhorizontal.x / 2, 1 / Player_verticalhorizontal.y / 2, 1);
         Player_verticalhorizontal = sprvec.bounds.extents;
+        Bridges = new GameObject[BridgeMaxNum];
+        BridgeNum = 0;
     }
     
     
@@ -59,7 +70,7 @@ public class Box_PlayerController : MonoBehaviour
             else
             {
                 Debug.Log("AriaOut");
-                _bControll = false;
+                this.Moving = false;
                 var Ppos = transform.position;
                 var T = transform.position.y + Player_verticalhorizontal.y;
                 var B = transform.position.y - Player_verticalhorizontal.y;
@@ -106,11 +117,28 @@ public class Box_PlayerController : MonoBehaviour
         return false;
     }
     //辺の赤範囲判定
+    /// <summary>
+    /// OnRedLine = true;
+    /// </summary>
     public bool CheckRedAria()
     {
+        //G_Data.RedLineは赤線の幅
         if (MoveAriaLeftTop.x + G_Data.RedLine <= transform.position.x && transform.position.x <= MoveAriaRightBottom.x - G_Data.RedLine)
-            if (MoveAriaRightBottom.y + G_Data.RedLine <= transform.position.y && transform.position.y <= MoveAriaLeftTop.y - G_Data.RedLine) 
+            if (MoveAriaRightBottom.y + G_Data.RedLine <= transform.position.y && transform.position.y <= MoveAriaLeftTop.y - G_Data.RedLine)
+            {
+                RedSide = SideRedLine.Non;
                 return false;
+            }
+        //左右を優先
+        if (MoveAriaLeftTop.x + G_Data.RedLine > transform.position.x)
+            RedSide = SideRedLine.L;
+        else if(transform.position.x > MoveAriaRightBottom.x - G_Data.RedLine)
+            RedSide = SideRedLine.R;
+        else
+        if (MoveAriaRightBottom.y + G_Data.RedLine > transform.position.y)
+            RedSide = SideRedLine.B;
+        else if (transform.position.y > MoveAriaLeftTop.y - G_Data.RedLine)
+            RedSide = SideRedLine.T;
         return true;
     }
 
@@ -146,7 +174,51 @@ public class Box_PlayerController : MonoBehaviour
     //this->
     void MakeBridge()
     {
-        //vec2 (BridgeSpace)
+        Vector3 _vec = transform.position;
+        float _Angle = 0f;
+        //プレイヤー位置を基準とするのではなく、赤ラインの半分(0.5f分)を基準とする。(橋の役割とき)
+        switch (RedSide)
+        {
+            case SideRedLine.Non:
+                //プレイヤー足元位置を基準として上方向に配置(梯子の役割のとき)
+                _vec = transform.position + new Vector3(0, -Player_verticalhorizontal.y);
+                break;
+            case SideRedLine.T:
+                //プレイヤーのいる赤位置判定からの場所と方向決定
+                _vec = new Vector3(transform.position.x, Front_LeftTop.y - G_Data.RedLine / 2);
+                break;
+            case SideRedLine.B:
+                //プレイヤーのいる赤位置判定からの場所と方向決定
+                _vec = new Vector3(transform.position.x, Front_RightBottom.y + G_Data.RedLine / 2);
+                _Angle = 180f;
+                break;
+            case SideRedLine.L:
+                //プレイヤーのいる赤位置判定からの場所と方向決定
+                _vec = new Vector3(Front_LeftTop.x + G_Data.RedLine / 2, transform.position.y);
+                _Angle = 90f;
+                break;
+            case SideRedLine.R:
+                //プレイヤーのいる赤位置判定からの場所と方向決定
+                _vec = new Vector3(Front_RightBottom.x - G_Data.RedLine / 2, transform.position.y);
+                _Angle = 270f;
+                break;
+        }
+        if (Bridges[BridgeNum])
+            Destroy(Bridges[BridgeNum]);
+        _vec.z = transform.position.z - 0.01f;
+        Bridges[BridgeNum] = Instantiate(Bridge, _vec, Quaternion.Euler(180, 0, _Angle));
+        
+        switch (RedSide)
+        {
+            case SideRedLine.Non:Bridges[BridgeNum].transform.position += new Vector3(0,(Bridges[BridgeNum].GetComponent<MeshRenderer>().bounds.extents.y));break;
+            case SideRedLine.T:  Bridges[BridgeNum].transform.position += new Vector3(0,(Bridges[BridgeNum].GetComponent<MeshRenderer>().bounds.extents.y));break;
+            case SideRedLine.B:  Bridges[BridgeNum].transform.position -= new Vector3(0,(Bridges[BridgeNum].GetComponent<MeshRenderer>().bounds.extents.y));break;
+            case SideRedLine.L:  Bridges[BridgeNum].transform.position -= new Vector3((Bridges[BridgeNum].GetComponent<MeshRenderer>().bounds.extents.x),0);break;
+            case SideRedLine.R:  Bridges[BridgeNum].transform.position += new Vector3((Bridges[BridgeNum].GetComponent<MeshRenderer>().bounds.extents.x),0);break;
+        }
+        BridgeNum++;
+        if (BridgeMaxNum <= BridgeNum)
+            BridgeNum = 0;
     }
     /// <summary>
     /// プレイヤー移動範囲計算
