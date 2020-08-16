@@ -100,7 +100,7 @@ public class SideColorBoxScript : MonoBehaviour
         //プレイヤーのｚ座標を箱前面と統一、箱範囲内に収めさせる
         var PSc = player.GetComponent<Box_PlayerController>();
         SetAria(PSc);
-        Debug.Log(F_LeftTop + ":" + F_RightBottom + "->" + PSc.transform.position);
+        //Debug.Log("LT:"+F_LeftTop + "RB:" + F_RightBottom + "PP" + PSc.transform.position);
 
         yield return new WaitForEndOfFrame();
         //行動許可・移動範囲計算

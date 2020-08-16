@@ -4,17 +4,25 @@ using UnityEngine;
 
 public class CameraManager : MonoBehaviour
 {
-    [SerializeField,Header("ゴール")]
+    [SerializeField, Header("ゴール")]
     GameObject GoalObj;
     [SerializeField, Header("スタート")]
     GameObject StartObj;
-    [SerializeField,Range(0.1f,10)]
+    [SerializeField, Range(0.1f, 10)]
     float StartCamSpeed = 1;
-    
+    [SerializeField, Header("赤ライン内外カメラ移動(秒)"), Range(0.1f, 2)]
+    float redline_cam_move_time;
     Box_PlayerController PSc;
-    bool bMoveOK = false;
+    bool _bMoveOK = false;
     bool bSide_edge = false;
     bool bBridge = false;
+    bool _bOnLine = false;
+
+
+    bool _bCorutine_Action = false;
+    IEnumerator routine;
+    bool _bColutine_OnLine = false;
+    bool _bColutine_OutLine = false;
     [SerializeField]
     Vector3 StartCamera_Distance;
     [SerializeField]
@@ -24,53 +32,114 @@ public class CameraManager : MonoBehaviour
     void Start()
     {
         NowBox = StartObj;
-        
+        redline_cam_move_time = (1 / redline_cam_move_time);
         PSc = GameObject.FindWithTag("Player").transform.GetComponent<Box_PlayerController>();
         if (GoalObj && StartObj)
         {
             var Cam_StartPos = GoalObj.transform.position;
             var Cam_EndPos = StartObj.transform.position;
-            
+
             StartCoroutine(Starter(Cam_StartPos, Cam_EndPos));
         }
     }
     //===========================================================
-    // プレイヤー移動と共に移動する処理(Y軸のみ追従)
+    // プレイヤー移動によるカメラ処理
     //===========================================================
     void Update()
     {
         //ステージ見渡しムービー終了・カメラ動作OK時
-        if (bMoveOK)
+        if (_bMoveOK)
         {
-            //プレイヤーが壁の端か否か
-            if (PSc.CheckRedAria())
+            //プレイヤーが橋の上か否か
+            if (!bBridge)
             {
-                Debug.Log("赤枠");
-                //プレイヤーが橋の上か否か
-                if (bBridge)
+                //プレイヤーが壁の端か否か
+                if (PSc.CheckRedAria())//ライン上true
                 {
-
+                    _bOnLine = true;
+                    //ライン上に来た時、アウトラインコルーチンが動作していない
+                    if (!_bColutine_OnLine)
+                    {
+                        _bCorutine_Action = false;
+                        //アウトラインコルーチンが動作していたら停止、オンライン動作させる
+                        if (_bColutine_OutLine)
+                        {
+                            StopCoroutine(routine);
+                            routine = null;
+                            _bColutine_OutLine = false;
+                        }
+                        routine = Cam_RedOnLine();
+                        StartCoroutine(routine);
+                    }
+                    //コルーチン動作終了後処理
+                    else
+                    if (_bCorutine_Action)
+                        transform.position = PSc.transform.position - Camera_Distance;
                 }
+                //ライン外false
                 else
                 {
-                    //カメラ滑らかに移動とかしたほうがいいんだろうけど…めんどk
-                    transform.position = PSc.transform.position - Camera_Distance;
+                    _bOnLine = false;
+                    if (PSc.OnRedLine)//箱回転中はライン外かつ
+                        transform.position = PSc.transform.position - Camera_Distance;
+                    else
+                    {
+                        //ライン外に来た時、オンラインコルーチンが動作していない
+                        if (!_bColutine_OutLine)
+                        {
+                            _bCorutine_Action = false;
+                            //オンラインコルーチンが動作していたら停止、アウトライン動作させる
+                            if (_bColutine_OnLine)
+                            {
+                                StopCoroutine(routine);
+                                routine = null;
+                                _bColutine_OnLine = false;
+                            }
+                            routine = Cam_RedOutLine();
+                            StartCoroutine(routine);
+                        }
+                        //コルーチン動作終了後処理
+                        else
+                        if (_bCorutine_Action)
+                            transform.position = NowBox.transform.root.position - Camera_Distance;
+                    }
                 }
             }
-            else
+            else//橋の上
             {
-                if (PSc.OnRedLine)
-                    transform.position = PSc.transform.position - Camera_Distance;
-                else
-                //カメラ滑らかに移動とかしたほうがいいんだろうけど…めんどk
-                transform.position = NowBox.transform.root.position - Camera_Distance;
-                //transform.position = Vector3.Lerp(transform.position, NowBox.transform.root.position - Camera_Distance,);
+                transform.position = PSc.transform.position - Camera_Distance;
             }
         }
     }
-    IEnumerator Cam_RedLine()
+    IEnumerator Cam_RedOnLine()
     {
-        yield return new WaitForEndOfFrame();
+        _bColutine_OnLine = true;
+        float timer = 0;
+        var Cpos = transform.position;
+        while (_bOnLine)
+        {
+            timer += Time.deltaTime * redline_cam_move_time;
+            transform.position = Vector3.Slerp(Cpos, PSc.transform.position - Camera_Distance, timer);
+            if (1 < timer)
+                break;
+            yield return new WaitForEndOfFrame();
+        }
+        _bCorutine_Action = true;
+    }
+    IEnumerator Cam_RedOutLine()
+    {
+        _bColutine_OutLine = true;
+        float timer = 0;
+        var Cpos = transform.position;
+        while (!_bOnLine)
+        {
+            timer += Time.deltaTime * redline_cam_move_time;
+            transform.position = Vector3.Slerp(Cpos, transform.root.transform.position - Camera_Distance, timer);
+            if (1 < timer)
+                break;
+            yield return new WaitForEndOfFrame();
+        }
+        _bCorutine_Action = true;
     }
 
     //===========================================================
@@ -110,17 +179,21 @@ public class CameraManager : MonoBehaviour
             }
             yield return new WaitForEndOfFrame();
         }
+        timer = 0;
+        var spherePos = sphere.transform.position;
         while (true)
         {
-            transform.position = Vector3.Slerp(sphere.transform.position - StartCamera_Distance, sphere.transform.position - Camera_Distance, timer * cam_moveSpeed);
-            timer += Time.deltaTime;
-            if(timer*cam_moveSpeed > 1)
+            transform.position = Vector3.Slerp(spherePos - StartCamera_Distance, spherePos - Camera_Distance, timer);
+            Debug.DrawLine(transform.position, transform.position + new Vector3(10, 0, 0), Color.cyan, 10);
+            timer += Time.deltaTime * cam_moveSpeed;
+            if(timer > 1)
             {
                 transform.position = sphere.transform.position - Camera_Distance;
                 break;
             }
+            yield return new WaitForEndOfFrame();
         }
-        bMoveOK = true;
+        _bMoveOK = true;
         PSc.Moving = true;
     }
 
