@@ -24,9 +24,9 @@ public class CameraManager : MonoBehaviour
     bool _bColutine_OnLine = false;
     bool _bColutine_OutLine = false;
     [SerializeField]
-    Vector3 StartCamera_Distance;
+    Vector3 StartCamera_Distance = new Vector3(0, 0, 40);
     [SerializeField]
-    Vector3 Camera_Distance;
+    Vector3 Camera_Distance = new Vector3(0, 0, 20);
     GameObject NowBox;
 
     void Start()
@@ -51,7 +51,7 @@ public class CameraManager : MonoBehaviour
         if (_bMoveOK)
         {
             //プレイヤーが橋の上か否か
-            if (!bBridge)
+            if (!Bridge)
             {
                 //プレイヤーが壁の端か否か
                 if (PSc.CheckRedAria())//ライン上true
@@ -101,7 +101,7 @@ public class CameraManager : MonoBehaviour
                         //コルーチン動作終了後処理
                         else
                         if (_bCorutine_Action)
-                            transform.position = NowBox.transform.root.position - Camera_Distance;
+                            transform.position = transform.transform.root.position - Camera_Distance;
                     }
                 }
             }
@@ -184,8 +184,7 @@ public class CameraManager : MonoBehaviour
         while (true)
         {
             transform.position = Vector3.Slerp(spherePos - StartCamera_Distance, spherePos - Camera_Distance, timer);
-            Debug.DrawLine(transform.position, transform.position + new Vector3(10, 0, 0), Color.cyan, 10);
-            timer += Time.deltaTime * cam_moveSpeed;
+            timer += Time.deltaTime * cam_moveSpeed * 2;
             if(timer > 1)
             {
                 transform.position = sphere.transform.position - Camera_Distance;
@@ -222,5 +221,9 @@ public class CameraManager : MonoBehaviour
     public void SetNextBox(SideColorBoxScript nextboxSc)
     {
         NowBox = nextboxSc.gameObject;
+        var root = transform.root;
+        transform.SetParent(null);
+        root.position = NowBox.transform.position;
+        transform.SetParent(root);
     }
 }

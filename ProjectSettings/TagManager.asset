@@ -9,6 +9,8 @@ TagManager:
   - Player3D
   - Door
   - BoxManager
+  - Box
+  - BridgeBase
   layers:
   - Default
   - TransparentFX
