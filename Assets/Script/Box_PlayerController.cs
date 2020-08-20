@@ -207,6 +207,8 @@ public class Box_PlayerController : MonoBehaviour
     public void MakeBridge()
     {
         GameObject target = null;
+        //橋ベースの長い方向を記録する用
+        int BridgeWay = 0;
         //前面にある橋のベースを探索
         for (int i = 0; i < sidebox.GetBridgeLine.Length; i++)
         {
@@ -253,6 +255,11 @@ public class Box_PlayerController : MonoBehaviour
                         if (BRB.y <= T && B <= FLT.y)
                         {
                             target = sidebox.transform.GetChild(i).gameObject;
+                            //橋ベースがy軸方向の方が長い
+                            if (target.transform.localScale.x < target.transform.localScale.y)
+                                BridgeWay = -1; 
+                            else
+                                BridgeWay = 1;
                         }
                 }
             }
@@ -281,6 +288,10 @@ public class Box_PlayerController : MonoBehaviour
                 if (check)
                 {
                     Vector3 posB = obj.transform.position;
+                    if (BridgeWay == 1)//longX
+                        posB.x = posA.x = 0;
+                    else if (BridgeWay == -1)//longY
+                        posB.y = posA.y = 0;
                     float dis = Mathf.Abs(Vector3.Distance(posA, posB));
                     if (dis < distance)
                     {
@@ -309,6 +320,10 @@ public class Box_PlayerController : MonoBehaviour
                 Destroy(BridgeObj);
 
             //各生成場所セット
+            /*----------------------------------------------------------
+             * 白部分の重なる場所に橋をかけなければならない。
+             * 白同士がずれていた場合、橋をかけ直さなければ…！！！
+             */
             Vector3 _vec = transform.position;
             float _Angle = 0f;
             //プレイヤー位置を基準とするのではなく、赤ラインの半分(0.5f分)を基準とする。(橋の役割とき)
@@ -475,19 +490,26 @@ public class Box_PlayerController : MonoBehaviour
     IEnumerator InBridge()
     {
         float timer = 0;
-        var ppos = transform.position;
-        var Spos = transform.position;
+        var ppos = transform.position;//player position
+        var Spos = transform.position;//橋の移動基準となるポジションにするやつ
         Vector3 epos;
         Vector3 range = BridgeObj.GetComponent<MeshRenderer>().bounds.extents;
+        /*
+                var pos = transform.position;
+                var T = transform.position.y + Player_verticalhorizontal.y;
+                //範囲内に触れたとき
+                if (BridgeAriaLT.x <= R && L <= BridgeAriaBR.x)
+    }
+         */
         //横向きの橋
         if (range.x > range.y)
         {
             Spos = new Vector3(transform.position.x, BridgeObj.transform.position.y, transform.position.z);
             //Playerが橋の左側
             if (Spos.x < BridgeObj.transform.position.x)
-                epos = BridgeObj.transform.position + new Vector3(range.x + Player_verticalhorizontal.x + 0.01f, 0);
+                epos = BridgeObj.transform.position + new Vector3(range.x + (Player_verticalhorizontal.x + 0.01f), 0);
             else
-                epos = BridgeObj.transform.position - new Vector3(range.x + Player_verticalhorizontal.x + 0.01f, 0);
+                epos = BridgeObj.transform.position - new Vector3(range.x + (Player_verticalhorizontal.x + 0.01f), 0);
         }
         //縦向きの橋
         else
@@ -495,9 +517,9 @@ public class Box_PlayerController : MonoBehaviour
             Spos = new Vector3(BridgeObj.transform.position.x, transform.position.y, transform.position.z);
             //Playerが橋の下側
             if (Spos.y < BridgeObj.transform.position.y)
-                epos = BridgeObj.transform.position + new Vector3(0, range.y + Player_verticalhorizontal.y + 0.01f);
+                epos = BridgeObj.transform.position + new Vector3(0, range.y + (Player_verticalhorizontal.y + 0.01f));
             else
-                epos = BridgeObj.transform.position - new Vector3(0, range.y + Player_verticalhorizontal.y + 0.01f);
+                epos = BridgeObj.transform.position - new Vector3(0, range.y + (Player_verticalhorizontal.y + 0.01f));
         }
         
         //橋の中心線との距離を得て、橋の中心線に向けて移動させる
@@ -512,6 +534,7 @@ public class Box_PlayerController : MonoBehaviour
             if(timer >= 1)
             break;
         }
+        transform.position = Spos;
         //橋の向こう側に向けて移動させる
         timer = 0;
         while (true)
@@ -522,6 +545,8 @@ public class Box_PlayerController : MonoBehaviour
             if (timer >= 1)
                 break;
         }
+        transform.position = epos;
+
         //----------------------------------------------------
         //橋の外にたどり着いたので各種セット
         //----------------------------------------------------

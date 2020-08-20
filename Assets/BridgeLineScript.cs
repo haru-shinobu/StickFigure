@@ -23,6 +23,7 @@ public class BridgeLineScript : MonoBehaviour
         transform.position = pos;
         //橋ベースの大きさ調整
         
+
         transform.localScale = new Vector3((ren.x - 1) * 50, 50 / 2, 1);
     }
 }
