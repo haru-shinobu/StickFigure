@@ -15,7 +15,7 @@ public class Box_PlayerController : MonoBehaviour
     Vector3 MoveAriaLeftTop, MoveAriaRightBottom;
 
     [SerializeField, Header("テープ")]
-    GameObject Bridge;
+    public GameObject Bridge;
     [SerializeField, Header("テープの個数"), Range(1, 4)]
     int BridgeMaxNum;
     int BridgeNum = 0;
@@ -172,7 +172,7 @@ public class Box_PlayerController : MonoBehaviour
     // 橋
     //=======================================================================
     //this->
-    void MakeBridge()
+    public void MakeBridge()
     {
         Vector3 _vec = transform.position;
         float _Angle = 0f;
