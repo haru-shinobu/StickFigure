@@ -4,14 +4,25 @@ using UnityEngine;
 
 public class SideColorBoxScript : MonoBehaviour
 {
-    [SerializeField,Header("壁切替速度"), Range(0.5f, 2)]
+    [SerializeField, Header("壁切替速度"), Range(0.5f, 2)]
     float ChangeSpeed = 1;
     Vector3 F_LeftTop, F_RightBottom;
     MeshRenderer mesh;
+    Box_PlayerController PSc;
+    GameObject[] BridgeBaseLines;
+    public GameObject[] GetBridgeLine
+    {
+        get { return BridgeBaseLines; }
+    }
     void Awake()
     {
+        var player = GameObject.FindWithTag("Player");
+        PSc = player.GetComponent<Box_PlayerController>();
         if (!mesh)
             mesh = transform.GetComponent<MeshRenderer>();
+        BridgeBaseLines = new GameObject[transform.childCount];
+        for (int i = 0; transform.childCount > i; i++)
+            BridgeBaseLines[i] = transform.GetChild(i).gameObject;
     }
     //=======================================================================
     /// <summary>
@@ -21,7 +32,7 @@ public class SideColorBoxScript : MonoBehaviour
     /// </summary>
     //=======================================================================
     //Box_PlayerController Update()->
-    public void ChangeBoxRoll(Transform PTrs,int type)
+    public void ChangeBoxRoll(Transform PTrs, int type)
     {
         PTrs.SetParent(transform);
         RollBlocks(type);
@@ -47,7 +58,7 @@ public class SideColorBoxScript : MonoBehaviour
     }
     IEnumerator BlockRoller(Vector3 way_vec)
     {
-        var player = GameObject.FindWithTag("Player");
+
 
         float minAngle = 0.0f;
         float maxAngle = 90.0f;
@@ -92,13 +103,13 @@ public class SideColorBoxScript : MonoBehaviour
 
 
         //プレイヤーとの親子関係解除
-        player.transform.SetParent(null);
+        PSc.transform.SetParent(null);
         //プレイヤー回転ズレ防止
-        player.transform.up = Vector3.up;
-        player.transform.forward = Vector3.forward;
+        PSc.transform.up = Vector3.up;
+        PSc.transform.forward = Vector3.forward;
 
         //プレイヤーのｚ座標を箱前面と統一、箱範囲内に収めさせる
-        var PSc = player.GetComponent<Box_PlayerController>();
+
         SetAria(PSc);
         //Debug.Log("LT:"+F_LeftTop + "RB:" + F_RightBottom + "PP" + PSc.transform.position);
 
@@ -117,21 +128,19 @@ public class SideColorBoxScript : MonoBehaviour
         {
             mesh = transform.GetComponent<MeshRenderer>();
         }
-        
+
         Vector3 _vec = new Vector3(
             -Mathf.Abs(mesh.bounds.extents.x),
             Mathf.Abs(mesh.bounds.extents.y),
             Mathf.Abs(mesh.bounds.extents.z));
-        //transform.TransformPoint(_vec);で取得していたが謎バグってた…
         Vector3 FLT = transform.position + _vec;
-        
+
         _vec = new Vector3(
             Mathf.Abs(mesh.bounds.extents.x),
             -Mathf.Abs(mesh.bounds.extents.y),
             -Mathf.Abs(mesh.bounds.extents.z));
-        //transform.TransformPoint(_vec);で取得していたが謎バグってた…
         Vector3 BRB = transform.position + _vec;
-        
+
         if (FLT.x > BRB.x)
         {
             var sub = BRB.x;
@@ -155,7 +164,7 @@ public class SideColorBoxScript : MonoBehaviour
 
         PSc.Front_LeftTop = F_LeftTop = FLT;
         PSc.Front_RightBottom = F_RightBottom = BRB;
-        
+
 
     }
     //==================================================================
@@ -179,11 +188,18 @@ public class SideColorBoxScript : MonoBehaviour
     //=======================================================================
     // ゲームスタート時の設定用
     //=======================================================================
-    public Transform SetStartPos(Box_PlayerController PSc)
+    public Transform SetStartPos(Box_PlayerController bPSc)
     {
-        PSc.transform.position = transform.position;
-        SetAria(PSc);
-        
+        bPSc.transform.position = transform.position;
+        SetAria(bPSc);
+
         return transform;
+    }
+    //=======================================================================
+    // 箱移動後の設定用
+    //=======================================================================
+    public void SetBoxPos(Box_PlayerController bPSc)
+    {
+        SetAria(bPSc);
     }
 }

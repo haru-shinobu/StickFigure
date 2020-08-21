@@ -131,7 +131,7 @@ public class BoxScript : MonoBehaviour
 
         //箱範囲内に収めさせる
         var PSc = player.GetComponent<Box_PlayerController>();
-        PSc.WallInAria();
+        //PSc.WallInAria();
         yield return new WaitForEndOfFrame();
         //行動許可・移動範囲計算
         PSc.Moving = true;

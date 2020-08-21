@@ -24,9 +24,9 @@ public class CameraManager : MonoBehaviour
     bool _bColutine_OnLine = false;
     bool _bColutine_OutLine = false;
     [SerializeField]
-    Vector3 StartCamera_Distance;
+    Vector3 StartCamera_Distance = new Vector3(0, 0, 40);
     [SerializeField]
-    Vector3 Camera_Distance;
+    Vector3 Camera_Distance = new Vector3(0, 0, 20);
     GameObject NowBox;
 
     void Start()
@@ -51,7 +51,7 @@ public class CameraManager : MonoBehaviour
         if (_bMoveOK)
         {
             //プレイヤーが橋の上か否か
-            if (!bBridge)
+            if (!Bridge)
             {
                 //プレイヤーが壁の端か否か
                 if (PSc.CheckRedAria())//ライン上true
@@ -74,17 +74,31 @@ public class CameraManager : MonoBehaviour
                     //コルーチン動作終了後処理
                     else
                     if (_bCorutine_Action)
-                        transform.position = PSc.transform.position - Camera_Distance;
+                    {
+                        Vector3 Rootpos = transform.root.position;
+                        Vector3 Pscpos = PSc.transform.position;
+                        Rootpos.z = Pscpos.z = 0;
+                        Vector3 pos = (Rootpos - Pscpos);
+                        transform.position = Pscpos - pos - Camera_Distance;
+                        transform.LookAt(transform.root.position);
+                    }
                 }
                 //ライン外false
                 else
                 {
                     _bOnLine = false;
                     if (PSc.OnRedLine)//箱回転中はライン外かつ
-                        transform.position = PSc.transform.position - Camera_Distance;
+                    {
+                        Vector3 Rootpos = transform.root.position;
+                        Vector3 Pscpos = PSc.transform.position;
+                        Rootpos.z = Pscpos.z = 0;
+                        Vector3 pos = (Rootpos - Pscpos);
+                        transform.position = PSc.transform.position - pos - Camera_Distance;
+                        transform.LookAt(transform.root.position);
+                    }
                     else
                     {
-                        //ライン外に来た時、オンラインコルーチンが動作していない
+                        //ライン外に来た時、アウトラインコルーチンが動作していない
                         if (!_bColutine_OutLine)
                         {
                             _bCorutine_Action = false;
@@ -101,13 +115,17 @@ public class CameraManager : MonoBehaviour
                         //コルーチン動作終了後処理
                         else
                         if (_bCorutine_Action)
-                            transform.position = NowBox.transform.root.position - Camera_Distance;
+                        {
+                            transform.position = transform.transform.root.position - Camera_Distance;
+                            transform.LookAt(transform.root.position);
+                        }
                     }
                 }
             }
             else//橋の上
             {
                 transform.position = PSc.transform.position - Camera_Distance;
+                transform.LookAt(transform.root.position);
             }
         }
     }
@@ -116,10 +134,15 @@ public class CameraManager : MonoBehaviour
         _bColutine_OnLine = true;
         float timer = 0;
         var Cpos = transform.position;
+        Vector3 Rpos = transform.root.position;
+        Rpos.z = 0;
         while (_bOnLine)
         {
             timer += Time.deltaTime * redline_cam_move_time;
-            transform.position = Vector3.Slerp(Cpos, PSc.transform.position - Camera_Distance, timer);
+            Vector3 Ppos = PSc.transform.position;
+            Ppos.z = 0;
+            transform.position = Vector3.Slerp(Cpos, Ppos - (Rpos - Ppos) - Camera_Distance, timer);
+            transform.LookAt(transform.root.position);
             if (1 < timer)
                 break;
             yield return new WaitForEndOfFrame();
@@ -135,6 +158,7 @@ public class CameraManager : MonoBehaviour
         {
             timer += Time.deltaTime * redline_cam_move_time;
             transform.position = Vector3.Slerp(Cpos, transform.root.transform.position - Camera_Distance, timer);
+            transform.LookAt(transform.root.position);
             if (1 < timer)
                 break;
             yield return new WaitForEndOfFrame();
@@ -184,8 +208,7 @@ public class CameraManager : MonoBehaviour
         while (true)
         {
             transform.position = Vector3.Slerp(spherePos - StartCamera_Distance, spherePos - Camera_Distance, timer);
-            Debug.DrawLine(transform.position, transform.position + new Vector3(10, 0, 0), Color.cyan, 10);
-            timer += Time.deltaTime * cam_moveSpeed;
+            timer += Time.deltaTime * cam_moveSpeed * 2;
             if(timer > 1)
             {
                 transform.position = sphere.transform.position - Camera_Distance;
@@ -222,5 +245,9 @@ public class CameraManager : MonoBehaviour
     public void SetNextBox(SideColorBoxScript nextboxSc)
     {
         NowBox = nextboxSc.gameObject;
+        var root = transform.root;
+        transform.SetParent(null);
+        root.position = NowBox.transform.position;
+        transform.SetParent(root);
     }
 }
