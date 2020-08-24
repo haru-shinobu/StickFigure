@@ -28,10 +28,10 @@ public class StarterScript : MonoBehaviour
         G_data.RedLine = sideBox.transform.root.localScale.x;
         //StartBox設定
         G_data.P_Now_Box = StartBox.transform.root.gameObject;
+
+        G_data.Bases = GameObject.FindGameObjectsWithTag("BridgeBase");
     }
-    //==================================================================
-    // スタート正面に来た時に位置を記録させる
-    //==================================================================
+    
     void Start()
     {
         Destroy(this);

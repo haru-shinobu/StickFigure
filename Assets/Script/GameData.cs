@@ -17,4 +17,11 @@ public class GameData : MonoBehaviour
         get { return Box_Offset; }
         set { Box_Offset = value; }
     }
+
+    GameObject[] BridgeBases;
+    public GameObject[] Bases
+    {
+        get { return BridgeBases; }
+        set { BridgeBases = value; }
+    }
 }

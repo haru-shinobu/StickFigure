@@ -53,6 +53,13 @@ public class CameraManager : MonoBehaviour
             //プレイヤーが橋の上か否か
             if (!Bridge)
             {
+                Vector3 Rootpos = transform.root.position;
+                Vector3 Pscpos = PSc.transform.position;
+                Rootpos.z = Pscpos.z = 0;
+                Vector3 pos = (Rootpos - Pscpos);
+                transform.position = Pscpos - pos - Camera_Distance;
+                transform.LookAt(transform.root.position);
+                /*
                 //プレイヤーが壁の端か否か
                 if (PSc.CheckRedAria())//ライン上true
                 {
@@ -121,6 +128,7 @@ public class CameraManager : MonoBehaviour
                         }
                     }
                 }
+                */
             }
             else//橋の上
             {
@@ -129,6 +137,7 @@ public class CameraManager : MonoBehaviour
             }
         }
     }
+    /*
     IEnumerator Cam_RedOnLine()
     {
         _bColutine_OnLine = true;
@@ -165,7 +174,7 @@ public class CameraManager : MonoBehaviour
         }
         _bCorutine_Action = true;
     }
-
+    */
     //===========================================================
     // ステージ見渡し処理　：ゴールからスタートまでをY軸回転しながら見渡す
     // Starter(カメラゲームスタート位置,カメラゲームプレイ位置)
@@ -217,6 +226,7 @@ public class CameraManager : MonoBehaviour
             yield return new WaitForEndOfFrame();
         }
         _bMoveOK = true;
+        PSc.gameObject.layer = LayerMask.NameToLayer("2D");
         PSc.Moving = true;
     }
 
