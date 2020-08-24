@@ -9,12 +9,12 @@ public class RayTest : MonoBehaviour
     public Box_PlayerController BChecker;
     public GameData G_Data;
     public GameObject Text;
-   public GameObject _tape;
     Vector2 Player_verticalhorizontal;
-     public GameObject Player;
+    //public GameObject Player;
     public const float NOTHING = -1;
     public float maxDistance = 30;
     public float distance;
+    //public float Point;
     float Sprite_half_DistanceX;
     float Sprite_half_DistanceY;
     SpriteRenderer Sr;
@@ -22,7 +22,7 @@ public class RayTest : MonoBehaviour
     Vector3 MoveAriaLeftTop, MoveAriaRightBottom;
     Vector3 LeftTop;
     Vector3 RightBottom;
-
+    
 
 
     void Awake()
@@ -46,9 +46,8 @@ public class RayTest : MonoBehaviour
     }
     void Start()
     {
+        //BChecker.Bridge.SetActive(true);
         Text.SetActive(false);
-
-        //tape.SetActive(false);
     }
     void Update()
     {
@@ -63,45 +62,75 @@ public class RayTest : MonoBehaviour
             if (MoveAriaRightBottom.y + G_Data.RedLine <= transform.position.y)
             {
                 fwd = transform.TransformDirection(0, 20, 5);
-                if (isActiveAndEnabled==_tape_) {
-                    if (Input.GetKey(KeyCode.J))
+                if (Input.GetKeyDown(KeyCode.Space))
+                {
+                    _tape = new Vector3(transform.position.x, MoveAriaLeftTop.y - G_Data.RedLine / 2);
+                    BChecker.Bridge.SetActive(true);
+                }
+                //if (Input.GetKeyDown(KeyCode.Q))
+                //{
+                    if(BChecker.Bridge.activeInHierarchy==true)
                     {
                         Debug.Log("wataru");
-                         _tape = new Vector3(transform.position.x, MoveAriaLeftTop.y - G_Data.RedLine / 2);
                     }
-                }
+                //}
             }
             //下向き
             if (MoveAriaLeftTop.y - G_Data.RedLine >= transform.position.y)
             {
                 fwd = transform.TransformDirection(0, -20, 5);
-                if (Input.GetKey(KeyCode.Space))
+                if (Input.GetKeyDown(KeyCode.Space))
                 {
                     _tape = new Vector3(transform.position.x, MoveAriaLeftTop.y + G_Data.RedLine / 2);
+                }
+                if (Input.GetKeyDown(KeyCode.Q))
+                {
+                    if (_tape_.activeSelf==false)
+                    {
+                        Debug.Log("wataru");
+                    }
                 }
             }
             //右向き
             if (MoveAriaLeftTop.x + G_Data.RedLine <= transform.position.x)
             {
                 fwd = transform.TransformDirection(20, 0, 5);
-                if (Input.GetKey(KeyCode.Space))
+                if (Input.GetKeyDown(KeyCode.Space))
                 {
                     _tape = transform.position + new Vector3(MoveAriaRightBottom.x - G_Data.RedLine / 2, transform.position.y);
+                }
+                if (Input.GetKeyDown(KeyCode.Q))
+                {
+                    if (_tape_.activeSelf==false)
+                    {
+                        Debug.Log("wataru");
+                    }
                 }
             }
             //左向き
             if (MoveAriaRightBottom.x - G_Data.RedLine >= transform.position.x)
             {
                 fwd = transform.TransformDirection(-20, 0, 5);
-                if (Input.GetKey(KeyCode.Space))
+                if (Input.GetKeyDown(KeyCode.Space))
                 {
                     _tape = new Vector3(MoveAriaRightBottom.x + G_Data.RedLine / 2, transform.position.y);
+                }
+                if (Input.GetKeyDown(KeyCode.Q))
+                {
+                    if (_tape_.activeSelf==false)
+                    {
+                        Debug.Log("wataru");
+                    }
                 }
             }
 
             //Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
-            if (Physics.Raycast(transform.position - transform.forward, fwd, out hit, maxDistance))
+            RaycastHit Hit;
+            if (Physics.Raycast(transform.position, Vector3.down, out Hit)) {
+                Debug.Log("Hit.point");
+            }
+                if (Physics.Raycast(transform.position - transform.forward, fwd, out hit, maxDistance))
             {
                 distance = hit.distance;
             }
@@ -122,17 +151,16 @@ public class RayTest : MonoBehaviour
             {
                 Text.SetActive(true);
             }
-            //テープが出てたら
-                //if (MoveAriaRightBottom.y + G_Data.RedLine <= transform.position.y)
-                //{
-                if (_tape_) { 
-                    //Debug.Log("でてる");
-                    //if (Input.GetKey(KeyCode.J))
-                    //{
-                    //    Debug.Log("next");
-                    //}
-                }
+           }
+        //テープ確認
+        if (BChecker.Bridge.activeInHierarchy)
+        {
+            //テープ回収
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                BChecker.Bridge.SetActive(false);
             }
         }
-    }
+      }
+   }
 //}
