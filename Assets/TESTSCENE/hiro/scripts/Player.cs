@@ -83,7 +83,7 @@ public class Player : MonoBehaviour
                 if (B < Front_RightBottom.y) rollways = 2;
                 if (L < Front_LeftTop.x) rollways = 3;
                 if (R > Front_RightBottom.x) rollways = 4;
-                sidebox.ChangeBoxRoll(transform, rollways);
+                sidebox.ChangeBoxRoll(rollways);
             }
 
             //プレイヤーが箱の色幅にいるときは //camM.Side = true;

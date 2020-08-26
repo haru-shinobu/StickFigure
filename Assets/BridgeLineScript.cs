@@ -8,6 +8,8 @@ public class BridgeLineScript : MonoBehaviour
     [SerializeField, Header("対応レイヤー")]
     LayerMask pairlayer;
 
+    bool b_enabled = false;
+
     void Awake()
     {
         gameObject.layer = pairlayer;
@@ -26,10 +28,61 @@ public class BridgeLineScript : MonoBehaviour
         else
         if (pos.z == -ren.z) pos.z -= 0.001f;
         transform.position = pos;
-        //橋ベースの大きさ調整
-        //float LineOffset = GameObject.FindWithTag("BoxManager").GetComponent<GameData>().RedLine;
-        //Vector3 vec = transform.parent.GetComponent<MeshRenderer>().bounds.extents;
-        //transform.localScale = new Vector3((ren.x - 1) * 50, 50 / 2, 1);
+        Invoke("ReGround", 0.5f);
+    }
+    void Update()
+    {
+        if (transform.forward == Vector3.forward)
+        {
+
+            //橋基礎がより低い時
+            if (transform.up == Vector3.up || transform.up == -Vector3.up)
+            {
+                if (!b_enabled)
+                {
+                    transform.up = Vector3.up;
+                    GetComponent<CapsuleCollider>().enabled = true;
+                    b_enabled = true;
+                }
+            }
+            else
+                if (b_enabled)
+            {
+                GetComponent<CapsuleCollider>().enabled = false;
+                b_enabled = false;
+            }
+        }
+    }
+
+    public void SlipdroundLine()
+    {
+        GetComponent<CapsuleCollider>().enabled = false;
+        Invoke("ReGround", 1f);
+    }
+    void ReGround()
+    {
+        GetComponent<CapsuleCollider>().enabled = true;
+    }
+    public void DownBridge()
+    {
+        GetComponent<CapsuleCollider>().enabled = false;
+        StartCoroutine("WaitToFall");
+        
+    }
+    IEnumerator WaitToFall()
+    {
+        yield return new WaitForSeconds(1);
+        Box_PlayerController player = GameObject.FindWithTag("Player").GetComponent<Box_PlayerController>();
+        while (!player.Moving)
+            yield return new WaitForEndOfFrame();
+
+        if (transform.position.y < player.transform.position.y)
+            GetComponent<CapsuleCollider>().enabled = true;
+        else
+        {
+            Invoke("ReGround", 1);
+        }
+
     }
     
 }
