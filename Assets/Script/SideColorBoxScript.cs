@@ -1,17 +1,61 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class SideColorBoxScript : MonoBehaviour
 {
-    [SerializeField,Header("壁切替速度"), Range(0.5f, 2)]
+    [SerializeField, Header("回転速度"), Range(0.5f, 2)]
     float ChangeSpeed = 1;
     Vector3 F_LeftTop, F_RightBottom;
     MeshRenderer mesh;
+    Box_PlayerController PSc;
+    //箱内橋オブジェクト
+    GameObject[] BridgeBaseLines;
+    public GameObject[] GetBridgeLine
+    {
+        get { return BridgeBaseLines; }
+    }
+    //箱内地面オブジェクト
+    GameObject[] GroundLines;
+    public GameObject[] BoxInGround
+    {
+        get { return GroundLines; }
+        set { GroundLines = value; }
+    }
     void Awake()
     {
+        var player = GameObject.FindWithTag("Player");
+        PSc = player.GetComponent<Box_PlayerController>();
         if (!mesh)
             mesh = transform.GetComponent<MeshRenderer>();
+        // 1箱内 にある橋オブジェクトを確保
+        int num = 0;
+        for (int i = 0; transform.childCount > i; i++)
+        {
+            if (transform.GetChild(i).tag == "BridgeBase")
+                num++;
+        }
+        BridgeBaseLines = new GameObject[num];
+        for (int i = 0; transform.childCount > i; i++)
+            if (transform.GetChild(i).tag == "BridgeBase")
+                BridgeBaseLines[num] = transform.GetChild(i).gameObject;
+
+        
+        //箱内地面オブジェクトを確保
+        //子オブジェクト、タグgroundをすべて探索
+        IEnumerable<Transform> childIEnu = GetComponentsInChildren<Transform>(true).Where(t => t.tag == "ground");
+        List<GameObject> list = new List<GameObject>();
+        foreach (var no in childIEnu)
+        {
+            list.Add(no.gameObject);
+        }
+        BoxInGround = new GameObject[list.Count];
+        for(int i = 0; i < list.Count; i++)
+        {
+            BoxInGround[i] = list[i];
+        }
+        list.Clear();
     }
     //=======================================================================
     /// <summary>
@@ -21,7 +65,7 @@ public class SideColorBoxScript : MonoBehaviour
     /// </summary>
     //=======================================================================
     //Box_PlayerController Update()->
-    public void ChangeBoxRoll(Transform PTrs,int type)
+    public void ChangeBoxRoll(Transform PTrs, int type)
     {
         PTrs.SetParent(transform);
         RollBlocks(type);
@@ -47,8 +91,6 @@ public class SideColorBoxScript : MonoBehaviour
     }
     IEnumerator BlockRoller(Vector3 way_vec)
     {
-        var player = GameObject.FindWithTag("Player");
-
         float minAngle = 0.0f;
         float maxAngle = 90.0f;
         float timer = 0;
@@ -82,28 +124,27 @@ public class SideColorBoxScript : MonoBehaviour
 
         transform.root.localEulerAngles = euAngle;
 
-        //ブロックの親からブロックを解除
+        //ブロックの親子を解除
         var rootTrs = transform.root;
         transform.SetParent(null);
-        //解除した元ブロックの親を初期位置へ戻す
+        //解除した親を初期位置へ戻す
         rootTrs.eulerAngles = nowrot;
         //再びブロックの親に指定
         transform.SetParent(rootTrs);
 
 
         //プレイヤーとの親子関係解除
-        player.transform.SetParent(null);
+        PSc.transform.SetParent(null);
         //プレイヤー回転ズレ防止
-        player.transform.up = Vector3.up;
-        player.transform.forward = Vector3.forward;
+        PSc.transform.up = Vector3.up;
+        PSc.transform.forward = Vector3.forward;
 
         //プレイヤーのｚ座標を箱前面と統一、箱範囲内に収めさせる
-        var PSc = player.GetComponent<Box_PlayerController>();
-        SetAria(PSc);
-        //Debug.Log("LT:"+F_LeftTop + "RB:" + F_RightBottom + "PP" + PSc.transform.position);
 
+        SetAria(PSc);
+        //念のため1拍おいた
         yield return new WaitForEndOfFrame();
-        //行動許可・移動範囲計算
+        //行動許可
         PSc.Moving = true;
     }
     //==================================================================
@@ -117,21 +158,19 @@ public class SideColorBoxScript : MonoBehaviour
         {
             mesh = transform.GetComponent<MeshRenderer>();
         }
-        
+
         Vector3 _vec = new Vector3(
             -Mathf.Abs(mesh.bounds.extents.x),
             Mathf.Abs(mesh.bounds.extents.y),
             Mathf.Abs(mesh.bounds.extents.z));
-        //transform.TransformPoint(_vec);で取得していたが謎バグってた…
         Vector3 FLT = transform.position + _vec;
-        
+
         _vec = new Vector3(
             Mathf.Abs(mesh.bounds.extents.x),
             -Mathf.Abs(mesh.bounds.extents.y),
             -Mathf.Abs(mesh.bounds.extents.z));
-        //transform.TransformPoint(_vec);で取得していたが謎バグってた…
         Vector3 BRB = transform.position + _vec;
-        
+
         if (FLT.x > BRB.x)
         {
             var sub = BRB.x;
@@ -155,7 +194,7 @@ public class SideColorBoxScript : MonoBehaviour
 
         PSc.Front_LeftTop = F_LeftTop = FLT;
         PSc.Front_RightBottom = F_RightBottom = BRB;
-        
+
 
     }
     //==================================================================
@@ -179,11 +218,18 @@ public class SideColorBoxScript : MonoBehaviour
     //=======================================================================
     // ゲームスタート時の設定用
     //=======================================================================
-    public Transform SetStartPos(Box_PlayerController PSc)
+    public Transform SetStartPos(Box_PlayerController bPSc)
     {
-        PSc.transform.position = transform.position;
-        SetAria(PSc);
-        
+        bPSc.transform.position = transform.position;
+        SetAria(bPSc);
+
         return transform;
+    }
+    //=======================================================================
+    // 箱移動後の設定用
+    //=======================================================================
+    public void SetBoxPos(Box_PlayerController bPSc)
+    {
+        SetAria(bPSc);
     }
 }

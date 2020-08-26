@@ -1,5 +1,18 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &5391886438544277769
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4175462698619795396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a693ce4662b25054b855a1fb74813ff9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ChangeSpeed: 1
 --- !u!1 &5391886437666830407
 GameObject:
   m_ObjectHideFlags: 0
@@ -31,19 +44,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5391886438544277769
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4175462698619795396}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a693ce4662b25054b855a1fb74813ff9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ChangeSpeed: 1
 --- !u!1001 &5391886437529366221
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -115,6 +115,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: hako_b 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -927199367670048503, guid: c4623ac449fd3974faf96bd43d76e071,
+        type: 3}
+      propertyPath: m_TagString
+      value: Box
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c4623ac449fd3974faf96bd43d76e071, type: 3}

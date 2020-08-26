@@ -122,7 +122,7 @@ public class BoxSurfaceScript : MonoBehaviour
 
         if (nextwalls != null)
         {
-            Ptrs.GetComponent<Box_PlayerController>().SetNextWall(nextwalls.GetComponent<BoxSurfaceScript>());
+            //Ptrs.GetComponent<Box_PlayerController>().SetNextWall(nextwalls.GetComponent<BoxSurfaceScript>());
             Ptrs.SetParent(nextwalls.transform);
             //壁の回転
             boxroot.RollBlocks(rollways, this.gameObject, nextwalls);
