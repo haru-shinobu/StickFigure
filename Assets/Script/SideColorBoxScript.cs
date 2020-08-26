@@ -1,18 +1,27 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class SideColorBoxScript : MonoBehaviour
 {
-    [SerializeField, Header("壁切替速度"), Range(0.5f, 2)]
+    [SerializeField, Header("回転速度"), Range(0.5f, 2)]
     float ChangeSpeed = 1;
     Vector3 F_LeftTop, F_RightBottom;
     MeshRenderer mesh;
     Box_PlayerController PSc;
+    //箱内橋オブジェクト
     GameObject[] BridgeBaseLines;
     public GameObject[] GetBridgeLine
     {
         get { return BridgeBaseLines; }
+    }
+    //箱内地面オブジェクト
+    GameObject[] GroundLines;
+    public GameObject[] BoxInGround
+    {
+        get { return GroundLines; }
+        set { GroundLines = value; }
     }
     void Awake()
     {
@@ -20,9 +29,33 @@ public class SideColorBoxScript : MonoBehaviour
         PSc = player.GetComponent<Box_PlayerController>();
         if (!mesh)
             mesh = transform.GetComponent<MeshRenderer>();
-        BridgeBaseLines = new GameObject[transform.childCount];
+        // 1箱内 にある橋オブジェクトを確保
+        int num = 0;
         for (int i = 0; transform.childCount > i; i++)
-            BridgeBaseLines[i] = transform.GetChild(i).gameObject;
+        {
+            if (transform.GetChild(i).tag == "BridgeBase")
+                num++;
+        }
+        BridgeBaseLines = new GameObject[num];
+        for (int i = 0; transform.childCount > i; i++)
+            if (transform.GetChild(i).tag == "BridgeBase")
+                BridgeBaseLines[num] = transform.GetChild(i).gameObject;
+
+        
+        //箱内地面オブジェクトを確保
+        //子オブジェクト、タグgroundをすべて探索
+        IEnumerable<Transform> childIEnu = GetComponentsInChildren<Transform>(true).Where(t => t.tag == "ground");
+        List<GameObject> list = new List<GameObject>();
+        foreach (var no in childIEnu)
+        {
+            list.Add(no.gameObject);
+        }
+        BoxInGround = new GameObject[list.Count];
+        for(int i = 0; i < list.Count; i++)
+        {
+            BoxInGround[i] = list[i];
+        }
+        list.Clear();
     }
     //=======================================================================
     /// <summary>
@@ -58,8 +91,6 @@ public class SideColorBoxScript : MonoBehaviour
     }
     IEnumerator BlockRoller(Vector3 way_vec)
     {
-
-
         float minAngle = 0.0f;
         float maxAngle = 90.0f;
         float timer = 0;
@@ -93,10 +124,10 @@ public class SideColorBoxScript : MonoBehaviour
 
         transform.root.localEulerAngles = euAngle;
 
-        //ブロックの親からブロックを解除
+        //ブロックの親子を解除
         var rootTrs = transform.root;
         transform.SetParent(null);
-        //解除した元ブロックの親を初期位置へ戻す
+        //解除した親を初期位置へ戻す
         rootTrs.eulerAngles = nowrot;
         //再びブロックの親に指定
         transform.SetParent(rootTrs);
@@ -111,10 +142,9 @@ public class SideColorBoxScript : MonoBehaviour
         //プレイヤーのｚ座標を箱前面と統一、箱範囲内に収めさせる
 
         SetAria(PSc);
-        //Debug.Log("LT:"+F_LeftTop + "RB:" + F_RightBottom + "PP" + PSc.transform.position);
-
+        //念のため1拍おいた
         yield return new WaitForEndOfFrame();
-        //行動許可・移動範囲計算
+        //行動許可
         PSc.Moving = true;
     }
     //==================================================================

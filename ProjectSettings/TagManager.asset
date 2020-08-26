@@ -11,6 +11,7 @@ TagManager:
   - BoxManager
   - Box
   - BridgeBase
+  - ground
   layers:
   - Default
   - TransparentFX
