@@ -9,7 +9,7 @@ public class Box_PlayerController : MonoBehaviour
     bool _bControll = false;
     bool _bRedLine = false;
     bool OnBridge = false;
-    bool LineBridge = false;
+    
     bool GrapLing = false;
     private float offset = 0.05f;
     //プレイヤーの縦横の半分を記録
@@ -40,19 +40,16 @@ public class Box_PlayerController : MonoBehaviour
         T,B,L,R,Non,
     }
     SideRedLine RedSide = SideRedLine.Non;
-
+    IEnumerator nowIE;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         
-        var sprvec = transform.GetComponent<SpriteRenderer>();
+        var sprvec = transform.GetComponent<MeshRenderer>();
         Player_verticalhorizontal = sprvec.bounds.extents;
         camM = Camera.main.GetComponent<CameraManager>();
         G_Data = GameObject.FindWithTag("BoxManager").GetComponent<GameData>();
-        //以下2文はどのような形の画像でも１＊１の正方形にする処理。
-        transform.localScale = new Vector3(1 / Player_verticalhorizontal.x / 2, 1 / Player_verticalhorizontal.y / 2, 1);
-        Player_verticalhorizontal = sprvec.bounds.extents;
     }
     
     
@@ -110,7 +107,8 @@ public class Box_PlayerController : MonoBehaviour
                 if (Moving)
                 {
                     this.Moving = false;
-                    StartCoroutine("InBridge");
+                    nowIE = InBridge();
+                    StartCoroutine(nowIE);
                 }
             }
         }
@@ -168,6 +166,7 @@ public class Box_PlayerController : MonoBehaviour
                         transform.position = pos;
                         camM.Bridge = OnBridge = true;
                         BridgeObj.GetComponent<bridgeScript>().second_NoCollider();
+
                         return OnBridge;
                     }
             }
@@ -327,7 +326,7 @@ public class Box_PlayerController : MonoBehaviour
     public void MakeBridgeCheck()
     {
         CheckRedAria();
-        LineBridge = false;
+        
         GameObject target = null;
 
         if (RedSide != SideRedLine.Non)
@@ -456,12 +455,12 @@ public class Box_PlayerController : MonoBehaviour
                 Vector3 bounds = Bridge.GetComponent<MeshRenderer>().bounds.extents * 2;
 
                 if (bounds.x > bounds.y) bounds.y = bounds.x;
-
-                //生成                
+                
+                //生成方向準備
                 if (distance - 0.001f <= bounds.y)
                 {
                     MakeOk = true;
-                    LineBridge = true;
+                    
                     Vector3 once = target.GetComponent<SpriteRenderer>().bounds.extents;
                     if (once.y < once.x)
                     {
@@ -482,11 +481,7 @@ public class Box_PlayerController : MonoBehaviour
                 else
                     GrapLinger();
             }
-
-            //前回の橋が残っているとき破棄
-            if (BridgeObj)
-                Destroy(BridgeObj);
-
+            
             if (MakeOk)
                 MakeBridge(target, nextBase);
         }
@@ -500,6 +495,10 @@ public class Box_PlayerController : MonoBehaviour
     //this.MakeBridgeCheck()->
     void MakeBridge(GameObject prevBB,GameObject nextBB)
     {
+        //前回の橋が残っているとき破棄
+        if (BridgeObj)
+            Destroy(BridgeObj);
+
         //各生成場所セット
         Vector3 _vec = transform.position;
         float _Angle = 0f;
@@ -604,6 +603,7 @@ public class Box_PlayerController : MonoBehaviour
         if (!GrapLing)
         {
             GameObject land = null;
+            GameObject onebridgebase = null;
 
             foreach (GameObject ground in sidebox.BoxInGround)
             {
@@ -629,6 +629,23 @@ public class Box_PlayerController : MonoBehaviour
                     }
                 }
             }
+            if (land == null)
+            {   
+                foreach(GameObject obj in sidebox.GetBridgeLine)
+                {
+                    if(obj.transform.forward == Vector3.forward && obj.transform.up == Vector3.up)
+                    {
+                        if (transform.position.y < obj.transform.position.y)
+                        {
+                            Vector3 exvec = obj.GetComponent<SpriteRenderer>().bounds.extents;
+                            if(obj.transform.position.x - exvec.x < transform.position.x && transform.position.x < obj.transform.position.x + exvec.x)
+                            {
+                                onebridgebase = obj;
+                            }
+                        }
+                    }
+                }
+            }
             
             //グラップリング処理
             //ただし移動できない壁後付けするため注意。（製作途中）
@@ -643,10 +660,13 @@ public class Box_PlayerController : MonoBehaviour
                         sidebox.RollSwitchAction();
 
                         if (BridgeObj) Destroy(BridgeObj);
+                        Debug.Log("switch");
 
                         this.Moving = false;
                         GrapLing = true;
-                        StartCoroutine("GrapAttack");
+                        //StartCoroutine("GrapAttack");
+                        nowIE = GrapAttack();
+                        StartCoroutine(nowIE);
                     }
                 }
                 //橋があるとき
@@ -657,37 +677,55 @@ public class Box_PlayerController : MonoBehaviour
                         Vector3 bridgeextent = BridgeObj.GetComponent<MeshRenderer>().bounds.extents;
                         Vector3 Brpos = BridgeObj.transform.position;
 
-                        if (Brpos.x - bridgeextent.x < transform.position.x && transform.position.x < Brpos.x + bridgeextent.x)
+                        if (Brpos.x - bridgeextent.x < transform.position.x + Player_verticalhorizontal.x && transform.position.x - Player_verticalhorizontal.y < Brpos.x + bridgeextent.x) 
                         {
                             //橋の下限まで伸ばす。
                             Vector3 point = new Vector3(transform.position.x, BridgeObj.transform.position.y - bridgeextent.y - Player_verticalhorizontal.y, transform.position.z);
-                            StartCoroutine("Graplinger", point);
+                            //StartCoroutine("Graplinger", point);
+                            nowIE = Graplinger(point);
+                            StartCoroutine(nowIE);
                             GrapLing = true;
                         }
                     }
                 }
+                //地面があるとき
                 if (!GrapLing)
                 {
                     if (land)
                     {
                         if (transform.position.y < land.transform.position.y)
                         {
-                            //画像の縦横をとり、地面が水平のとき、グラップリング対象とする
                             Vector3 exvec = land.GetComponent<SpriteRenderer>().bounds.extents;
                             //他処理を停止してグラップリング移動させる
                             Vector3 point = new Vector3(transform.position.x, land.transform.position.y + exvec.y + Player_verticalhorizontal.y, transform.position.z);
-                            StartCoroutine("Graplinger", point);
+                            //StartCoroutine("Graplinger", point);
+                            nowIE = Graplinger(point);
+                            StartCoroutine(nowIE);
                             GrapLing = true;
                         }
                     }
                 }
-
+                //橋ベースがあるとき
+                if (!GrapLing)
+                {
+                    if (onebridgebase)
+                    {
+                        Vector3 exvec = onebridgebase.GetComponent<SpriteRenderer>().bounds.extents;
+                        Vector3 point = new Vector3(transform.position.x, onebridgebase.transform.position.y - exvec.y + Player_verticalhorizontal.y, transform.position.z);
+                        //StartCoroutine("Graplinger", point);
+                        nowIE = Graplinger(point);
+                        StartCoroutine(nowIE);
+                        GrapLing = true;
+                    }
+                }
                 //間に何もないとき
                 if (!GrapLing)
                 {
                     //上限まで伸ばす
                     Vector3 point = new Vector3(transform.position.x, MoveAriaLeftTop.y - Player_verticalhorizontal.y+0.1f, transform.position.z);
-                    StartCoroutine("Graplinger", point);
+                    //StartCoroutine("Graplinger", point);
+                    nowIE = Graplinger(point);
+                    StartCoroutine(nowIE);
                     GrapLing = true;
                 }
 
@@ -782,6 +820,10 @@ public class Box_PlayerController : MonoBehaviour
     //========================================================
     IEnumerator InBridge()
     {
+        while (GrapLing)
+        {
+            yield return new WaitForEndOfFrame();
+        }
         rb.isKinematic = true;
         
         float timer = 0;
@@ -841,44 +883,42 @@ public class Box_PlayerController : MonoBehaviour
         }
 
         transform.position = epos;
-        
+
         //----------------------------------------------------
         //橋の外にたどり着いたので各種セット
         // playerを範囲内に含む橋ベースオブジェクト探索
-        if (LineBridge)
+
+        foreach (GameObject obj in G_Data.Bases)
         {
-            foreach (GameObject obj in G_Data.Bases)
+            //移動先
+            Vector3 extents_vec = obj.transform.parent.GetComponent<MeshRenderer>().bounds.extents;
+
+            Vector3 FLTvec = obj.transform.parent.position + new Vector3(
+                    -Mathf.Abs(extents_vec.x),
+                     Mathf.Abs(extents_vec.y));
+
+            Vector3 BRBvec = obj.transform.parent.position + new Vector3(
+                     Mathf.Abs(extents_vec.x),
+                    -Mathf.Abs(extents_vec.y));
+
+            //間違い防止策
+            if (FLTvec.x > BRBvec.x)
             {
-                //移動先
-                Vector3 extents_vec = obj.transform.parent.GetComponent<MeshRenderer>().bounds.extents;
-
-                Vector3 FLTvec = obj.transform.parent.position + new Vector3(
-                        -Mathf.Abs(extents_vec.x),
-                         Mathf.Abs(extents_vec.y));
-
-                Vector3 BRBvec = obj.transform.parent.position + new Vector3(
-                         Mathf.Abs(extents_vec.x),
-                        -Mathf.Abs(extents_vec.y));
-
-                //間違い防止策
-                if (FLTvec.x > BRBvec.x)
-                {
-                    float sub = BRBvec.x;
-                    BRBvec.x = FLTvec.x;
-                    FLTvec.x = sub;
-                }
-
-                if (FLTvec.y < BRBvec.y)
-                {
-                    float sub = BRBvec.y;
-                    BRBvec.y = FLTvec.y;
-                    FLTvec.y = sub;
-                }
-
-                if (FLTvec.x < epos.x && epos.x < BRBvec.x)
-                    if (BRBvec.y < epos.y && epos.y < FLTvec.y)
-                        nextBase = obj;
+                float sub = BRBvec.x;
+                BRBvec.x = FLTvec.x;
+                FLTvec.x = sub;
             }
+
+            if (FLTvec.y < BRBvec.y)
+            {
+                float sub = BRBvec.y;
+                BRBvec.y = FLTvec.y;
+                FLTvec.y = sub;
+            }
+
+            if (FLTvec.x < epos.x && epos.x < BRBvec.x)
+                if (BRBvec.y < epos.y && epos.y < FLTvec.y)
+                    nextBase = obj;
         }
         
         if (nextBase != null)
@@ -909,13 +949,20 @@ public class Box_PlayerController : MonoBehaviour
         Vector3 Ppos = transform.position;
         float timer = 0;
 
-        while (true)
+        while (!OnBridge)
         {
             transform.position = Vector3.Lerp(Ppos, point, timer);
             timer += Time.deltaTime;
             yield return new WaitForEndOfFrame();
 
-            if (timer > 1) break;
+            if (timer >= 1) break;
+
+            if (OnBridge)
+            {
+                GrapLing = false;
+                sCollider.enabled = true;
+                yield break;
+            }
         }
         transform.position = point;
         sCollider.enabled = true;
