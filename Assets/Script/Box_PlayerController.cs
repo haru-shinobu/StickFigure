@@ -44,7 +44,7 @@ public class Box_PlayerController : MonoBehaviour
 
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
+        rb = transform.parent.GetComponent<Rigidbody>();
         
         var sprvec = transform.GetComponent<MeshRenderer>();
         Player_verticalhorizontal = sprvec.bounds.extents;
@@ -80,10 +80,10 @@ public class Box_PlayerController : MonoBehaviour
                     else//箱回転へ
                     {
                         this.Moving = false;
-                        var T = transform.position.y + Player_verticalhorizontal.y;
-                        var B = transform.position.y - Player_verticalhorizontal.y;
-                        var L = transform.position.x - Player_verticalhorizontal.x;
-                        var R = transform.position.x + Player_verticalhorizontal.x;
+                        var T = transform.parent.position.y + Player_verticalhorizontal.y;
+                        var B = transform.parent.position.y - Player_verticalhorizontal.y;
+                        var L = transform.parent.position.x - Player_verticalhorizontal.x;
+                        var R = transform.parent.position.x + Player_verticalhorizontal.x;
 
                         //上下左右
                         var rollways = 0;
@@ -123,10 +123,11 @@ public class Box_PlayerController : MonoBehaviour
     //移動範囲確認(箱)
     bool CheckMoveAria()
     {
-        var T = transform.position.y + Player_verticalhorizontal.y;
-        var B = transform.position.y - Player_verticalhorizontal.y;
-        var R = transform.position.x + Player_verticalhorizontal.x;
-        var L = transform.position.x - Player_verticalhorizontal.x;
+        var pos = transform.parent.position;
+        var T = pos.y + Player_verticalhorizontal.y;
+        var B = pos.y - Player_verticalhorizontal.y;
+        var R = pos.x + Player_verticalhorizontal.x;
+        var L = pos.x - Player_verticalhorizontal.x;
         
         if (B < MoveAriaRightBottom.y + Speed)
             rb.isKinematic = true;
@@ -152,7 +153,7 @@ public class Box_PlayerController : MonoBehaviour
         {
             if (BridgeObj.transform.forward == Vector3.forward || BridgeObj.transform.forward == -Vector3.forward)
             {   
-                var pos = transform.position;
+                var pos = transform.parent.position;
                 var T = pos.y + Player_verticalhorizontal.y;
                 var B = pos.y - Player_verticalhorizontal.y;
                 var R = pos.x + Player_verticalhorizontal.x;
@@ -163,7 +164,7 @@ public class Box_PlayerController : MonoBehaviour
                     if (BridgeAriaBR.y <= T && B <= BridgeAriaLT.y)
                     {
                         pos.z = BridgeAriaLT.z;
-                        transform.position = pos;
+                        transform.parent.position = pos;
                         camM.Bridge = OnBridge = true;
                         BridgeObj.GetComponent<bridgeScript>().second_NoCollider();
 
@@ -183,21 +184,21 @@ public class Box_PlayerController : MonoBehaviour
     public bool CheckRedAria()
     {
         //G_Data.RedLineは赤線の幅
-        if (MoveAriaLeftTop.x + G_Data.RedLine <= transform.position.x && transform.position.x <= MoveAriaRightBottom.x - G_Data.RedLine)
-            if (MoveAriaRightBottom.y + G_Data.RedLine <= transform.position.y && transform.position.y <= MoveAriaLeftTop.y - G_Data.RedLine)
+        if (MoveAriaLeftTop.x + G_Data.RedLine <= transform.parent.position.x &&  transform.parent.position.x <= MoveAriaRightBottom.x - G_Data.RedLine)
+            if (MoveAriaRightBottom.y + G_Data.RedLine <= transform.parent.position.y && transform.parent.position.y <= MoveAriaLeftTop.y - G_Data.RedLine)
             {
                 RedSide = SideRedLine.Non;
                 return false;
             }
         //左右を優先
-        if (MoveAriaLeftTop.x + G_Data.RedLine > transform.position.x)
+        if (MoveAriaLeftTop.x + G_Data.RedLine > transform.parent.position.x)
             RedSide = SideRedLine.L;
-        else if(transform.position.x > MoveAriaRightBottom.x - G_Data.RedLine)
+        else if(transform.parent.position.x > MoveAriaRightBottom.x - G_Data.RedLine)
             RedSide = SideRedLine.R;
         else
-        if (MoveAriaRightBottom.y + G_Data.RedLine > transform.position.y)
+        if (MoveAriaRightBottom.y + G_Data.RedLine > transform.parent.position.y)
             RedSide = SideRedLine.B;
-        else if (transform.position.y > MoveAriaLeftTop.y - G_Data.RedLine)
+        else if (transform.parent.position.y > MoveAriaLeftTop.y - G_Data.RedLine)
             RedSide = SideRedLine.T;
         return true;
     }
@@ -211,12 +212,12 @@ public class Box_PlayerController : MonoBehaviour
     {
         if (horizontal > 0)
         {
-            transform.localPosition += Vector3.right * Speed;
+            transform.parent.localPosition += Vector3.right * Speed;
         }
         else
         if (horizontal < 0)
         {
-            transform.localPosition -= Vector3.right * Speed;
+            transform.parent.localPosition -= Vector3.right * Speed;
         }
         //*********************************************************
         //**      ** 下を押したときの処理はここに描く    **      **
@@ -234,9 +235,9 @@ public class Box_PlayerController : MonoBehaviour
                     if (exvec.x > exvec.y)
                     {
                         //地面幅のなかにプレイヤーが存在し、なおかつその地面の上にプレイヤーがいるなら
-                        if (ground.transform.position.x - exvec.x < transform.position.x && transform.position.x < ground.transform.position.x + exvec.x)
-                            if (transform.position.y - Player_verticalhorizontal.y - 0.1f < ground.transform.position.y
-                                && ground.transform.position.y < transform.position.y)
+                        if (ground.transform.position.x - exvec.x < transform.parent.position.x && transform.parent.position.x < ground.transform.position.x + exvec.x)
+                            if (transform.parent.position.y - Player_verticalhorizontal.y - 0.1f < ground.transform.position.y &&
+                                ground.transform.position.y < transform.parent.position.y)
                             {
                                 ground.GetComponent<GroundScript>().SlipDown();
                                 slide = true;
@@ -284,11 +285,11 @@ public class Box_PlayerController : MonoBehaviour
                                     BRB.z = FLT.z;
                                 else
                                     FLT.z = BRB.z;
-                                Vector3 pos = transform.position;
-                                float T = transform.position.y + Player_verticalhorizontal.y;
-                                float B = transform.position.y - Player_verticalhorizontal.y;
-                                float R = transform.position.x + Player_verticalhorizontal.x;
-                                float L = transform.position.x - Player_verticalhorizontal.x;
+                                Vector3 pos = transform.parent.position;
+                                float T = pos.y + Player_verticalhorizontal.y;
+                                float B = pos.y - Player_verticalhorizontal.y;
+                                float R = pos.x + Player_verticalhorizontal.x;
+                                float L = pos.x - Player_verticalhorizontal.x;
                                 //範囲内のとき
                                 if (FLT.x <= R && L <= BRB.x)
                                     if (BRB.y <= T && B <= FLT.y)
@@ -311,10 +312,10 @@ public class Box_PlayerController : MonoBehaviour
         }
         /*
         if (vartical > 0)
-            transform.localPosition += Vector3.up * Speed;
+            transform.parent.localPosition += Vector3.up * Speed;
         else
         if (vartical < 0)
-            transform.localPosition -= Vector3.up * Speed;
+            transform.parent.localPosition -= Vector3.up * Speed;
         */
     }
 
@@ -375,11 +376,11 @@ public class Box_PlayerController : MonoBehaviour
                             FLT.z = BRB.z;
 
 
-                        var pos = transform.position;
-                        var T = transform.position.y + Player_verticalhorizontal.y;
-                        var B = transform.position.y - Player_verticalhorizontal.y;
-                        var R = transform.position.x + Player_verticalhorizontal.x;
-                        var L = transform.position.x - Player_verticalhorizontal.x;
+                        var pos = transform.parent.position;
+                        var T = pos.y + Player_verticalhorizontal.y;
+                        var B = pos.y - Player_verticalhorizontal.y;
+                        var R = pos.x + Player_verticalhorizontal.x;
+                        var L = pos.x - Player_verticalhorizontal.x;
 
                         //範囲内のとき
                         if (FLT.x <= R && L <= BRB.x)
@@ -441,8 +442,8 @@ public class Box_PlayerController : MonoBehaviour
                             Vector3 obj_extents = obj.transform.GetComponent<SpriteRenderer>().bounds.extents;
 
                             if (
-                            (obj.transform.position.x - obj_extents.x < transform.position.x && transform.position.x < obj.transform.position.x + obj_extents.x) ||
-                            (obj.transform.position.y - obj_extents.y < transform.position.y && transform.position.y < obj.transform.position.y + obj_extents.y))
+                            (obj.transform.position.x - obj_extents.x < transform.parent.position.x && transform.parent.position.x < obj.transform.position.x + obj_extents.x) ||
+                            (obj.transform.position.y - obj_extents.y < transform.parent.position.y && transform.parent.position.y < obj.transform.position.y + obj_extents.y))
                             {
                                 distance = dis;
                                 nextBase = obj;
@@ -464,14 +465,14 @@ public class Box_PlayerController : MonoBehaviour
                     Vector3 once = target.GetComponent<SpriteRenderer>().bounds.extents;
                     if (once.y < once.x)
                     {
-                        if (transform.position.y < target.transform.position.y)
+                        if (transform.parent.position.y < target.transform.position.y)
                             RedSide = SideRedLine.T;
                         else
                             RedSide = SideRedLine.B;
                     }
                     else
                     {
-                        if (transform.position.x < target.transform.position.x)
+                        if (transform.parent.position.x < target.transform.position.x)
                             RedSide = SideRedLine.R;
                         else
                             RedSide = SideRedLine.L;
@@ -500,7 +501,7 @@ public class Box_PlayerController : MonoBehaviour
             Destroy(BridgeObj);
 
         //各生成場所セット
-        Vector3 _vec = transform.position;
+        Vector3 _vec = transform.parent.position;
         float _Angle = 0f;
 
         //プレイヤー位置を基準とするのではなく、赤ラインの半分(0.5f分)を基準とする。(橋の役割とき)
@@ -508,31 +509,31 @@ public class Box_PlayerController : MonoBehaviour
         {
             case SideRedLine.Non:
                 //プレイヤー足元位置を基準として上方向に配置(梯子の役割のとき)
-                _vec = transform.position + new Vector3(0, -Player_verticalhorizontal.y);
+                _vec = transform.parent.position + new Vector3(0, -Player_verticalhorizontal.y);
                 break;
             case SideRedLine.T:
                 //プレイヤーのいる赤位置判定からの場所と方向決定
-                _vec = new Vector3(transform.position.x, Front_LeftTop.y - G_Data.RedLine / 2);
+                _vec = new Vector3(transform.parent.position.x, Front_LeftTop.y - G_Data.RedLine / 2);
                 break;
             case SideRedLine.B:
                 //プレイヤーのいる赤位置判定からの場所と方向決定
-                _vec = new Vector3(transform.position.x, Front_RightBottom.y + G_Data.RedLine / 2);
+                _vec = new Vector3(transform.parent.position.x, Front_RightBottom.y + G_Data.RedLine / 2);
                 _Angle = 180f;
                 break;
             case SideRedLine.L:
                 //プレイヤーのいる赤位置判定からの場所と方向決定
-                _vec = new Vector3(Front_LeftTop.x + G_Data.RedLine / 2, transform.position.y);
+                _vec = new Vector3(Front_LeftTop.x + G_Data.RedLine / 2, transform.parent.position.y);
                 _Angle = 90f;
                 break;
             case SideRedLine.R:
                 //プレイヤーのいる赤位置判定からの場所と方向決定
-                _vec = new Vector3(Front_RightBottom.x - G_Data.RedLine / 2, transform.position.y);
+                _vec = new Vector3(Front_RightBottom.x - G_Data.RedLine / 2, transform.parent.position.y);
                 _Angle = 270f;
                 break;
         }
 
         //めり込むため位置微調整
-        _vec.z = transform.position.z - 0.01f;
+        _vec.z = transform.parent.position.z - 0.01f;
         //生成
         BridgeObj = Instantiate(Bridge, _vec, Quaternion.Euler(180, 0, _Angle));
         
@@ -552,8 +553,8 @@ public class Box_PlayerController : MonoBehaviour
             MeshRenderer mesh = BridgeObj.transform.GetComponent<MeshRenderer>();
 
             var BSc = BridgeObj.GetComponent<bridgeScript>();
-            BSc.SetBasePrev = prevBB;
-            BSc.SetBaseNext = nextBB;
+            BSc.BasePrev = prevBB;
+            BSc.BaseNext = nextBB;
             BSc.second_NoCollider();
 
             var bridgePos = BridgeObj.transform.position;
@@ -616,14 +617,14 @@ public class Box_PlayerController : MonoBehaviour
                     if (exvec.x > exvec.y)
                     {
                         //地面幅のなかにプレイヤーが存在するなら
-                        if (ground.transform.position.x - exvec.x < transform.position.x && transform.position.x < ground.transform.position.x + exvec.x)
+                        if (ground.transform.position.x - exvec.x < transform.parent.position.x && transform.parent.position.x < ground.transform.position.x + exvec.x)
                         {
-                            if (transform.position.y < ground.transform.position.y)
+                            if (transform.parent.position.y < ground.transform.position.y)
                                 land = ground;
 
                             //その地面の上にプレイヤーがいるなら
-                            if (transform.position.y - Player_verticalhorizontal.y - 0.1f < ground.transform.position.y
-                                && ground.transform.position.y < transform.position.y)
+                            if (transform.parent.position.y - Player_verticalhorizontal.y - 0.1f < ground.transform.position.y
+                                && ground.transform.position.y < transform.parent.position.y)
                                 GrapOK = true;
                         }
                     }
@@ -635,10 +636,10 @@ public class Box_PlayerController : MonoBehaviour
                 {
                     if(obj.transform.forward == Vector3.forward && obj.transform.up == Vector3.up)
                     {
-                        if (transform.position.y < obj.transform.position.y)
+                        if (transform.parent.position.y < obj.transform.position.y)
                         {
                             Vector3 exvec = obj.GetComponent<SpriteRenderer>().bounds.extents;
-                            if(obj.transform.position.x - exvec.x < transform.position.x && transform.position.x < obj.transform.position.x + exvec.x)
+                            if(obj.transform.position.x - exvec.x < transform.parent.position.x && transform.parent.position.x < obj.transform.position.x + exvec.x)
                             {
                                 onebridgebase = obj;
                             }
@@ -660,7 +661,6 @@ public class Box_PlayerController : MonoBehaviour
                         sidebox.RollSwitchAction();
 
                         if (BridgeObj) Destroy(BridgeObj);
-                        Debug.Log("switch");
 
                         this.Moving = false;
                         GrapLing = true;
@@ -677,10 +677,10 @@ public class Box_PlayerController : MonoBehaviour
                         Vector3 bridgeextent = BridgeObj.GetComponent<MeshRenderer>().bounds.extents;
                         Vector3 Brpos = BridgeObj.transform.position;
 
-                        if (Brpos.x - bridgeextent.x < transform.position.x + Player_verticalhorizontal.x && transform.position.x - Player_verticalhorizontal.y < Brpos.x + bridgeextent.x) 
+                        if (Brpos.x - bridgeextent.x < transform.parent.position.x + Player_verticalhorizontal.x && transform.parent.position.x - Player_verticalhorizontal.y < Brpos.x + bridgeextent.x) 
                         {
                             //橋の下限まで伸ばす。
-                            Vector3 point = new Vector3(transform.position.x, BridgeObj.transform.position.y - bridgeextent.y - Player_verticalhorizontal.y, transform.position.z);
+                            Vector3 point = new Vector3(transform.parent.position.x, BridgeObj.transform.position.y - bridgeextent.y - Player_verticalhorizontal.y, transform.parent.position.z);
                             //StartCoroutine("Graplinger", point);
                             nowIE = Graplinger(point);
                             StartCoroutine(nowIE);
@@ -693,11 +693,11 @@ public class Box_PlayerController : MonoBehaviour
                 {
                     if (land)
                     {
-                        if (transform.position.y < land.transform.position.y)
+                        if (transform.parent.position.y < land.transform.position.y)
                         {
                             Vector3 exvec = land.GetComponent<SpriteRenderer>().bounds.extents;
                             //他処理を停止してグラップリング移動させる
-                            Vector3 point = new Vector3(transform.position.x, land.transform.position.y + exvec.y + Player_verticalhorizontal.y, transform.position.z);
+                            Vector3 point = new Vector3(transform.parent.position.x, land.transform.position.y + exvec.y + Player_verticalhorizontal.y, transform.parent.position.z);
                             //StartCoroutine("Graplinger", point);
                             nowIE = Graplinger(point);
                             StartCoroutine(nowIE);
@@ -711,7 +711,7 @@ public class Box_PlayerController : MonoBehaviour
                     if (onebridgebase)
                     {
                         Vector3 exvec = onebridgebase.GetComponent<SpriteRenderer>().bounds.extents;
-                        Vector3 point = new Vector3(transform.position.x, onebridgebase.transform.position.y - exvec.y + Player_verticalhorizontal.y, transform.position.z);
+                        Vector3 point = new Vector3(transform.parent.position.x, onebridgebase.transform.position.y - exvec.y + Player_verticalhorizontal.y, transform.parent.position.z);
                         //StartCoroutine("Graplinger", point);
                         nowIE = Graplinger(point);
                         StartCoroutine(nowIE);
@@ -722,7 +722,7 @@ public class Box_PlayerController : MonoBehaviour
                 if (!GrapLing)
                 {
                     //上限まで伸ばす
-                    Vector3 point = new Vector3(transform.position.x, MoveAriaLeftTop.y - Player_verticalhorizontal.y+0.1f, transform.position.z);
+                    Vector3 point = new Vector3(transform.parent.position.x, MoveAriaLeftTop.y - Player_verticalhorizontal.y+0.1f, transform.parent.position.z);
                     //StartCoroutine("Graplinger", point);
                     nowIE = Graplinger(point);
                     StartCoroutine(nowIE);
@@ -781,7 +781,7 @@ public class Box_PlayerController : MonoBehaviour
         {
             MoveAriaLeftTop = value;
 
-            var PPos = transform.position;
+            var PPos = transform.parent.position;
             var T = PPos.y + Player_verticalhorizontal.y;
             var L = PPos.x - Player_verticalhorizontal.x;
 
@@ -790,7 +790,7 @@ public class Box_PlayerController : MonoBehaviour
             if (T >= MoveAriaLeftTop.y)
                 PPos.y = MoveAriaLeftTop.y - Player_verticalhorizontal.y - offset;
 
-            transform.position = PPos;
+            transform.parent.position = PPos;
 
         }
     }
@@ -802,7 +802,7 @@ public class Box_PlayerController : MonoBehaviour
         {
             MoveAriaRightBottom = value;
 
-            var PPos = transform.position;
+            var PPos = transform.parent.position;
             var B = PPos.y - Player_verticalhorizontal.y;
             var R = PPos.x + Player_verticalhorizontal.x;
             
@@ -810,7 +810,7 @@ public class Box_PlayerController : MonoBehaviour
                 PPos.x = MoveAriaRightBottom.x - Player_verticalhorizontal.x - offset;
             if (MoveAriaRightBottom.y >= B)
                 PPos.y = MoveAriaRightBottom.y + Player_verticalhorizontal.y + offset;
-            transform.position = PPos;
+            transform.parent.position = PPos;
         }
     }
 
@@ -825,17 +825,29 @@ public class Box_PlayerController : MonoBehaviour
             yield return new WaitForEndOfFrame();
         }
         rb.isKinematic = true;
-        
+        var bridgeSc = BridgeObj.GetComponent<bridgeScript>();
+
+        //橋を渡るので、元居た箱の方の
+        //橋ベース用コライダ . 地面用コライダ . 不透過壁用コライダ   を非アクティブ化しておく
+        float P = (transform.parent.position - bridgeSc.BasePrev.transform.position).sqrMagnitude;
+        float N = (transform.parent.position - bridgeSc.BaseNext.transform.position).sqrMagnitude;
+        //渡した側に近い時
+        if (P < N)
+            bridgeSc.BridgeCross(true);
+        //渡された側に近い時
+        else
+            bridgeSc.BridgeCross(false);
+
         float timer = 0;
-        var ppos = transform.position;//player position
-        var Spos = transform.position;//橋の移動基準となるポジションにするやつ
+        var ppos = transform.parent.position;//player position
+        var Spos = transform.parent.position;//橋の移動基準となるポジションにするやつ
         Vector3 epos;
         Vector3 range = BridgeObj.GetComponent<MeshRenderer>().bounds.extents;
         
         //横向きの橋
         if (range.x > range.y)
         {
-            Spos = new Vector3(transform.position.x, BridgeObj.transform.position.y, transform.position.z);
+            Spos = new Vector3(transform.parent.position.x, BridgeObj.transform.position.y, transform.parent.position.z);
             //Playerが橋の左側
             if (Spos.x < BridgeObj.transform.position.x)
                 epos = BridgeObj.transform.position + new Vector3(range.x + (Player_verticalhorizontal.x + 0.01f), 0);
@@ -845,10 +857,10 @@ public class Box_PlayerController : MonoBehaviour
         //縦向きの橋
         else
         {
-            Spos = new Vector3(BridgeObj.transform.position.x, transform.position.y, transform.position.z);
+            Spos = new Vector3(BridgeObj.transform.position.x, transform.parent.position.y, transform.parent.position.z);
             //Playerが橋の下側
             if (Spos.y < BridgeObj.transform.position.y)
-                epos = BridgeObj.transform.position + new Vector3(0, range.y + (Player_verticalhorizontal.y + 0.01f));
+                epos =   BridgeObj.transform.position + new Vector3(0, range.y + (Player_verticalhorizontal.y + 0.01f));
             else
                 epos = BridgeObj.transform.position - new Vector3(0, range.y + (Player_verticalhorizontal.y + 0.01f));
         }
@@ -862,13 +874,13 @@ public class Box_PlayerController : MonoBehaviour
         {
             yield return new WaitForEndOfFrame();
             timer += Time.deltaTime * distance;
-            transform.position = Vector3.Lerp(ppos, Spos, timer);
+            transform.parent.position = Vector3.Lerp(ppos, Spos, timer);
 
             if (timer >= 1)
                 break;
         }
 
-        transform.position = Spos;
+        transform.parent.position = Spos;
         
         //橋の向こう側に向けて移動させる
         timer = 0;
@@ -876,13 +888,13 @@ public class Box_PlayerController : MonoBehaviour
         {
             yield return new WaitForEndOfFrame();
             timer += Time.deltaTime;
-            transform.position = Vector3.Lerp(Spos, epos, timer);
+            transform.parent.position = Vector3.Lerp(Spos, epos, timer);
 
             if (timer >= 1)
                 break;
         }
 
-        transform.position = epos;
+        transform.parent.position = epos;
 
         //----------------------------------------------------
         //橋の外にたどり着いたので各種セット
@@ -946,12 +958,12 @@ public class Box_PlayerController : MonoBehaviour
     {
         SphereCollider sCollider =GetComponent<SphereCollider>();
         sCollider.enabled = false;
-        Vector3 Ppos = transform.position;
+        Vector3 Ppos = transform.parent.position;
         float timer = 0;
 
         while (!OnBridge)
         {
-            transform.position = Vector3.Lerp(Ppos, point, timer);
+            transform.parent.position = Vector3.Lerp(Ppos, point, timer);
             timer += Time.deltaTime;
             yield return new WaitForEndOfFrame();
 
@@ -964,7 +976,7 @@ public class Box_PlayerController : MonoBehaviour
                 yield break;
             }
         }
-        transform.position = point;
+        transform.parent.position = point;
         sCollider.enabled = true;
         GrapLing = false;
     }

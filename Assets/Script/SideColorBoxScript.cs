@@ -88,7 +88,7 @@ public class SideColorBoxScript : MonoBehaviour
     //Box_PlayerController Update()->
     public void ChangeBoxRoll(int type)
     {
-        PSc.transform.SetParent(transform);
+        PSc.transform.parent.SetParent(transform);
         RollBlocks(type);
     }
     //=======================================================================
@@ -155,10 +155,10 @@ public class SideColorBoxScript : MonoBehaviour
 
 
         //プレイヤーとの親子関係解除
-        PSc.transform.SetParent(null);
+        PSc.transform.parent.SetParent(null);
         //プレイヤー回転ズレ防止
-        PSc.transform.up = Vector3.up;
-        PSc.transform.forward = Vector3.forward;
+        PSc.transform.parent.up = Vector3.up;
+        PSc.transform.parent.forward = Vector3.forward;
 
         //プレイヤーのｚ座標を箱前面と統一、箱範囲内に収めさせる
         SetAria(PSc);
@@ -208,9 +208,9 @@ public class SideColorBoxScript : MonoBehaviour
         else
             FLT.z = BRB.z;
 
-        var pos = PSc.transform.position;
+        var pos = PSc.transform.parent.position;
         pos.z = -mesh.bounds.extents.z;
-        PSc.transform.position = pos;
+        PSc.transform.parent.position = pos;
 
         PSc.Front_LeftTop = F_LeftTop = FLT;
         PSc.Front_RightBottom = F_RightBottom = BRB;
@@ -227,7 +227,7 @@ public class SideColorBoxScript : MonoBehaviour
     IEnumerator BlockRoller(bool flag)
     {
         //プレイヤーを箱の子に。
-        PSc.transform.SetParent(transform);
+        PSc.transform.parent.SetParent(transform);
         //プレイヤーの移動禁止
         PSc.P_rb.velocity = Vector3.zero;
         PSc.P_rb.isKinematic = true;
@@ -250,7 +250,7 @@ public class SideColorBoxScript : MonoBehaviour
             timer += Time.deltaTime * ChangeSpeed;
             float angle = Mathf.LerpAngle(minAngle, maxAngle, timer);
             transform.root.localEulerAngles = nowrot + angle * way_vec;
-            PSc.transform.up = Vector3.up;
+            PSc.transform.parent.up = Vector3.up;
             yield return new WaitForEndOfFrame();
             if (timer >= 1)
             {
@@ -284,10 +284,10 @@ public class SideColorBoxScript : MonoBehaviour
         transform.SetParent(rootTrs);
 
         //プレイヤーとの親子関係解除
-        PSc.transform.SetParent(null);
+        PSc.transform.parent.SetParent(null);
         //プレイヤー回転ズレ防止
-        PSc.transform.up = Vector3.up;
-        PSc.transform.forward = Vector3.forward;
+        PSc.transform.parent.up = Vector3.up;
+        PSc.transform.parent.forward = Vector3.forward;
         //プレイヤーのｚ座標を箱前面と統一、箱範囲内に収めさせる
         SetAria(PSc);
 
@@ -320,7 +320,7 @@ public class SideColorBoxScript : MonoBehaviour
     //=======================================================================
     public Transform SetStartPos(Box_PlayerController bPSc)
     {
-        bPSc.transform.position = transform.position;
+        bPSc.transform.parent.position = transform.position;
         SetAria(bPSc);
 
         return transform;
@@ -337,7 +337,7 @@ public class SideColorBoxScript : MonoBehaviour
     //=======================================================================
     public bool FindBoxRollerSwitch()
     {
-        float PposX = PSc.transform.position.x;
+        float PposX = PSc.transform.parent.position.x;
         if (CollRollSwitch1)
         {   
             var swichwide1 = CollRollSwitch1.GetComponent<SpriteRenderer>().bounds.extents;

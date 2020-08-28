@@ -4,15 +4,19 @@ using UnityEngine;
 
 public class bridgeScript : MonoBehaviour
 {
+    //渡した側の橋ベース
     GameObject BridgeBasePrev;
-    public GameObject SetBasePrev
+    public GameObject BasePrev
     {
         set { BridgeBasePrev = value; }
+        get { return BridgeBasePrev; }
     }
+    //渡された側の橋ベース
     GameObject BridgeBaseNext;
-    public GameObject SetBaseNext
+    public GameObject BaseNext
     {
         set { BridgeBaseNext = value; }
+        get { return BridgeBaseNext; }
     }
     void Start()
     {
@@ -34,5 +38,47 @@ public class bridgeScript : MonoBehaviour
             transform.GetChild(0).gameObject.SetActive(true);
         else
             transform.GetChild(1).gameObject.SetActive(true);
+    }
+    /// <summary>
+    /// true = 渡した側橋ベースのコライダを止める
+    /// fasle = 渡された側橋ベースのコライダを止める
+    /// </summary>
+    /// <param name="flag"></param>
+    // Box_PlayerController IEnumerator InBridge()->
+    public void BridgeCross(bool flag)
+    {
+        if (flag)
+        {
+            //BridgeBasePrev.GetComponent<CapsuleCollider>().enabled = false;
+            var boxsc = BridgeBasePrev.transform.parent.GetComponent<SideColorBoxScript>();
+            var boxsc2 = BridgeBaseNext.transform.parent.GetComponent<SideColorBoxScript>();
+            for (int i = 0; i < boxsc.GetBridgeLine.Length; i++)
+            {
+                boxsc.GetBridgeLine[i].GetComponent<CapsuleCollider>().enabled = false;
+                boxsc2.GetBridgeLine[i].GetComponent<CapsuleCollider>().enabled = true;
+            }
+            for (int i = 0; i < boxsc.BoxInGround.Length; i++)
+            {
+                boxsc.BoxInGround[i].GetComponent<CapsuleCollider>().enabled = false;
+                boxsc2.BoxInGround[i].GetComponent<CapsuleCollider>().enabled = true;
+            }
+
+        }
+        else
+        {
+            //BridgeBaseNext.GetComponent<CapsuleCollider>().enabled = false;
+            var boxsc = BridgeBasePrev.transform.parent.GetComponent<SideColorBoxScript>();
+            var boxsc2 = BridgeBaseNext.transform.parent.GetComponent<SideColorBoxScript>();
+            for (int i = 0; i < boxsc.GetBridgeLine.Length; i++)
+            {
+                boxsc.GetBridgeLine[i].GetComponent<CapsuleCollider>().enabled = false;
+                boxsc2.GetBridgeLine[i].GetComponent<CapsuleCollider>().enabled = true;
+            }
+            for (int i = 0; i < boxsc.BoxInGround.Length; i++)
+            {
+                boxsc.BoxInGround[i].GetComponent<CapsuleCollider>().enabled = false;
+                boxsc2.BoxInGround[i].GetComponent<CapsuleCollider>().enabled = true;
+            }
+        }
     }
 }
