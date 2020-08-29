@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2654532580767831044}
   - component: {fileID: 2654532580767831045}
   - component: {fileID: 2654532580767831047}
+  - component: {fileID: 2953610331252622976}
   m_Layer: 0
   m_Name: BridgeBase
   m_TagString: BridgeBase
@@ -25,13 +26,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2654532580767831042}
-  m_LocalRotation: {x: 0.5, y: 0.5, z: -0.5, w: 0.5}
-  m_LocalPosition: {x: -4.5, y: 5, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 200, y: 24, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 90, y: 90, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &2654532580767831045
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -94,3 +95,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5be04ebbe8887b04c8e947610fe1d809, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pairlayer:
+    serializedVersion: 2
+    m_Bits: 0
+--- !u!136 &2953610331252622976
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2654532580767831042}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.005
+  m_Height: 0.04
+  m_Direction: 0
+  m_Center: {x: 0, y: -0.026, z: 0}

@@ -8,7 +8,7 @@ public class CameraManager : MonoBehaviour
     GameObject GoalObj;
     [SerializeField, Header("スタート")]
     GameObject StartObj;
-    [SerializeField, Range(0.1f, 10)]
+    [SerializeField, Range(0.1f, 100)]
     float StartCamSpeed = 1;
     [SerializeField, Header("赤ライン内外カメラ移動(秒)"), Range(0.1f, 2)]
     float redline_cam_move_time;
@@ -21,8 +21,10 @@ public class CameraManager : MonoBehaviour
 
     bool _bCorutine_Action = false;
     IEnumerator routine;
-    bool _bColutine_OnLine = false;
-    bool _bColutine_OutLine = false;
+    //bool _bColutine_OnLine = false;
+    //bool _bColutine_OutLine = false;
+    bool _bColutine_OnBox = false;
+    bool _bColutine_OnBridge = false;
     [SerializeField]
     Vector3 StartCamera_Distance = new Vector3(0, 0, 40);
     [SerializeField]
@@ -38,8 +40,8 @@ public class CameraManager : MonoBehaviour
         {
             var Cam_StartPos = GoalObj.transform.position;
             var Cam_EndPos = StartObj.transform.position;
-
-            StartCoroutine(Starter(Cam_StartPos, Cam_EndPos));
+            routine = Starter(Cam_StartPos, Cam_EndPos);
+            StartCoroutine(routine);
         }
     }
     //===========================================================
@@ -53,90 +55,159 @@ public class CameraManager : MonoBehaviour
             //プレイヤーが橋の上か否か
             if (!Bridge)
             {
-                Vector3 Rootpos = transform.root.position;
-                Vector3 Pscpos = PSc.transform.position;
-                Rootpos.z = Pscpos.z = 0;
-                Vector3 pos = (Rootpos - Pscpos);
-                transform.position = Pscpos - pos - Camera_Distance;
-                transform.LookAt(transform.root.position);
-                /*
-                //プレイヤーが壁の端か否か
-                if (PSc.CheckRedAria())//ライン上true
-                {
-                    _bOnLine = true;
-                    //ライン上に来た時、アウトラインコルーチンが動作していない
-                    if (!_bColutine_OnLine)
+                if (!_bColutine_OnBox) {
+                    _bCorutine_Action = false;
+                    //コルーチンが動作していたら停止。動作させる。OnBoxコルーチンを動作させる
+                    if (_bColutine_OnBridge)
                     {
-                        _bCorutine_Action = false;
-                        //アウトラインコルーチンが動作していたら停止、オンライン動作させる
-                        if (_bColutine_OutLine)
-                        {
-                            StopCoroutine(routine);
-                            routine = null;
-                            _bColutine_OutLine = false;
-                        }
-                        routine = Cam_RedOnLine();
-                        StartCoroutine(routine);
+                        StopCoroutine(routine);
+                        routine = null;
+                        _bColutine_OnBridge = false;
                     }
-                    //コルーチン動作終了後処理
-                    else
-                    if (_bCorutine_Action)
-                    {
-                        Vector3 Rootpos = transform.root.position;
-                        Vector3 Pscpos = PSc.transform.position;
-                        Rootpos.z = Pscpos.z = 0;
-                        Vector3 pos = (Rootpos - Pscpos);
-                        transform.position = Pscpos - pos - Camera_Distance;
-                        transform.LookAt(transform.root.position);
-                    }
+                    routine = OnBlockCam();
+                    StartCoroutine(routine);
+                }else
+                if (_bCorutine_Action) {
+                    Vector3 Rootpos = transform.root.position;
+                    Vector3 Pscpos = PSc.transform.parent.position;
+                    Rootpos.z = Pscpos.z = 0;
+                    Vector3 pos = (Rootpos - Pscpos);
+                    transform.position = Pscpos - pos - Camera_Distance;
+                    transform.LookAt(transform.root.position);
                 }
-                //ライン外false
-                else
                 {
-                    _bOnLine = false;
-                    if (PSc.OnRedLine)//箱回転中はライン外かつ
+                    /*
+                    //プレイヤーが壁の端か否か
+                    if (PSc.CheckRedAria())//ライン上true
                     {
-                        Vector3 Rootpos = transform.root.position;
-                        Vector3 Pscpos = PSc.transform.position;
-                        Rootpos.z = Pscpos.z = 0;
-                        Vector3 pos = (Rootpos - Pscpos);
-                        transform.position = PSc.transform.position - pos - Camera_Distance;
-                        transform.LookAt(transform.root.position);
-                    }
-                    else
-                    {
-                        //ライン外に来た時、アウトラインコルーチンが動作していない
-                        if (!_bColutine_OutLine)
+                        _bOnLine = true;
+                        //ライン上に来た時、アウトラインコルーチンが動作していない
+                        if (!_bColutine_OnLine)
                         {
                             _bCorutine_Action = false;
-                            //オンラインコルーチンが動作していたら停止、アウトライン動作させる
-                            if (_bColutine_OnLine)
+                            //アウトラインコルーチンが動作していたら停止、オンライン動作させる
+                            if (_bColutine_OutLine)
                             {
                                 StopCoroutine(routine);
                                 routine = null;
-                                _bColutine_OnLine = false;
+                                _bColutine_OutLine = false;
                             }
-                            routine = Cam_RedOutLine();
+                            routine = Cam_RedOnLine();
                             StartCoroutine(routine);
                         }
                         //コルーチン動作終了後処理
                         else
                         if (_bCorutine_Action)
                         {
-                            transform.position = transform.transform.root.position - Camera_Distance;
+                            Vector3 Rootpos = transform.root.position;
+                            Vector3 Pscpos = PSc.transform.parent.position;
+                            Rootpos.z = Pscpos.z = 0;
+                            Vector3 pos = (Rootpos - Pscpos);
+                            transform.position = Pscpos - pos - Camera_Distance;
                             transform.LookAt(transform.root.position);
                         }
                     }
+                    //ライン外false
+                    else
+                    {
+                        _bOnLine = false;
+                        if (PSc.OnRedLine)//箱回転中はライン外かつ
+                        {
+                            Vector3 Rootpos = transform.root.position;
+                            Vector3 Pscpos = PSc.transform.parent.position;
+                            Rootpos.z = Pscpos.z = 0;
+                            Vector3 pos = (Rootpos - Pscpos);
+                            transform.position = PSc.transform.parent.position - pos - Camera_Distance;
+                            transform.LookAt(transform.root.position);
+                        }
+                        else
+                        {
+                            //ライン外に来た時、アウトラインコルーチンが動作していない
+                            if (!_bColutine_OutLine)
+                            {
+                                _bCorutine_Action = false;
+                                //オンラインコルーチンが動作していたら停止、アウトライン動作させる
+                                if (_bColutine_OnLine)
+                                {
+                                    StopCoroutine(routine);
+                                    routine = null;
+                                    _bColutine_OnLine = false;
+                                }
+                                routine = Cam_RedOutLine();
+                                StartCoroutine(routine);
+                            }
+                            //コルーチン動作終了後処理
+                            else
+                            if (_bCorutine_Action)
+                            {
+                                transform.position = transform.transform.root.position - Camera_Distance;
+                                transform.LookAt(transform.root.position);
+                            }
+                        }
+                    }
+                    */
                 }
-                */
             }
             else//橋の上
             {
-                transform.position = PSc.transform.position - Camera_Distance;
-                transform.LookAt(transform.root.position);
+                if (!_bColutine_OnBridge)
+                {
+                    _bCorutine_Action = false;
+                    //コルーチンが動作していたら停止。動作させる。OnBridgeコルーチンを動作させる
+                    if (_bColutine_OnBox)
+                    {
+                        StopCoroutine(routine);
+                        routine = null;
+                        _bColutine_OnBox = false;
+                    }
+                    routine = OnBridgeCam();
+                    StartCoroutine(routine);
+                }
+                else
+                if (_bCorutine_Action) {
+                    transform.position = PSc.transform.parent.position - Camera_Distance;
+                    transform.LookAt(transform.root.position);
+                }
             }
         }
     }
+
+    IEnumerator OnBlockCam()
+    {
+        _bColutine_OnBox = true;
+        Vector3 rootPos = transform.root.position;
+        Vector3 PlayerPos = PSc.transform.parent.position;
+        rootPos.z = PlayerPos.z = 0;
+        Vector3 pos = rootPos - PlayerPos;
+        Vector3 StartPos = transform.position;
+        Vector3 EndPos = PlayerPos - pos - Camera_Distance;
+        float timer = 0;
+        while (timer>=1)
+        {
+            yield return new WaitForEndOfFrame();
+            timer += Time.deltaTime;
+            transform.position = Vector3.Lerp(StartPos, EndPos, timer);
+            transform.LookAt(transform.root.position);
+        }
+        _bCorutine_Action = true;
+    }
+
+    IEnumerator OnBridgeCam()
+    {
+        _bColutine_OnBridge = true;
+        Vector3 StartPos = transform.position;
+        Vector3 EndPos = PSc.transform.parent.position - Camera_Distance;
+        float timer = 0;
+        while (timer >= 1)
+        {
+            timer += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+            transform.position = Vector3.Lerp(StartPos, EndPos, timer);
+            transform.LookAt(transform.root.position);
+        }
+        _bCorutine_Action = true;
+    }
+
     /*
     IEnumerator Cam_RedOnLine()
     {
@@ -148,7 +219,7 @@ public class CameraManager : MonoBehaviour
         while (_bOnLine)
         {
             timer += Time.deltaTime * redline_cam_move_time;
-            Vector3 Ppos = PSc.transform.position;
+            Vector3 Ppos = PSc.transform.parent.position;
             Ppos.z = 0;
             transform.position = Vector3.Slerp(Cpos, Ppos - (Rpos - Ppos) - Camera_Distance, timer);
             transform.LookAt(transform.root.position);
