@@ -12,6 +12,8 @@ public class StarterScript : MonoBehaviour
     GameObject StartBox;
     GameData G_data;
 
+    [SerializeField]
+    GameObject Wind;
     //==================================================================
     // ゲームスタート時のプレイヤーの開始壁をセット
     //==================================================================
@@ -21,17 +23,20 @@ public class StarterScript : MonoBehaviour
         
         var sideBox = StartBox.GetComponent<SideColorBoxScript>();
         BoxPlayer.SetNextBox(sideBox);
-        sideBox.SetStartPos(BoxPlayer);
+        BoxPlayer.transform.parent.position = sideBox.transform.position;
+
+        sideBox.SetBoxPos(BoxPlayer);
         
         //REDline設定
         G_data = GetComponent<GameData>();
         G_data.RedLine = sideBox.transform.root.localScale.x;
         //StartBox設定
         G_data.P_Now_Box = StartBox.transform.root.gameObject;
+
+        G_data.Bases = GameObject.FindGameObjectsWithTag("BridgeBase");
+        G_data.WindPrefab = Wind;
     }
-    //==================================================================
-    // スタート正面に来た時に位置を記録させる
-    //==================================================================
+    
     void Start()
     {
         Destroy(this);

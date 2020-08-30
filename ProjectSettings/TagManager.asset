@@ -9,6 +9,11 @@ TagManager:
   - Player3D
   - Door
   - BoxManager
+  - Box
+  - BridgeBase
+  - ground
+  - NoPassWall
+  - SideWall
   layers:
   - Default
   - TransparentFX
@@ -18,10 +23,10 @@ TagManager:
   - UI
   - 
   - 
-  - room
+  - UnPassWall
   - 2D
   - 3D
-  - Light
+  - sideWall
   - 
   - 
   - 

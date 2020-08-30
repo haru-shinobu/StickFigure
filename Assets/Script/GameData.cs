@@ -4,6 +4,13 @@ using UnityEngine;
 
 public class GameData : MonoBehaviour
 {
+    GameObject Wind;
+    public GameObject WindPrefab
+    {
+        get { return Wind; }
+        set { Wind = value; }
+    }
+
     GameObject Player_On_NowBox;
     public GameObject P_Now_Box
     {
@@ -16,5 +23,12 @@ public class GameData : MonoBehaviour
     {
         get { return Box_Offset; }
         set { Box_Offset = value; }
+    }
+
+    GameObject[] BridgeBases;
+    public GameObject[] Bases
+    {
+        get { return BridgeBases; }
+        set { BridgeBases = value; }
     }
 }
