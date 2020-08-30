@@ -61,7 +61,7 @@ public class Box_PlayerController : MonoBehaviour
         Vector3 vel = rb.velocity;
         if (vel.y < -Speed * 10) vel.y = -Speed * 10;
         rb.velocity = vel;
-
+        Debug.Log(MoveAriaRightBottom + "M:R" + RollAriaRightBottom);
         if (Moving)
         {
             float horizontal = Input.GetAxis("Horizontal");
@@ -134,18 +134,28 @@ public class Box_PlayerController : MonoBehaviour
         var B = pos.y - Player_verticalhorizontal.y;
         var R = pos.x + Player_verticalhorizontal.x;
         var L = pos.x - Player_verticalhorizontal.x;
-
+        
+        //Debug.Log();
+        //Debug.Log();
         if (Move_Aria_FLT.x >= L) transform.parent.position += Vector3.right * Speed;
         if (R >= Move_Aria_FRB.x) transform.parent.position -= Vector3.right * Speed;
         if (T >= Move_Aria_FLT.y) transform.parent.position -= Vector3.up * Speed;
-        if (Move_Aria_FRB.y >= B)
+        if (Move_Aria_FRB.y == RollAriaRightBottom.y)
         {
-            transform.parent.position += Vector3.up * Speed;
-            var s = rb.velocity;
-            s.y = 0;
-            rb.velocity = s;
+            if (Move_Aria_FRB.y + G_Data.RedLine / 2 >= B)
+            {
+                rb.velocity = Vector3.zero;
+                rb.isKinematic = true;
+            }
         }
-
+        else
+            if (Move_Aria_FRB.y >= B)
+        {
+            transform.parent.position += new Vector3(0, Mathf.Abs(Move_Aria_FRB.y - B));
+            rb.velocity = Vector3.zero;
+            rb.isKinematic = true;
+        }
+    
     }
 
     //回転始動範囲(箱)
@@ -717,33 +727,34 @@ public class Box_PlayerController : MonoBehaviour
                     //回転スイッチの位置(仮)
                     //存在しないとき箱左上で返す
                     pos1 = sidebox.FindBoxRollerSwitch();
-                    if (a > pos1.y) a = pos1.y;
+                    if (a > pos1.y || pos1.y != Front_LeftTop.y) a = pos1.y;
                     
                     //橋の下限の位置
                     if (BridgeObj)
                     {
                         pos2 = BridgeObj.transform.position;
                         pos2.y -= BridgeObj.GetComponent<MeshRenderer>().bounds.extents.y;
-                        if (a > pos2.y) a = pos2.y;
+                        if (a > pos2.y || pos2.y != Front_LeftTop.y) a = pos2.y;
                     }
                     //地面の位置
                     if (land)
                     {
                         pos3 = land.transform.position;
                         pos3.y -= land.GetComponent<SpriteRenderer>().bounds.extents.y;
-                        if (a > pos3.y) a = pos3.y;
+                        if (a > pos3.y || pos3.y != Front_LeftTop.y) a = pos3.y;
                     }
                     //橋ベースの位置
                     if (onebridgebase)
                     {
                         pos4 = onebridgebase.transform.position;
-                        if (a > pos4.y) a = pos4.y;
+                        if (a > pos4.y || pos4.y != Front_LeftTop.y) a = pos4.y;
                     }
                     //不透過壁の位置
                     //存在しないとき箱左上で返す
                     pos5 = sidebox.UnPassWallPos();
-                    if (a > pos5.y) a = pos5.y;
+                    if (a > pos5.y || pos5.y != Front_LeftTop.y) a = pos5.y;
 
+                    Debug.Log(a);
                     if (a != Front_LeftTop.y)
                     {
                         if (a == pos1.y)
