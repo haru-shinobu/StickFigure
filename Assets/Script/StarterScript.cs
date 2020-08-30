@@ -21,7 +21,9 @@ public class StarterScript : MonoBehaviour
         
         var sideBox = StartBox.GetComponent<SideColorBoxScript>();
         BoxPlayer.SetNextBox(sideBox);
-        sideBox.SetStartPos(BoxPlayer);
+        BoxPlayer.transform.parent.position = sideBox.transform.position;
+
+        sideBox.SetBoxPos(BoxPlayer);
         
         //REDline設定
         G_data = GetComponent<GameData>();
