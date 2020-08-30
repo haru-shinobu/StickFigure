@@ -12,6 +12,8 @@ public class StarterScript : MonoBehaviour
     GameObject StartBox;
     GameData G_data;
 
+    [SerializeField]
+    GameObject Wind;
     //==================================================================
     // ゲームスタート時のプレイヤーの開始壁をセット
     //==================================================================
@@ -32,6 +34,7 @@ public class StarterScript : MonoBehaviour
         G_data.P_Now_Box = StartBox.transform.root.gameObject;
 
         G_data.Bases = GameObject.FindGameObjectsWithTag("BridgeBase");
+        G_data.WindPrefab = Wind;
     }
     
     void Start()

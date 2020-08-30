@@ -16443,6 +16443,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   StartBox: {fileID: 1789494416}
+  Wind: {fileID: 4762941626521320300, guid: 172560073d6d56e46aadfa0a6db8d385, type: 3}
 --- !u!114 &2082146976
 MonoBehaviour:
   m_ObjectHideFlags: 0

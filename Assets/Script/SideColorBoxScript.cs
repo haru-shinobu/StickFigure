@@ -277,6 +277,7 @@ public class SideColorBoxScript : MonoBehaviour
     //this.OnRollerSwitch()->
     IEnumerator BlockRoller(bool flag)
     {
+        Debug.Log(flag);
         //プレイヤーを箱の子に。
         PSc.transform.parent.SetParent(transform);
         //プレイヤーの移動禁止
@@ -406,7 +407,7 @@ public class SideColorBoxScript : MonoBehaviour
     }
 
     //スイッチの回転方向
-    public bool GetRollSwitchPos()
+    public bool GetRollSwitchWay()
     {
         return Switch.GetComponent<BoxRollerSwitchScript>().GetRollWay;
     }

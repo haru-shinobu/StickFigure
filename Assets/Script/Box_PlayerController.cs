@@ -83,12 +83,13 @@ public class Box_PlayerController : MonoBehaviour
                         var L = transform.parent.position.x - Player_verticalhorizontal.x;
                         var R = transform.parent.position.x + Player_verticalhorizontal.x;
 
+                        GameObject wind = Instantiate(G_Data.WindPrefab, sidebox.transform.position, Quaternion.identity);
                         //上下左右
                         var rollways = 0;
-                        if (T > Front_LeftTop.y) rollways = 1;
-                        if (B < Front_RightBottom.y) rollways = 2;
-                        if (L < Front_LeftTop.x) rollways = 3;
-                        if (R > Front_RightBottom.x) rollways = 4;
+                        if (T > Front_LeftTop.y) { rollways = 1;      wind.transform.rotation = Quaternion.Euler(0, 0, 90); }
+                        if (B < Front_RightBottom.y) { rollways = 2;  wind.transform.rotation = Quaternion.Euler(0, 0, -90); }
+                        if (L < Front_LeftTop.x) { rollways = 3;      wind.transform.rotation = Quaternion.Euler(0, 0, 180); }
+                        if (R > Front_RightBottom.x) { rollways = 4;  wind.transform.rotation = Quaternion.Euler(0, 0, 0); }
                         if (BridgeObj) Destroy(BridgeObj);
                         sidebox.ChangeBoxRoll(rollways);
                     }
@@ -761,6 +762,11 @@ public class Box_PlayerController : MonoBehaviour
                         {
                             if (sidebox.FindBoxRollerSwitch() != Front_RightBottom)
                             {
+                                GameObject wind = Instantiate(G_Data.WindPrefab, sidebox.transform.position, Quaternion.identity);
+                                if (sidebox.GetRollSwitchWay())
+                                    wind.transform.rotation = Quaternion.Euler(-90, 0, 0);
+                                else
+                                    wind.transform.rotation = Quaternion.Euler(90, 0, 0);
                                 //箱へアクセス、スイッチの動作指令を送らせる
                                 sidebox.RollSwitchAction();
 
