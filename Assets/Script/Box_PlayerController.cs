@@ -7,7 +7,7 @@ public class Box_PlayerController : MonoBehaviour
     [SerializeField, Range(0.1f, 10)]
     float Speed = 0.4f;
     bool _bControll = false;
-    bool _bRedLine = false;
+    
     bool OnBridge = false;
     
     bool GrapLing = false;
@@ -16,10 +16,12 @@ public class Box_PlayerController : MonoBehaviour
     Vector2 Player_verticalhorizontal;
     ///プレイヤーの縦横移動範囲設定、壁移動のたび再記録
     Vector3 MoveAriaLeftTop, MoveAriaRightBottom;
+    ///箱回転枠範囲設定、壁移動のたび再記録
+    Vector3 RollAriaLeftTop, RollAriaRightBottom;
     ///橋の縦横移動範囲設定、橋かけるたび再記録
     Vector3 BridgeAriaLeftTop, BridgeAriaRightBottom;
 
-    [SerializeField, Header("テープPrefab")]
+    [SerializeField, Header("橋Prefab")]
     GameObject Bridge;
     
     private string bridgetag = "BridgeBase";
@@ -72,12 +74,8 @@ public class Box_PlayerController : MonoBehaviour
                 //グラップリングしていないとき
                 if (!GrapLing)
                 {
-                    // プレイヤー移動範囲チェック
-                    if (CheckMoveAria())
-                    {
-                        this.Move(horizontal, vartical);
-                    }
-                    else//箱回転へ
+                    //箱回転範囲を出たとき
+                    if (CheckRollAria())
                     {
                         this.Moving = false;
                         var T = transform.parent.position.y + Player_verticalhorizontal.y;
@@ -94,10 +92,19 @@ public class Box_PlayerController : MonoBehaviour
                         if (BridgeObj) Destroy(BridgeObj);
                         sidebox.ChangeBoxRoll(rollways);
                     }
+                    else
+                    {
+                        // プレイヤー移動範囲チェック
+                        RePositionMoveAria();
+                        this.Move(horizontal, vartical);
+                        
+                    }
+
                     if (Input.GetButton("Jump"))
                     {
                         //橋の判定など
                         MakeBridgeCheck();
+
                     }
                 }
             }
@@ -119,9 +126,30 @@ public class Box_PlayerController : MonoBehaviour
         }
     }
 
-
     //移動範囲確認(箱)
-    bool CheckMoveAria()
+    void RePositionMoveAria()
+    {
+        var pos = transform.parent.position;
+        var T = pos.y + Player_verticalhorizontal.y;
+        var B = pos.y - Player_verticalhorizontal.y;
+        var R = pos.x + Player_verticalhorizontal.x;
+        var L = pos.x - Player_verticalhorizontal.x;
+
+        if (Move_Aria_FLT.x >= L) transform.parent.position += Vector3.right * Speed;
+        if (R >= Move_Aria_FRB.x) transform.parent.position -= Vector3.right * Speed;
+        if (T >= Move_Aria_FLT.y) transform.parent.position -= Vector3.up * Speed;
+        if (Move_Aria_FRB.y >= B)
+        {
+            transform.parent.position += Vector3.up * Speed;
+            var s = rb.velocity;
+            s.y = 0;
+            rb.velocity = s;
+        }
+
+    }
+
+    //回転始動範囲(箱)
+    bool CheckRollAria()
     {
         var pos = transform.parent.position;
         var T = pos.y + Player_verticalhorizontal.y;
@@ -129,20 +157,17 @@ public class Box_PlayerController : MonoBehaviour
         var R = pos.x + Player_verticalhorizontal.x;
         var L = pos.x - Player_verticalhorizontal.x;
         
-        if (B < MoveAriaRightBottom.y + Speed)
+        if (B <= Move_Aria_FRB.y + Speed)
             rb.isKinematic = true;
         else
             rb.isKinematic = false;
         
-        //範囲内のとき
-        if (MoveAriaLeftTop.x <= L && R <= MoveAriaRightBottom.x)
-            if (MoveAriaRightBottom.y <= B && T <= MoveAriaLeftTop.y)
+        if (RollAriaLeftTop.x < L && R < RollAriaRightBottom.x)
+            if (RollAriaRightBottom.y < B && T < RollAriaLeftTop.y)
             {
-                OnRedLine = false;
-                return true;
+                return false;
             }
-        OnRedLine = true;
-        return false;
+        return true;
     }
     
 
@@ -184,21 +209,21 @@ public class Box_PlayerController : MonoBehaviour
     public bool CheckRedAria()
     {
         //G_Data.RedLineは赤線の幅
-        if (MoveAriaLeftTop.x + G_Data.RedLine <= transform.parent.position.x &&  transform.parent.position.x <= MoveAriaRightBottom.x - G_Data.RedLine)
-            if (MoveAriaRightBottom.y + G_Data.RedLine <= transform.parent.position.y && transform.parent.position.y <= MoveAriaLeftTop.y - G_Data.RedLine)
+        if (RollAriaLeftTop.x + G_Data.RedLine <= transform.parent.position.x &&  transform.parent.position.x <= RollAriaRightBottom.x - G_Data.RedLine)
+            if (RollAriaRightBottom.y + G_Data.RedLine <= transform.parent.position.y && transform.parent.position.y <= RollAriaLeftTop.y - G_Data.RedLine)
             {
                 RedSide = SideRedLine.Non;
                 return false;
             }
         //左右を優先
-        if (MoveAriaLeftTop.x + G_Data.RedLine > transform.parent.position.x)
+        if (RollAriaLeftTop.x + G_Data.RedLine > transform.parent.position.x)
             RedSide = SideRedLine.L;
-        else if(transform.parent.position.x > MoveAriaRightBottom.x - G_Data.RedLine)
+        else if(transform.parent.position.x > RollAriaRightBottom.x - G_Data.RedLine)
             RedSide = SideRedLine.R;
         else
-        if (MoveAriaRightBottom.y + G_Data.RedLine > transform.parent.position.y)
+        if (RollAriaRightBottom.y + G_Data.RedLine > transform.parent.position.y)
             RedSide = SideRedLine.B;
-        else if (transform.parent.position.y > MoveAriaLeftTop.y - G_Data.RedLine)
+        else if (transform.parent.position.y > RollAriaLeftTop.y - G_Data.RedLine)
             RedSide = SideRedLine.T;
         return true;
     }
@@ -224,7 +249,9 @@ public class Box_PlayerController : MonoBehaviour
         //*********************************************************
         if(vartical < 0)
         {
+            Debug.Log(RedSide);
             bool slide = false;
+            //すり抜けられる床かどうか
             foreach (GameObject ground in sidebox.BoxInGround)
             {
                 //正面に来ている地面のみ
@@ -245,6 +272,7 @@ public class Box_PlayerController : MonoBehaviour
                     }
                 }
             }
+
             if (!slide)
             {
                 if (CheckRedAria())
@@ -296,6 +324,13 @@ public class Box_PlayerController : MonoBehaviour
                                     {
                                         bflag = true;
                                         sidebox.GetBridgeLine[i].SendMessage("SlipdroundLine");
+                                        if(BridgeObj)
+                                        {
+                                            Vector3 checkpos = new Vector3(BridgeObj.transform.position.x, BridgeAriaLT.y, BridgeObj.transform.position.z);
+                                            if (FLT.x <= checkpos.x && checkpos.x <= BRB.x)
+                                                if (BRB.y <= checkpos.y && checkpos.y <= FLT.y)
+                                                    BridgeObj.GetComponent<bridgeScript>().second_NoCollider();
+                                        }
                                     }
                             }
                         }
@@ -399,9 +434,9 @@ public class Box_PlayerController : MonoBehaviour
             }
 
             bool MakeOk = false;
-            
+
             //橋のベースの範囲内にプレイヤーがいたとき、そのベースがnullでなくなる
-            if (target)
+            if (target != null)
             {
                 //取得全ベースから現在の箱と同じ箱についている橋のベース以外で一番近い橋Baseを得る
                 nextBase = null;
@@ -488,7 +523,7 @@ public class Box_PlayerController : MonoBehaviour
         }
 
         //ターゲット橋ベースが無い場合。グラップリング用
-        if (!target)
+        if (target == null)
             GrapLinger();
     }
 
@@ -496,6 +531,7 @@ public class Box_PlayerController : MonoBehaviour
     //this.MakeBridgeCheck()->
     void MakeBridge(GameObject prevBB,GameObject nextBB)
     {
+
         //前回の橋が残っているとき破棄
         if (BridgeObj)
             Destroy(BridgeObj);
@@ -605,13 +641,13 @@ public class Box_PlayerController : MonoBehaviour
         {
             GameObject land = null;
             GameObject onebridgebase = null;
-
+            
             foreach (GameObject ground in sidebox.BoxInGround)
             {
                 //正面に来ている地面のみ
                 if (ground.transform.forward == Vector3.forward)
                 {
-                    //画像の縦横をとり、地面が水平のとき、グラップリング対象とする
+                    //画像の縦横をとり、地面が横広のとき、グラップリング対象とする
                     Vector3 exvec = ground.GetComponent<SpriteRenderer>().bounds.extents;
 
                     if (exvec.x > exvec.y)
@@ -630,6 +666,8 @@ public class Box_PlayerController : MonoBehaviour
                     }
                 }
             }
+
+            //間に地面がないとき
             if (land == null)
             {   
                 foreach(GameObject obj in sidebox.GetBridgeLine)
@@ -647,6 +685,8 @@ public class Box_PlayerController : MonoBehaviour
                     }
                 }
             }
+
+            if (onebridgebase || land) Debug.Log("land base");
             
             //グラップリング処理
             //ただし移動できない壁後付けするため注意。（製作途中）
@@ -654,81 +694,123 @@ public class Box_PlayerController : MonoBehaviour
             {
                 if (!GrapLing)
                 {
-                    //間に回転スイッチがあるとき
-                    if (sidebox.FindBoxRollerSwitch())
-                    {
-                        //箱へアクセス、スイッチの動作指令を送らせる
-                        sidebox.RollSwitchAction();
+                    Debug.Log("grapcheck");
+                    Vector3 pos,pos1, pos2, pos3, pos4, pos5;
+                    pos = pos1 = pos2 = pos3 = pos4 = pos5 = Front_LeftTop;
+                    //不透過壁があるか否か
+                    //存在しないとき箱左上で返す
+                    pos = sidebox.sideWall();
+                    float a = pos.y;
 
-                        if (BridgeObj) Destroy(BridgeObj);
-
-                        this.Moving = false;
-                        GrapLing = true;
-                        //StartCoroutine("GrapAttack");
-                        nowIE = GrapAttack();
-                        StartCoroutine(nowIE);
-                    }
-                }
-                //橋があるとき
-                if (!GrapLing)
-                {
+                    //回転スイッチの位置(仮)
+                    //存在しないとき箱左上で返す
+                    pos1 = sidebox.FindBoxRollerSwitch();
+                    if (a > pos1.y) a = pos1.y;
+                    
+                    //橋の下限の位置
                     if (BridgeObj)
                     {
-                        Vector3 bridgeextent = BridgeObj.GetComponent<MeshRenderer>().bounds.extents;
-                        Vector3 Brpos = BridgeObj.transform.position;
-
-                        if (Brpos.x - bridgeextent.x < transform.parent.position.x + Player_verticalhorizontal.x && transform.parent.position.x - Player_verticalhorizontal.y < Brpos.x + bridgeextent.x) 
-                        {
-                            //橋の下限まで伸ばす。
-                            Vector3 point = new Vector3(transform.parent.position.x, BridgeObj.transform.position.y - bridgeextent.y - Player_verticalhorizontal.y, transform.parent.position.z);
-                            //StartCoroutine("Graplinger", point);
-                            nowIE = Graplinger(point);
-                            StartCoroutine(nowIE);
-                            GrapLing = true;
-                        }
+                        pos2 = BridgeObj.transform.position;
+                        pos2.y -= BridgeObj.GetComponent<MeshRenderer>().bounds.extents.y;
+                        if (a > pos2.y) a = pos2.y;
                     }
-                }
-                //地面があるとき
-                if (!GrapLing)
-                {
+                    //地面の位置
                     if (land)
                     {
-                        if (transform.parent.position.y < land.transform.position.y)
-                        {
-                            Vector3 exvec = land.GetComponent<SpriteRenderer>().bounds.extents;
-                            //他処理を停止してグラップリング移動させる
-                            Vector3 point = new Vector3(transform.parent.position.x, land.transform.position.y + exvec.y + Player_verticalhorizontal.y, transform.parent.position.z);
-                            //StartCoroutine("Graplinger", point);
-                            nowIE = Graplinger(point);
-                            StartCoroutine(nowIE);
-                            GrapLing = true;
-                        }
+                        pos3 = land.transform.position;
+                        pos3.y -= land.GetComponent<SpriteRenderer>().bounds.extents.y;
+                        if (a > pos3.y) a = pos3.y;
                     }
-                }
-                //橋ベースがあるとき
-                if (!GrapLing)
-                {
+                    //橋ベースの位置
                     if (onebridgebase)
                     {
-                        Vector3 exvec = onebridgebase.GetComponent<SpriteRenderer>().bounds.extents;
-                        Vector3 point = new Vector3(transform.parent.position.x, onebridgebase.transform.position.y - exvec.y + Player_verticalhorizontal.y, transform.parent.position.z);
-                        //StartCoroutine("Graplinger", point);
-                        nowIE = Graplinger(point);
-                        StartCoroutine(nowIE);
-                        GrapLing = true;
+                        pos4 = onebridgebase.transform.position;
+                        if (a > pos4.y) a = pos4.y;
+                    }
+                    //不透過壁の位置
+                    //存在しないとき箱左上で返す
+                    pos5 = sidebox.UnPassWallPos();
+                    if (a > pos5.y) a = pos5.y;
+                    Debug.Log(pos.y + ":" + pos1.y + ":" + pos2.y + ":" + pos3.y + ":" + pos4.y + ":" + pos5.y);
+                    Debug.Log(a);
+                    if (a != Front_LeftTop.y)
+                    {
+                        if (a == pos1.y)
+                        {
+                            if (sidebox.FindBoxRollerSwitch() != Front_RightBottom)
+                            {
+                                //箱へアクセス、スイッチの動作指令を送らせる
+                                sidebox.RollSwitchAction();
+
+                                if (BridgeObj) Destroy(BridgeObj);
+
+                                this.Moving = false;
+                                GrapLing = true;
+                                nowIE = GrapAttack();
+                                StartCoroutine(nowIE);
+                            }
+                        }
+                        if (a == pos2.y)
+                        {
+                            //橋があるとき
+                            if (BridgeObj)
+                            {
+                                Vector3 bridgeextent = BridgeObj.GetComponent<MeshRenderer>().bounds.extents;
+                                Vector3 Brpos = BridgeObj.transform.position;
+
+                                if (Brpos.x - bridgeextent.x < transform.parent.position.x + Player_verticalhorizontal.x && transform.parent.position.x - Player_verticalhorizontal.y < Brpos.x + bridgeextent.x)
+                                {
+                                    //橋の下限まで伸ばす。
+                                    Vector3 point = new Vector3(transform.parent.position.x, BridgeObj.transform.position.y - bridgeextent.y - Player_verticalhorizontal.y, transform.parent.position.z);
+                                    nowIE = Graplinger(point);
+                                    StartCoroutine(nowIE);
+                                    GrapLing = true;
+                                }
+                            }
+                        }
+                        if (a == pos3.y)
+                        {
+                            //地面があるとき
+                            if (land)
+                            {
+                                if (transform.parent.position.y < land.transform.position.y)
+                                {
+                                    Vector3 exvec = land.GetComponent<SpriteRenderer>().bounds.extents;
+                                    //他処理を停止してグラップリング移動させる
+                                    Vector3 point = new Vector3(transform.parent.position.x, land.transform.position.y + exvec.y + Player_verticalhorizontal.y, transform.parent.position.z);
+                                    nowIE = Graplinger(point);
+                                    StartCoroutine(nowIE);
+                                    GrapLing = true;
+                                }
+                            }
+                        }
+                        if (a == pos4.y)
+                        {
+                            //橋ベースがあるとき
+                            if (onebridgebase)
+                            {
+                                Vector3 exvec = onebridgebase.GetComponent<SpriteRenderer>().bounds.extents;
+                                Vector3 point = new Vector3(transform.parent.position.x, onebridgebase.transform.position.y - exvec.y + Player_verticalhorizontal.y, transform.parent.position.z);
+                                nowIE = Graplinger(point);
+                                StartCoroutine(nowIE);
+                                GrapLing = true;
+                            }
+                        }
+                    }
+                    if (!GrapLing)
+                    {
+                        if (a == pos.y || a == pos5.y)
+                            //間に何もないとき
+                            if (Front_LeftTop.y <= pos.y && Front_LeftTop.y <= pos5.y)
+                            {
+                                //上限まで伸ばす
+                                Vector3 point = new Vector3(transform.parent.position.x, RollAriaLeftTop.y - Player_verticalhorizontal.y + 0.1f, transform.parent.position.z);
+                                nowIE = Graplinger(point);
+                                StartCoroutine(nowIE);
+                                GrapLing = true;
+                            }
                     }
                 }
-                //間に何もないとき
-                if (!GrapLing)
-                {
-                    //上限まで伸ばす
-                    Vector3 point = new Vector3(transform.parent.position.x, MoveAriaLeftTop.y - Player_verticalhorizontal.y+0.1f, transform.parent.position.z);
-                    //StartCoroutine("Graplinger", point);
-                    nowIE = Graplinger(point);
-                    StartCoroutine(nowIE);
-                    GrapLing = true;
-                }
-
             }
         }
     }
@@ -764,11 +846,6 @@ public class Box_PlayerController : MonoBehaviour
         get { return _bControll; }
         set { _bControll = value; /*rb.isKinematic = false; */}
     }
-    public bool OnRedLine
-    {
-        get { return _bRedLine; }
-        set { _bRedLine = value; }
-    }
     public Rigidbody P_rb
     {
         get { return rb; }
@@ -776,19 +853,19 @@ public class Box_PlayerController : MonoBehaviour
     //行動範囲左上記録
     public Vector3 Front_LeftTop
     {
-        get { return MoveAriaLeftTop; }
+        get { return RollAriaLeftTop; }
         set
         {
-            MoveAriaLeftTop = value;
+            RollAriaLeftTop = value;
 
             var PPos = transform.parent.position;
             var T = PPos.y + Player_verticalhorizontal.y;
             var L = PPos.x - Player_verticalhorizontal.x;
 
-            if (MoveAriaLeftTop.x >= L)
-                PPos.x = MoveAriaLeftTop.x + Player_verticalhorizontal.x + offset;
-            if (T >= MoveAriaLeftTop.y)
-                PPos.y = MoveAriaLeftTop.y - Player_verticalhorizontal.y - offset;
+            if (RollAriaLeftTop.x >= L)
+                PPos.x = RollAriaLeftTop.x + Player_verticalhorizontal.x + offset;
+            if (T >= RollAriaLeftTop.y)
+                PPos.y = RollAriaLeftTop.y - Player_verticalhorizontal.y - offset;
 
             transform.parent.position = PPos;
 
@@ -797,24 +874,36 @@ public class Box_PlayerController : MonoBehaviour
     //行動範囲右下記録
     public Vector3 Front_RightBottom
     {
-        get { return MoveAriaRightBottom; }
+        get { return RollAriaRightBottom; }
         set
         {
-            MoveAriaRightBottom = value;
+            RollAriaRightBottom = value;
 
             var PPos = transform.parent.position;
             var B = PPos.y - Player_verticalhorizontal.y;
             var R = PPos.x + Player_verticalhorizontal.x;
             
-            if (R >= MoveAriaRightBottom.x)
-                PPos.x = MoveAriaRightBottom.x - Player_verticalhorizontal.x - offset;
-            if (MoveAriaRightBottom.y >= B)
-                PPos.y = MoveAriaRightBottom.y + Player_verticalhorizontal.y + offset;
+            if (R >= RollAriaRightBottom.x)
+                PPos.x = RollAriaRightBottom.x - Player_verticalhorizontal.x - offset;
+            if (RollAriaRightBottom.y >= B)
+                PPos.y = RollAriaRightBottom.y + Player_verticalhorizontal.y + offset;
             transform.parent.position = PPos;
         }
     }
+    
+    //行動範囲左上記録
+    public Vector3 Move_Aria_FLT
+    {
+        get { return MoveAriaLeftTop; }
+        set { MoveAriaLeftTop = value; }
+    }
 
-
+    //行動範囲右下記録
+    public Vector3 Move_Aria_FRB
+    {
+        get { return MoveAriaRightBottom; }
+        set { MoveAriaRightBottom = value; }
+    }
     //========================================================
     // 橋の上に乗ったときのプレイヤー処理
     //========================================================
