@@ -4,6 +4,13 @@ using UnityEngine;
 
 public class GameData : MonoBehaviour
 {
+    GameObject Wind;
+    public GameObject WindPrefab
+    {
+        get { return Wind; }
+        set { Wind = value; }
+    }
+
     GameObject Player_On_NowBox;
     public GameObject P_Now_Box
     {

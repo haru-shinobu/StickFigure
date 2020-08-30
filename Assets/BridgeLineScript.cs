@@ -5,14 +5,14 @@ using UnityEngine;
 public class BridgeLineScript : MonoBehaviour
 {
 
-    [SerializeField, Header("対応レイヤー")]
-    LayerMask pairlayer;
+    [SerializeField, Header("対応カラー")]
+    Color color;
 
     bool b_enabled = false;
 
     void Awake()
     {
-        gameObject.layer = pairlayer;
+        color = GetComponent<SpriteRenderer>().color;
         //やや箱表面から浮かせないとめり込む。
         var ren = transform.parent.GetComponent<MeshRenderer>().bounds.extents;
         var pos = transform.position;
@@ -28,7 +28,10 @@ public class BridgeLineScript : MonoBehaviour
         else
         if (pos.z == -ren.z) pos.z -= 0.001f;
         transform.position = pos;
-        Invoke("ReGround", 0.5f);
+        if (transform.up == Vector3.up || transform.up == -Vector3.up)
+        { if (b_enabled) b_enabled = false; }
+        else
+            if (!b_enabled)  b_enabled = true;
     }
     void Update()
     {
@@ -85,4 +88,8 @@ public class BridgeLineScript : MonoBehaviour
 
     }
     
+    public void enable(bool value)
+    {
+        b_enabled = value;
+    }
 }

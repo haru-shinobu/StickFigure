@@ -47,19 +47,27 @@ public class bridgeScript : MonoBehaviour
     // Box_PlayerController IEnumerator InBridge()->
     public void BridgeCross(bool flag)
     {
+
         var boxsc = BridgeBasePrev.transform.parent.GetComponent<SideColorBoxScript>();
         var boxsc2 = BridgeBaseNext.transform.parent.GetComponent<SideColorBoxScript>();
         if (flag)
         {
             for (int i = 0; i < boxsc.GetBridgeLine.Length; i++)
+            {
                 boxsc.GetBridgeLine[i].GetComponent<CapsuleCollider>().enabled = false;
+                boxsc.GetBridgeLine[i].SendMessage("enable",false);
+            }
             
             for (int i = 0; i < boxsc.BoxInGround.Length; i++)
                 boxsc.BoxInGround[i].GetComponent<CapsuleCollider>().enabled = false;
 
 
             for (int i = 0; i < boxsc2.GetBridgeLine.Length; i++)
-                boxsc2.GetBridgeLine[i].GetComponent<CapsuleCollider>().enabled = true;
+                if (BridgeBaseNext != boxsc2.GetBridgeLine[i])
+                {
+                    boxsc2.GetBridgeLine[i].GetComponent<CapsuleCollider>().enabled = true;
+                    boxsc2.GetBridgeLine[i].SendMessage("enable", true);
+                }
             
             for (int i = 0; i < boxsc2.BoxInGround.Length; i++)
                 boxsc2.BoxInGround[i].GetComponent<CapsuleCollider>().enabled = true;
@@ -67,17 +75,25 @@ public class bridgeScript : MonoBehaviour
         else
         {
             for (int i = 0; i < boxsc.GetBridgeLine.Length; i++)
-                boxsc.GetBridgeLine[i].GetComponent<CapsuleCollider>().enabled = true;
-            
+                if (BridgeBasePrev != boxsc.GetBridgeLine[i])
+                {
+                    boxsc.GetBridgeLine[i].GetComponent<CapsuleCollider>().enabled = true;
+                    boxsc.GetBridgeLine[i].SendMessage("enable", true);
+                }
             for (int i = 0; i < boxsc.BoxInGround.Length; i++)
                 boxsc.BoxInGround[i].GetComponent<CapsuleCollider>().enabled = true;
-            
+
 
             for (int i = 0; i < boxsc2.GetBridgeLine.Length; i++)
+            {
                 boxsc2.GetBridgeLine[i].GetComponent<CapsuleCollider>().enabled = false;
-
+                boxsc2.GetBridgeLine[i].SendMessage("enable", false);
+            }
             for (int i = 0; i < boxsc2.BoxInGround.Length; i++)
                 boxsc2.BoxInGround[i].GetComponent<CapsuleCollider>().enabled = false;
         }
+
+        //BridgeBasePrev.GetComponent<BridgeLineScript>().SlipdroundLine();
+        //BridgeBaseNext.GetComponent<BridgeLineScript>().SlipdroundLine();
     }
 }

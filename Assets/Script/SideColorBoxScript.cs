@@ -29,7 +29,7 @@ public class SideColorBoxScript : MonoBehaviour
     public GameObject CollRollSwitch1
     {
         get { return RollSwitch1; }
-        set { RollSwitch1 = value; }
+        set { RollSwitch1 = value;Debug.Log(RollSwitch1.name); }
     }
     public GameObject CollRollSwitch2
     {
@@ -247,7 +247,9 @@ public class SideColorBoxScript : MonoBehaviour
         PSc.Front_LeftTop = F_LeftTop = FLT;
         PSc.Front_RightBottom = F_RightBottom = BRB;
         var position = transform.position;
-        position.z = pos.z;
+        position.z = -mesh.bounds.extents.z;
+
+
         //プレイヤーの移動に関わる範囲
         var ray = PSc.GetComponent<RayScript>();
         var rayhitvecT = ray.Ray(position, Vector3.up,10, BoxAroundWallLayer);
@@ -255,10 +257,10 @@ public class SideColorBoxScript : MonoBehaviour
         var rayhitvecR = ray.Ray(position, Vector3.right, 10,BoxAroundWallLayer);
         var rayhitvecL = ray.Ray(position, -Vector3.right,10, BoxAroundWallLayer);
 
-        if (rayhitvecT.collider != null) FLT.y = rayhitvecT.transform.position.y - rayhitvecT.transform.GetComponent<CapsuleCollider>().radius;
-        if (rayhitvecB.collider != null) BRB.y = rayhitvecB.transform.position.y + rayhitvecB.transform.GetComponent<CapsuleCollider>().radius;
-        if (rayhitvecR.collider != null) BRB.x = rayhitvecR.transform.position.x - rayhitvecR.transform.GetComponent<CapsuleCollider>().radius;
-        if (rayhitvecL.collider != null) FLT.x = rayhitvecL.transform.position.x + rayhitvecL.transform.GetComponent<CapsuleCollider>().radius;
+        if (rayhitvecT.collider != null) {if(rayhitvecT.transform.parent == transform) FLT.y = rayhitvecT.transform.position.y - rayhitvecT.transform.GetComponent<CapsuleCollider>().radius; }
+        if (rayhitvecB.collider != null) {if(rayhitvecB.transform.parent == transform) BRB.y = rayhitvecB.transform.position.y + rayhitvecB.transform.GetComponent<CapsuleCollider>().radius;}
+        if (rayhitvecR.collider != null) {if(rayhitvecR.transform.parent == transform) BRB.x = rayhitvecR.transform.position.x - rayhitvecR.transform.GetComponent<CapsuleCollider>().radius;}
+        if (rayhitvecL.collider != null) {if(rayhitvecL.transform.parent == transform) FLT.x = rayhitvecL.transform.position.x + rayhitvecL.transform.GetComponent<CapsuleCollider>().radius;}
 
         PSc.Move_Aria_FLT = FLT;
         PSc.Move_Aria_FRB = BRB;
@@ -275,6 +277,7 @@ public class SideColorBoxScript : MonoBehaviour
     //this.OnRollerSwitch()->
     IEnumerator BlockRoller(bool flag)
     {
+        Debug.Log(flag);
         //プレイヤーを箱の子に。
         PSc.transform.parent.SetParent(transform);
         //プレイヤーの移動禁止
@@ -395,14 +398,16 @@ public class SideColorBoxScript : MonoBehaviour
             {
                 var swichwide2 = CollRollSwitch2.GetComponent<SpriteRenderer>().bounds.extents;
                 if (CollRollSwitch2.transform.position.x - swichwide2.x <= PposX && PposX <= CollRollSwitch2.transform.position.x + swichwide2.x)
+                {
                     Switch = CollRollSwitch2;
-                return Switch.transform.position;
+                    return Switch.transform.position;
+                }
             }
         return F_LeftTop;
     }
 
     //スイッチの回転方向
-    public bool GetRollSwitchPos()
+    public bool GetRollSwitchWay()
     {
         return Switch.GetComponent<BoxRollerSwitchScript>().GetRollWay;
     }
@@ -422,7 +427,6 @@ public class SideColorBoxScript : MonoBehaviour
         var hit = ray.Ray(PSc.transform.position, Vector3.up, (int)(F_LeftTop.y - PSc.transform.position.y)+1, BoxinWallLayer);
         if (hit.collider != null)
         {
-            Debug.Log(hit.collider.name);
             return hit.point;
         }
         return F_LeftTop;
@@ -434,7 +438,6 @@ public class SideColorBoxScript : MonoBehaviour
         Debug.DrawRay(PSc.transform.position,Vector3.up* (int)(F_LeftTop.y - F_RightBottom.y), Color.red, 100);
         if (rayhitvecT.collider != null)
         {
-            Debug.Log(rayhitvecT.collider.name);
             return rayhitvecT.point - Vector3.up;
         }
         return F_LeftTop;
