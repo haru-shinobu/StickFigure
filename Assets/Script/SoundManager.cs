@@ -10,8 +10,8 @@ using UnityEngine.SceneManagement;
 
 public class SoundManager : MonoBehaviour
 {
-    private static SoundManager _instance = null;
-    public static SoundManager _Instance { get { return _instance; } }
+    //private static SoundManager _instance = null;
+    //public static SoundManager _Instance { get { return _instance; } }
 
 
     [SerializeField] private GameObject soundManager;
@@ -34,18 +34,18 @@ public class SoundManager : MonoBehaviour
 
     string sceneName;
 
-    private void Awake()
-    {
-        if (_instance != null)
-        {
-            Destroy(this.gameObject);
-        }
-        else
-        {
-            _instance = this;
-            DontDestroyOnLoad(this.gameObject);
-        }
-    }
+    //private void Awake()
+    //{
+    //    if (_instance != null)
+    //    {
+    //        Destroy(this.gameObject);
+    //    }
+    //    else
+    //    {
+    //        _instance = this;
+    //        DontDestroyOnLoad(this.gameObject);
+    //    }
+    //}
 
     private void Start()
     {
