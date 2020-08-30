@@ -4,8 +4,12 @@ using UnityEngine;
 
 public class Box_PlayerController : MonoBehaviour
 {
-    [SerializeField, Range(0.1f, 10)]
-    float Speed = 0.4f;
+    [SerializeField, Range(0.1f, 10)] float MoveSpeed = 0.4f;
+    [SerializeField, Range(0.1f, 10)] float DropSpeed = 1;
+
+    int MoveCount = 0;
+    [SerializeField] int FlameCount = 10;
+
     bool _bControll = false;
     
     bool OnBridge = false;
@@ -59,7 +63,7 @@ public class Box_PlayerController : MonoBehaviour
     {
         //落下速度制限
         Vector3 vel = rb.velocity;
-        if (vel.y < -Speed * 10) vel.y = -Speed * 10;
+        if (vel.y < -DropSpeed * 10) vel.y = -DropSpeed * 10;
         rb.velocity = vel;
         Debug.Log(MoveAriaRightBottom + "M:R" + RollAriaRightBottom);
         if (Moving)
@@ -95,10 +99,15 @@ public class Box_PlayerController : MonoBehaviour
                     }
                     else
                     {
-                        // プレイヤー移動範囲チェック
-                        RePositionMoveAria();
-                        this.Move(horizontal, vartical);
-                        
+                        // 一定フレームで処理
+                        if (FlameCount < MoveCount++)
+                        {
+                            MoveCount = 0;
+                            // プレイヤー移動範囲チェック
+                            RePositionMoveAria();
+                            this.Move(horizontal, vartical);
+                        }
+
                     }
 
                     if (Input.GetButton("Jump"))
@@ -138,9 +147,9 @@ public class Box_PlayerController : MonoBehaviour
         
         //Debug.Log();
         //Debug.Log();
-        if (Move_Aria_FLT.x >= L) transform.parent.position += Vector3.right * Speed;
-        if (R >= Move_Aria_FRB.x) transform.parent.position -= Vector3.right * Speed;
-        if (T >= Move_Aria_FLT.y) transform.parent.position -= Vector3.up * Speed;
+        if (Move_Aria_FLT.x >= L) transform.parent.position += Vector3.right * MoveSpeed;
+        if (R >= Move_Aria_FRB.x) transform.parent.position -= Vector3.right * MoveSpeed;
+        if (T >= Move_Aria_FLT.y) transform.parent.position -= Vector3.up * MoveSpeed;
         if (Move_Aria_FRB.y == RollAriaRightBottom.y)
         {
             if (Move_Aria_FRB.y + G_Data.RedLine / 2 >= B)
@@ -168,7 +177,7 @@ public class Box_PlayerController : MonoBehaviour
         var R = pos.x + Player_verticalhorizontal.x;
         var L = pos.x - Player_verticalhorizontal.x;
         
-        if (B <= Move_Aria_FRB.y + Speed)
+        if (B <= Move_Aria_FRB.y + MoveSpeed)
             rb.isKinematic = true;
         else
             rb.isKinematic = false;
@@ -249,12 +258,12 @@ public class Box_PlayerController : MonoBehaviour
     {
         if (horizontal > 0)
         {
-            transform.parent.localPosition += Vector3.right * Speed;
+            transform.parent.localPosition += Vector3.right * MoveSpeed;
         }
         else
         if (horizontal < 0)
         {
-            transform.parent.localPosition -= Vector3.right * Speed;
+            transform.parent.localPosition -= Vector3.right * MoveSpeed;
         }
         //*********************************************************
         //**      ** 下を押したときの処理はここに描く    **      **
