@@ -188,10 +188,11 @@ public class Box_PlayerController : MonoBehaviour
                 if (BridgeAriaLT.x <= R && L <= BridgeAriaBR.x)
                     if (BridgeAriaBR.y <= T && B <= BridgeAriaLT.y)
                     {
+
                         pos.z = BridgeAriaLT.z;
                         transform.parent.position = pos;
                         camM.Bridge = OnBridge = true;
-                        BridgeObj.GetComponent<bridgeScript>().second_NoCollider();
+                        //BridgeObj.GetComponent<bridgeScript>().second_NoCollider();
 
                         return OnBridge;
                     }
@@ -209,21 +210,21 @@ public class Box_PlayerController : MonoBehaviour
     public bool CheckRedAria()
     {
         //G_Data.RedLineは赤線の幅
-        if (RollAriaLeftTop.x + G_Data.RedLine <= transform.parent.position.x &&  transform.parent.position.x <= RollAriaRightBottom.x - G_Data.RedLine)
-            if (RollAriaRightBottom.y + G_Data.RedLine <= transform.parent.position.y && transform.parent.position.y <= RollAriaLeftTop.y - G_Data.RedLine)
+        if (RollAriaLeftTop.x + G_Data.RedLine <= transform.parent.position.x - Player_verticalhorizontal.x && transform.parent.position.x + Player_verticalhorizontal.x <= RollAriaRightBottom.x - G_Data.RedLine)
+            if (RollAriaRightBottom.y + G_Data.RedLine <= transform.parent.position.y - Player_verticalhorizontal.y && transform.parent.position.y + Player_verticalhorizontal.y <= RollAriaLeftTop.y - G_Data.RedLine) 
             {
                 RedSide = SideRedLine.Non;
                 return false;
             }
         //左右を優先
-        if (RollAriaLeftTop.x + G_Data.RedLine > transform.parent.position.x)
+        if (RollAriaLeftTop.x + G_Data.RedLine > transform.parent.position.x-Player_verticalhorizontal.x)
             RedSide = SideRedLine.L;
-        else if(transform.parent.position.x > RollAriaRightBottom.x - G_Data.RedLine)
+        else if(transform.parent.position.x+ Player_verticalhorizontal.x > RollAriaRightBottom.x - G_Data.RedLine)
             RedSide = SideRedLine.R;
         else
-        if (RollAriaRightBottom.y + G_Data.RedLine > transform.parent.position.y)
+        if (RollAriaRightBottom.y + G_Data.RedLine > transform.parent.position.y - Player_verticalhorizontal.y)
             RedSide = SideRedLine.B;
-        else if (transform.parent.position.y > RollAriaLeftTop.y - G_Data.RedLine)
+        else if (transform.parent.position.y - Player_verticalhorizontal.y > RollAriaLeftTop.y - G_Data.RedLine)
             RedSide = SideRedLine.T;
         return true;
     }
@@ -249,7 +250,7 @@ public class Box_PlayerController : MonoBehaviour
         //*********************************************************
         if(vartical < 0)
         {
-            Debug.Log(RedSide);
+
             bool slide = false;
             //すり抜けられる床かどうか
             foreach (GameObject ground in sidebox.BoxInGround)
@@ -361,9 +362,19 @@ public class Box_PlayerController : MonoBehaviour
     //this->
     public void MakeBridgeCheck()
     {
-        CheckRedAria();
-        
         GameObject target = null;
+
+        if (CheckRedAria())
+        {
+            /*
+            if (RollAriaLeftTop.x + G_Data.RedLine <= transform.parent.position.x - Player_verticalhorizontal.x &&
+            transform.parent.position.x + Player_verticalhorizontal.x <= RollAriaRightBottom.x - G_Data.RedLine)
+            if (RollAriaRightBottom.y + G_Data.RedLine <= transform.parent.position.y - Player_verticalhorizontal.y && transform.parent.position.y + Player_verticalhorizontal.y <= RollAriaLeftTop.y - G_Data.RedLine)
+             */
+            //Debug.Log("LT:"+RollAriaLeftTop + " RB:" + RollAriaRightBottom + " PL" + transform.parent.position);
+            //Debug.Log("RedAria?");
+            //Debug.Log("PR" + transform.parent.position.x + Player_verticalhorizontal.x + "R" + (RollAriaRightBottom.x - G_Data.RedLine));
+        }
 
         if (RedSide != SideRedLine.Non)
         {
@@ -496,7 +507,7 @@ public class Box_PlayerController : MonoBehaviour
                 if (distance - 0.001f <= bounds.y)
                 {
                     MakeOk = true;
-                    
+                    /*
                     Vector3 once = target.GetComponent<SpriteRenderer>().bounds.extents;
                     if (once.y < once.x)
                     {
@@ -511,7 +522,7 @@ public class Box_PlayerController : MonoBehaviour
                             RedSide = SideRedLine.R;
                         else
                             RedSide = SideRedLine.L;
-                    }
+                    }*/
                 }
                 //橋基地同士の距離が橋以上のとき
                 else
@@ -628,6 +639,7 @@ public class Box_PlayerController : MonoBehaviour
 
             BridgeAriaLT = FLT;
             BridgeAriaBR = BRB;
+
         }
     }
 
@@ -659,7 +671,7 @@ public class Box_PlayerController : MonoBehaviour
                                 land = ground;
 
                             //その地面の上にプレイヤーがいるなら
-                            if (transform.parent.position.y - Player_verticalhorizontal.y - 0.1f < ground.transform.position.y
+                            if (transform.parent.position.y - Player_verticalhorizontal.y-0.1f < ground.transform.position.y + exvec.y
                                 && ground.transform.position.y < transform.parent.position.y)
                                 GrapOK = true;
                         }
@@ -694,7 +706,7 @@ public class Box_PlayerController : MonoBehaviour
             {
                 if (!GrapLing)
                 {
-                    Debug.Log("grapcheck");
+
                     Vector3 pos,pos1, pos2, pos3, pos4, pos5;
                     pos = pos1 = pos2 = pos3 = pos4 = pos5 = Front_LeftTop;
                     //不透過壁があるか否か
@@ -731,8 +743,7 @@ public class Box_PlayerController : MonoBehaviour
                     //存在しないとき箱左上で返す
                     pos5 = sidebox.UnPassWallPos();
                     if (a > pos5.y) a = pos5.y;
-                    Debug.Log(pos.y + ":" + pos1.y + ":" + pos2.y + ":" + pos3.y + ":" + pos4.y + ":" + pos5.y);
-                    Debug.Log(a);
+
                     if (a != Front_LeftTop.y)
                     {
                         if (a == pos1.y)
@@ -799,16 +810,15 @@ public class Box_PlayerController : MonoBehaviour
                     }
                     if (!GrapLing)
                     {
-                        if (a == pos.y || a == pos5.y)
-                            //間に何もないとき
-                            if (Front_LeftTop.y <= pos.y && Front_LeftTop.y <= pos5.y)
-                            {
-                                //上限まで伸ばす
-                                Vector3 point = new Vector3(transform.parent.position.x, RollAriaLeftTop.y - Player_verticalhorizontal.y + 0.1f, transform.parent.position.z);
-                                nowIE = Graplinger(point);
-                                StartCoroutine(nowIE);
-                                GrapLing = true;
-                            }
+                        //間に何もないとき
+                        if (Front_LeftTop.y <= pos.y && Front_LeftTop.y <= pos5.y)
+                        {
+                            //上限まで伸ばす
+                            Vector3 point = new Vector3(transform.parent.position.x, RollAriaLeftTop.y - Player_verticalhorizontal.y + 0.1f, transform.parent.position.z);
+                            nowIE = Graplinger(point);
+                            StartCoroutine(nowIE);
+                            GrapLing = true;
+                        }
                     }
                 }
             }
@@ -926,6 +936,8 @@ public class Box_PlayerController : MonoBehaviour
         //渡された側に近い時
         else
             bridgeSc.BridgeCross(false);
+        bridgeSc.BaseNext.GetComponent<CapsuleCollider>().enabled = false;
+        bridgeSc.BasePrev.GetComponent<CapsuleCollider>().enabled = false;
 
         float timer = 0;
         var ppos = transform.parent.position;//player position

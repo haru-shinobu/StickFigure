@@ -395,8 +395,10 @@ public class SideColorBoxScript : MonoBehaviour
             {
                 var swichwide2 = CollRollSwitch2.GetComponent<SpriteRenderer>().bounds.extents;
                 if (CollRollSwitch2.transform.position.x - swichwide2.x <= PposX && PposX <= CollRollSwitch2.transform.position.x + swichwide2.x)
+                {
                     Switch = CollRollSwitch2;
-                return Switch.transform.position;
+                    return Switch.transform.position;
+                }
             }
         return F_LeftTop;
     }
