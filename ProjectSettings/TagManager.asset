@@ -12,7 +12,8 @@ TagManager:
   - Box
   - BridgeBase
   - ground
-  - Clear
+  - NoPassWall
+  - SideWall
   layers:
   - Default
   - TransparentFX
@@ -22,14 +23,14 @@ TagManager:
   - UI
   - 
   - 
-  - room
+  - UnPassWall
   - 2D
   - 3D
+  - sideWall
   - 
   - 
   - 
-  - 
-  - 
+  - Player
   - 
   - 
   - 

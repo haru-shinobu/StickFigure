@@ -23,11 +23,13 @@ public class SideColorBoxScript : MonoBehaviour
         get { return GroundLines; }
         set { GroundLines = value; }
     }
+    //箱内回転スイッチ
+    [Header("回転スイッチは1箱に2つまで")]
     GameObject RollSwitch1 = null, RollSwitch2 = null;
     public GameObject CollRollSwitch1
     {
         get { return RollSwitch1; }
-        set { RollSwitch1 = value; }
+        set { RollSwitch1 = value;Debug.Log(RollSwitch1.name); }
     }
     public GameObject CollRollSwitch2
     {
@@ -35,25 +37,42 @@ public class SideColorBoxScript : MonoBehaviour
         set { RollSwitch2 = value; }
     }
     GameObject Switch;
-
+    //箱内不透過壁
+    GameObject[] NoPassWall;
+    public GameObject[] NPWall
+    {
+        get { return NoPassWall; }
+        set { NoPassWall = value; }
+    }
+    int BoxAroundWallLayer;
+    int BoxinWallLayer;
     void Awake()
     {
+        //箱枠レイヤー
+        BoxAroundWallLayer = 1 << LayerMask.NameToLayer("sideWall");
+        BoxinWallLayer = 1 << LayerMask.NameToLayer("UnPassWall");
+
         var player = GameObject.FindWithTag("Player");
         PSc = player.GetComponent<Box_PlayerController>();
         if (!mesh)
             mesh = transform.GetComponent<MeshRenderer>();
 
-        // 1箱内 にある橋オブジェクトを確保
-        int num = 0;
+
+        int num1 = 0;
+        int num2 = 0;
         for (int i = 0; transform.childCount > i; i++)
         {
+            // 1箱内 にある橋オブジェクトを確保
             if (transform.GetChild(i).tag == "BridgeBase")
-                num++;
+                num1++;
+            // 1箱内 にある不透過壁オブジェクトを確保
+            if (transform.GetChild(i).tag == "NoPassWall")
+                num2++;
         }
 
-        if (num != 0)
+        if (num1 != 0)
         {
-            BridgeBaseLines = new GameObject[num];
+            BridgeBaseLines = new GameObject[num1];
             int count = 0;
             for (int i = 0; transform.childCount > i; i++)
                 if (transform.GetChild(i).tag == "BridgeBase")
@@ -62,7 +81,18 @@ public class SideColorBoxScript : MonoBehaviour
                     count++;
                 }
         }
-        
+        if (num2 != 0)
+        {
+            NPWall = new GameObject[num2];
+            int count = 0;
+            for (int i = 0; transform.childCount > i; i++)
+                if (transform.GetChild(i).tag == "NoPassWall")
+                {
+                    NPWall[count] = transform.GetChild(i).gameObject;
+                    count++;
+                }
+        }
+        //試し。リストから変換してみた
         //1箱内 地面オブジェクトを確保
         //子オブジェクト、タグgroundをすべて探索
         IEnumerable<Transform> childIEnu = GetComponentsInChildren<Transform>(true).Where(t => t.tag == "ground");
@@ -72,11 +102,13 @@ public class SideColorBoxScript : MonoBehaviour
             list.Add(no.gameObject);
         }
         BoxInGround = new GameObject[list.Count];
-        for(int i = 0; i < list.Count; i++)
+        for (int i = 0; i < list.Count; i++)
         {
             BoxInGround[i] = list[i];
         }
         list.Clear();
+
+
     }
     //=======================================================================
     /// <summary>
@@ -170,7 +202,7 @@ public class SideColorBoxScript : MonoBehaviour
     //==================================================================
     // 箱前面の位置を記録・プレイヤーZ座標を箱前面と統一
     //==================================================================
-    //this.SetStartPos(Box_PlayerController PSc)->
+    //this.SetBoxPos(Box_PlayerController bPSc)->
     //this.IEnumerator BlockRoller(Vector3 way_vec)->
     void SetAria(Box_PlayerController PSc)
     {
@@ -207,13 +239,31 @@ public class SideColorBoxScript : MonoBehaviour
             BRB.z = FLT.z;
         else
             FLT.z = BRB.z;
-
+        //回転に関わる範囲
         var pos = PSc.transform.parent.position;
         pos.z = -mesh.bounds.extents.z;
         PSc.transform.parent.position = pos;
 
         PSc.Front_LeftTop = F_LeftTop = FLT;
         PSc.Front_RightBottom = F_RightBottom = BRB;
+        var position = transform.position;
+        position.z = -mesh.bounds.extents.z;
+
+
+        //プレイヤーの移動に関わる範囲
+        var ray = PSc.GetComponent<RayScript>();
+        var rayhitvecT = ray.Ray(position, Vector3.up,10, BoxAroundWallLayer);
+        var rayhitvecB = ray.Ray(position, -Vector3.up,10, BoxAroundWallLayer);
+        var rayhitvecR = ray.Ray(position, Vector3.right, 10,BoxAroundWallLayer);
+        var rayhitvecL = ray.Ray(position, -Vector3.right,10, BoxAroundWallLayer);
+
+        if (rayhitvecT.collider != null) {if(rayhitvecT.transform.parent == transform) FLT.y = rayhitvecT.transform.position.y - rayhitvecT.transform.GetComponent<CapsuleCollider>().radius; }
+        if (rayhitvecB.collider != null) {if(rayhitvecB.transform.parent == transform) BRB.y = rayhitvecB.transform.position.y + rayhitvecB.transform.GetComponent<CapsuleCollider>().radius;}
+        if (rayhitvecR.collider != null) {if(rayhitvecR.transform.parent == transform) BRB.x = rayhitvecR.transform.position.x - rayhitvecR.transform.GetComponent<CapsuleCollider>().radius;}
+        if (rayhitvecL.collider != null) {if(rayhitvecL.transform.parent == transform) FLT.x = rayhitvecL.transform.position.x + rayhitvecL.transform.GetComponent<CapsuleCollider>().radius;}
+
+        PSc.Move_Aria_FLT = FLT;
+        PSc.Move_Aria_FRB = BRB;
     }
     //==================================================================
     //BoxRollerSwitchからの信号用
@@ -226,6 +276,7 @@ public class SideColorBoxScript : MonoBehaviour
     //this.OnRollerSwitch()->
     IEnumerator BlockRoller(bool flag)
     {
+        Debug.Log(flag);
         //プレイヤーを箱の子に。
         PSc.transform.parent.SetParent(transform);
         //プレイヤーの移動禁止
@@ -238,7 +289,7 @@ public class SideColorBoxScript : MonoBehaviour
             way_vec = Vector3.forward;
 
         yield return new WaitForEndOfFrame();
-        
+
         float minAngle = 0.0f;
         float maxAngle = 90.0f;
         float timer = 0;
@@ -273,7 +324,7 @@ public class SideColorBoxScript : MonoBehaviour
 
 
         transform.root.localEulerAngles = euAngle;
-        
+
         //ブロックの親子を解除
         var rootTrs = transform.root;
         transform.SetParent(null);
@@ -315,16 +366,7 @@ public class SideColorBoxScript : MonoBehaviour
     {
         ChangeSpeed = speed;
     }
-    //=======================================================================
-    // ゲームスタート時の設定用
-    //=======================================================================
-    public Transform SetStartPos(Box_PlayerController bPSc)
-    {
-        bPSc.transform.parent.position = transform.position;
-        SetAria(bPSc);
 
-        return transform;
-    }
     //=======================================================================
     // 箱移動後の設定用
     //=======================================================================
@@ -333,30 +375,40 @@ public class SideColorBoxScript : MonoBehaviour
         SetAria(bPSc);
     }
     //=======================================================================
-    // 箱に回転スイッチが存在するかどうか
+    // 箱に回転スイッチが存在したときの位置
     //=======================================================================
-    public bool FindBoxRollerSwitch()
+    public Vector3 FindBoxRollerSwitch()
     {
         float PposX = PSc.transform.parent.position.x;
+        Debug.Log("SwitchSerch");
         if (CollRollSwitch1)
-        {   
-            var swichwide1 = CollRollSwitch1.GetComponent<SpriteRenderer>().bounds.extents;
-            if (CollRollSwitch1.transform.position.x - swichwide1.x <= PposX && PposX <= CollRollSwitch1.transform.position.x + swichwide1.x)
+            if (CollRollSwitch1.transform.forward == Vector3.forward)
             {
-                Switch = CollRollSwitch1;
-                return true;
+                var swichwide1 = CollRollSwitch1.GetComponent<SpriteRenderer>().bounds.extents;
+                if (CollRollSwitch1.transform.position.x - swichwide1.x <= PposX && PposX <= CollRollSwitch1.transform.position.x + swichwide1.x)
+                {
+                    Switch = CollRollSwitch1;
+                    Debug.Log("SwitchFind" + Switch.transform.position);
+                    return Switch.transform.position;
+                }
             }
-        }
+
         if (CollRollSwitch2)
-        {
-            var swichwide2 = CollRollSwitch2.GetComponent<SpriteRenderer>().bounds.extents;
-            if (CollRollSwitch2.transform.position.x - swichwide2.x <= PposX && PposX <= CollRollSwitch2.transform.position.x + swichwide2.x)
-                Switch = CollRollSwitch2;
-            return true;
-        }
-        return false;
+            if (CollRollSwitch2.transform.forward == Vector3.forward)
+            {
+                var swichwide2 = CollRollSwitch2.GetComponent<SpriteRenderer>().bounds.extents;
+                if (CollRollSwitch2.transform.position.x - swichwide2.x <= PposX && PposX <= CollRollSwitch2.transform.position.x + swichwide2.x)
+                {
+                    Switch = CollRollSwitch2;
+                    Debug.Log("SwitchFind" + Switch.transform.position);
+                    return Switch.transform.position;
+                }
+            }
+        return F_LeftTop;
     }
-    public bool GetRollSwitchPos()
+
+    //スイッチの回転方向
+    public bool GetRollSwitchWay()
     {
         return Switch.GetComponent<BoxRollerSwitchScript>().GetRollWay;
     }
@@ -365,7 +417,31 @@ public class SideColorBoxScript : MonoBehaviour
     //=======================================================================
     public void RollSwitchAction()
     {
-        Switch.GetComponent<BoxRollerSwitchScript>().OnRoll();
+        Switch.GetComponent<BoxRollerSwitchScript>().OnRoll(this);
     }
-
+    //=======================================================================
+    // 不透過壁
+    //=======================================================================
+    public Vector3 UnPassWallPos()
+    {
+        var ray = PSc.GetComponent<RayScript>();
+        var hit = ray.Ray(PSc.transform.position, Vector3.up, (int)(F_LeftTop.y - PSc.transform.position.y)+1, BoxinWallLayer);
+        if (hit.collider != null)
+        {
+            return hit.point;
+        }
+        return F_LeftTop;
+    }
+    public Vector3 sideWall()
+    {
+        var ray = PSc.GetComponent<RayScript>();
+        var rayhitvecT = ray.Ray(PSc.transform.position, Vector3.up, (int)(F_LeftTop.y - F_RightBottom.y), BoxAroundWallLayer);
+        Debug.DrawRay(PSc.transform.position,Vector3.up* (int)(F_LeftTop.y - F_RightBottom.y), Color.red, 100);
+        if (rayhitvecT.collider != null)
+        {
+            return rayhitvecT.point;
+        }
+        return F_LeftTop;
+        
+    }
 }

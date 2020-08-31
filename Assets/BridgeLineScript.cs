@@ -5,30 +5,36 @@ using UnityEngine;
 public class BridgeLineScript : MonoBehaviour
 {
 
-    [SerializeField, Header("対応レイヤー")]
-    LayerMask pairlayer;
+    [SerializeField, Header("対応カラー")]
+    Color color;
 
     bool b_enabled = false;
 
+    public Color GetColor { get { return GetComponent<SpriteRenderer>().color; } }
+
     void Awake()
     {
-        gameObject.layer = pairlayer;
+        color = GetComponent<SpriteRenderer>().color;
         //やや箱表面から浮かせないとめり込む。
         var ren = transform.parent.GetComponent<MeshRenderer>().bounds.extents;
+        var ppos = transform.parent.position;
         var pos = transform.position;
-        if (pos.x == ren.x) pos.x += 0.001f;
+        if (pos.x == ppos.x + ren.x) pos.x += 0.001f;
         else
-        if (pos.x == -ren.x) pos.x -= 0.001f;
+        if (pos.x == ppos.x - ren.x) pos.x -= 0.001f;
         else
-        if (pos.y == ren.y) pos.y += 0.001f;
+        if (pos.y == ppos.x + ren.y) pos.y += 0.001f;
         else
-        if (pos.y == -ren.y) pos.y -= 0.001f;
+        if (pos.y == ppos.x - ren.y) pos.y -= 0.001f;
         else
-        if (pos.z == ren.z) pos.z += 0.001f;
+        if (pos.z == ppos.x + ren.z) pos.z += 0.001f;
         else
-        if (pos.z == -ren.z) pos.z -= 0.001f;
+        if (pos.z == ppos.x - ren.z) pos.z -= 0.001f;
         transform.position = pos;
-        Invoke("ReGround", 0.5f);
+        if (transform.up == Vector3.up || transform.up == -Vector3.up)
+        { if (b_enabled) b_enabled = false; }
+        else
+            if (!b_enabled)  b_enabled = true;
     }
     void Update()
     {
@@ -85,4 +91,8 @@ public class BridgeLineScript : MonoBehaviour
 
     }
     
+    public void enable(bool value)
+    {
+        b_enabled = value;
+    }
 }

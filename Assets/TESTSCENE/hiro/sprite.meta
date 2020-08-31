@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<< HEAD:Assets/TESTSCENE/hiro/sprite.meta
 guid: baf6cefedc5699341a5d4d78b43234db
+=======
+guid: 13bb5873cad302a43846b76e888fa88e
+>>>>>>> a805f1c2856080b4e0c5e49c1b90bb83c59c4873:Assets/Script/Title.meta
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}
