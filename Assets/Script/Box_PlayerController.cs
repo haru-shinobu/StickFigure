@@ -737,34 +737,46 @@ public class Box_PlayerController : MonoBehaviour
                     //回転スイッチの位置(仮)
                     //存在しないとき箱左上で返す
                     pos1 = sidebox.FindBoxRollerSwitch();
-                    if (a > pos1.y || pos1.y != Front_LeftTop.y) a = pos1.y;
+                    if (a > pos1.y && pos1.y != Front_LeftTop.y) a = pos1.y;
                     
                     //橋の下限の位置
                     if (BridgeObj)
                     {
                         pos2 = BridgeObj.transform.position;
-                        pos2.y -= BridgeObj.GetComponent<MeshRenderer>().bounds.extents.y;
-                        if (a > pos2.y || pos2.y != Front_LeftTop.y) a = pos2.y;
+                        var ran = BridgeObj.GetComponent<MeshRenderer>().bounds.extents;
+                        pos2.y -= ran.y;
+
+                        if (a > pos2.y && transform.parent.position.y < pos2.y)
+                            if (BridgeObj.transform.position.x - ran.x < transform.parent.position.x && transform.parent.position.x < BridgeObj.transform.position.x + ran.x)
+                                a = pos2.y;
                     }
                     //地面の位置
                     if (land)
                     {
                         pos3 = land.transform.position;
-                        pos3.y -= land.GetComponent<SpriteRenderer>().bounds.extents.y;
-                        if (a > pos3.y || pos3.y != Front_LeftTop.y) a = pos3.y;
+                        var ran = land.GetComponent<SpriteRenderer>().bounds.extents;
+                        pos3.y -= ran.y;
+                        if (land.transform.position.y > transform.parent.position.y)
+                            if (a > pos3.y && pos3.y != Front_LeftTop.y) a = pos3.y;
                     }
                     //橋ベースの位置
                     if (onebridgebase)
                     {
                         pos4 = onebridgebase.transform.position;
-                        if (a > pos4.y || pos4.y != Front_LeftTop.y) a = pos4.y;
+                        var ran = onebridgebase.GetComponent<SpriteRenderer>().bounds.extents;
+                        pos4.y -= ran.y;
+                        if (a > pos4.y && pos4.y != Front_LeftTop.y)
+                            if (transform.parent.position.y < onebridgebase.transform.position.y)
+                                if (onebridgebase.transform.position.x - ran.x < transform.parent.position.x && transform.parent.position.x < onebridgebase.transform.position.x + ran.x)
+                                    a = pos4.y;
                     }
                     //不透過壁の位置
                     //存在しないとき箱左上で返す
                     pos5 = sidebox.UnPassWallPos();
-                    if (a > pos5.y || pos5.y != Front_LeftTop.y) a = pos5.y;
+                    if (a > pos5.y && pos5.y != Front_LeftTop.y) a = pos5.y;
 
-                    Debug.Log(a);
+                    
+                    Debug.Log(a+"Flame"+pos.y+"Switch"+pos1.y + "Bridge" +pos2.y + "ground" +pos3.y + "Base" + pos4.y + "Wall" + pos5.y);
                     if (a != Front_LeftTop.y)
                     {
                         if (a == pos1.y)

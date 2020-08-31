@@ -13,6 +13,10 @@ public class BoxRollerSwitchScript : MonoBehaviour
     
     void Start()
     {
+        if (!GetRollWay)
+        {
+            transform.localScale = new Vector3(-1, 1, 1);
+        }
         var ren = transform.parent.GetComponent<MeshRenderer>().bounds.extents;
         var pos = transform.position;
         if (pos.x == ren.x) pos.x += 0.001f;
