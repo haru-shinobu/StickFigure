@@ -149,7 +149,7 @@ public class TitleManager : MonoBehaviour
                 {
                     case ButtonSelect.BUTTON_GAME:
 
-                        SceneManager.LoadScene("MainScene");
+                        SceneManager.LoadScene("GameMainScene");
                         break;
                     //case ButtonSelect.BUTTON_RULE:
 
