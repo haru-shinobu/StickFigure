@@ -9,7 +9,7 @@ public class BridgeLineScript : MonoBehaviour
     Color color;
 
     bool b_enabled = false;
-
+    SideColorBoxScript side;
     public Color GetColor { get { return GetComponent<SpriteRenderer>().color; } }
 
     void Awake()
@@ -35,12 +35,13 @@ public class BridgeLineScript : MonoBehaviour
         { if (b_enabled) b_enabled = false; }
         else
             if (!b_enabled)  b_enabled = true;
+
+        side = transform.parent.GetComponent<SideColorBoxScript>();
     }
     void Update()
     {
-        if (transform.forward == Vector3.forward)
+        if (transform.position.z <= side.GetFLT.z)
         {
-
             //橋基礎がより低い時
             if (transform.up == Vector3.up || transform.up == -Vector3.up)
             {

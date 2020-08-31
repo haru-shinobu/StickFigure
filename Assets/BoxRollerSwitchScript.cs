@@ -35,9 +35,8 @@ public class BoxRollerSwitchScript : MonoBehaviour
         if (scs.CollRollSwitch1 == null)
             scs.CollRollSwitch1 = this.gameObject;
         else
-        if (scs.CollRollSwitch1 == null)
+        if (scs.CollRollSwitch2 == null)
             scs.CollRollSwitch2 = this.gameObject;
-
     }
 
     

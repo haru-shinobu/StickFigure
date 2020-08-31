@@ -8,6 +8,7 @@ public class SideColorBoxScript : MonoBehaviour
     [SerializeField, Header("回転速度"), Range(0.5f, 2)]
     float ChangeSpeed = 1;
     Vector3 F_LeftTop, F_RightBottom;
+    public Vector3 GetFLT { get { return F_LeftTop; } }
     MeshRenderer mesh;
     Box_PlayerController PSc;
     //箱内橋オブジェクト
@@ -276,7 +277,6 @@ public class SideColorBoxScript : MonoBehaviour
     //this.OnRollerSwitch()->
     IEnumerator BlockRoller(bool flag)
     {
-        Debug.Log(flag);
         //プレイヤーを箱の子に。
         PSc.transform.parent.SetParent(transform);
         //プレイヤーの移動禁止
@@ -381,9 +381,11 @@ public class SideColorBoxScript : MonoBehaviour
     {
         float PposX = PSc.transform.parent.position.x;
         Debug.Log("SwitchSerch");
-        if (CollRollSwitch1)
-            if (CollRollSwitch1.transform.forward == Vector3.forward)
+        
+        if (CollRollSwitch1) {
+            if (CollRollSwitch1.transform.position.z <= F_LeftTop.z)
             {
+                Debug.Log("Serch");
                 var swichwide1 = CollRollSwitch1.GetComponent<SpriteRenderer>().bounds.extents;
                 if (CollRollSwitch1.transform.position.x - swichwide1.x <= PposX && PposX <= CollRollSwitch1.transform.position.x + swichwide1.x)
                 {
@@ -392,9 +394,10 @@ public class SideColorBoxScript : MonoBehaviour
                     return Switch.transform.position;
                 }
             }
+        }
 
         if (CollRollSwitch2)
-            if (CollRollSwitch2.transform.forward == Vector3.forward)
+            if (CollRollSwitch2.transform.position.z <= F_LeftTop.z)
             {
                 var swichwide2 = CollRollSwitch2.GetComponent<SpriteRenderer>().bounds.extents;
                 if (CollRollSwitch2.transform.position.x - swichwide2.x <= PposX && PposX <= CollRollSwitch2.transform.position.x + swichwide2.x)

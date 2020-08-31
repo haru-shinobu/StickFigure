@@ -276,7 +276,7 @@ public class Box_PlayerController : MonoBehaviour
             foreach (GameObject ground in sidebox.BoxInGround)
             {
                 //正面に来ている地面のみ
-                if (ground.transform.forward == Vector3.forward)
+                if (ground.transform.position.z <= Front_LeftTop.z)
                 {
                     //画像の縦横をとり、地面が横長のとき、グラップリング対象とする
                     Vector3 exvec = ground.GetComponent<SpriteRenderer>().bounds.extents;
@@ -303,7 +303,7 @@ public class Box_PlayerController : MonoBehaviour
                     {
                         if (sidebox.GetBridgeLine[i].tag == bridgetag)
                         {
-                            if (sidebox.GetBridgeLine[i].transform.forward == Vector3.forward)
+                            if (sidebox.GetBridgeLine[i].transform.position.z <= Front_LeftTop.z)
                             {
                                 var bridgebaseline = sidebox.GetBridgeLine[i].transform.GetComponent<SpriteRenderer>().bounds.extents;
                                 Vector3 _vec = new Vector3(
@@ -406,7 +406,7 @@ public class Box_PlayerController : MonoBehaviour
             {
                 if (sidebox.GetBridgeLine[i].tag == bridgetag)
                 {
-                    if (sidebox.GetBridgeLine[i].transform.forward == Vector3.forward)
+                    if (sidebox.GetBridgeLine[i].transform.position.z <= Front_LeftTop.z)
                     {
                         var bridgebaseline = sidebox.GetBridgeLine[i].transform.GetComponent<SpriteRenderer>().bounds.extents;
 
@@ -676,12 +676,11 @@ public class Box_PlayerController : MonoBehaviour
             
             foreach (GameObject ground in sidebox.BoxInGround)
             {
+                //画像の縦横をとり、地面が横広のとき、グラップリング対象とする
+                Vector3 exvec = ground.GetComponent<SpriteRenderer>().bounds.extents;
                 //正面に来ている地面のみ
-                if (ground.transform.forward == Vector3.forward)
+                if (ground.transform.position.z <= sidebox.transform.position.z - exvec.z)
                 {
-                    //画像の縦横をとり、地面が横広のとき、グラップリング対象とする
-                    Vector3 exvec = ground.GetComponent<SpriteRenderer>().bounds.extents;
-
                     if (exvec.x > exvec.y)
                     {
                         //地面幅のなかにプレイヤーが存在するなら
@@ -704,11 +703,11 @@ public class Box_PlayerController : MonoBehaviour
             {   
                 foreach(GameObject obj in sidebox.GetBridgeLine)
                 {
-                    if(obj.transform.forward == Vector3.forward && obj.transform.up == Vector3.up)
+                    Vector3 exvec = obj.GetComponent<SpriteRenderer>().bounds.extents;
+                    if (obj.transform.position.z <=sidebox.transform.position.z - exvec.z && exvec.x > exvec.y)
                     {
                         if (transform.parent.position.y < obj.transform.position.y)
                         {
-                            Vector3 exvec = obj.GetComponent<SpriteRenderer>().bounds.extents;
                             if(obj.transform.position.x - exvec.x < transform.parent.position.x && transform.parent.position.x < obj.transform.position.x + exvec.x)
                             {
                                 onebridgebase = obj;
