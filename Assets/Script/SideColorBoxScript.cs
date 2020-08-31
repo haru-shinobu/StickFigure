@@ -264,7 +264,6 @@ public class SideColorBoxScript : MonoBehaviour
 
         PSc.Move_Aria_FLT = FLT;
         PSc.Move_Aria_FRB = BRB;
-
     }
     //==================================================================
     //BoxRollerSwitchからの信号用
@@ -381,7 +380,7 @@ public class SideColorBoxScript : MonoBehaviour
     public Vector3 FindBoxRollerSwitch()
     {
         float PposX = PSc.transform.parent.position.x;
-
+        Debug.Log("SwitchSerch");
         if (CollRollSwitch1)
             if (CollRollSwitch1.transform.forward == Vector3.forward)
             {
@@ -389,6 +388,7 @@ public class SideColorBoxScript : MonoBehaviour
                 if (CollRollSwitch1.transform.position.x - swichwide1.x <= PposX && PposX <= CollRollSwitch1.transform.position.x + swichwide1.x)
                 {
                     Switch = CollRollSwitch1;
+                    Debug.Log("SwitchFind" + Switch.transform.position);
                     return Switch.transform.position;
                 }
             }
@@ -400,6 +400,7 @@ public class SideColorBoxScript : MonoBehaviour
                 if (CollRollSwitch2.transform.position.x - swichwide2.x <= PposX && PposX <= CollRollSwitch2.transform.position.x + swichwide2.x)
                 {
                     Switch = CollRollSwitch2;
+                    Debug.Log("SwitchFind" + Switch.transform.position);
                     return Switch.transform.position;
                 }
             }
@@ -416,7 +417,7 @@ public class SideColorBoxScript : MonoBehaviour
     //=======================================================================
     public void RollSwitchAction()
     {
-        Switch.GetComponent<BoxRollerSwitchScript>().OnRoll();
+        Switch.GetComponent<BoxRollerSwitchScript>().OnRoll(this);
     }
     //=======================================================================
     // 不透過壁
@@ -438,7 +439,7 @@ public class SideColorBoxScript : MonoBehaviour
         Debug.DrawRay(PSc.transform.position,Vector3.up* (int)(F_LeftTop.y - F_RightBottom.y), Color.red, 100);
         if (rayhitvecT.collider != null)
         {
-            return rayhitvecT.point - Vector3.up;
+            return rayhitvecT.point;
         }
         return F_LeftTop;
         
