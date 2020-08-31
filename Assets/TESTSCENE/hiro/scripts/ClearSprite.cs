@@ -1,29 +1,27 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
-public class ClearScript : MonoBehaviour
+public class ClearSprite : MonoBehaviour
 {
     public Vector3 StartPos;
     public Vector3 hantennPos;
     public float time;
+    public ClearCube goal;
     private Vector3 deltaPos;
     private float elapsedTime;
-    public ClearCube _goal;
     private bool bStartToEnd = true;
 
-   void Start()
+    void Start()
     {
         transform.position = StartPos;
         deltaPos = (hantennPos - StartPos) / time;
     }
     void Update()
     {
-        if (_goal)
-        {
-            transform.position += deltaPos * Time.deltaTime;
-            elapsedTime += Time.deltaTime;
+        if (goal == true) { 
+        transform.position += deltaPos * Time.deltaTime;
+        elapsedTime += Time.deltaTime;
             if (elapsedTime > time)
             {
                 if (bStartToEnd)
@@ -34,10 +32,6 @@ public class ClearScript : MonoBehaviour
                 }
                 bStartToEnd = !bStartToEnd;
                 elapsedTime = 0;
-            }
-            if (Input.GetMouseButtonDown(0))
-            {
-                SceneManager.LoadScene("");
             }
         }
     }
