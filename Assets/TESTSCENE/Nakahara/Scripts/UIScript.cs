@@ -19,7 +19,7 @@ public class UIScript : MonoBehaviour
         //_PManager = PlayerMObj.GetComponent<PlayerManager>();
         // 何故か要素数が受け取れない
         //spriteTimer = Resources.LoadAll<Sprite>("Canvas/Sprites/NChip");
-        ImageObj = GameObject.Find("Image_p10");
+        ImageObj = GameObject.Find("Image_10");
         image_10 = ImageObj.GetComponent<Image>();
         ImageObj = GameObject.Find("Image_01");
         image_01 = ImageObj.GetComponent<Image>();
