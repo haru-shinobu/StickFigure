@@ -11,9 +11,9 @@ public class playerclear : MonoBehaviour
         
     }
 
-    private void OnCollisionStay(Collision collision)
+    private void OnCollisionStay(Collision other)
     {
-        if (collision.gameObject.tag == "Clear")
+        if (other.gameObject.tag == "Clear")
         {
             coRoutine();
         }
