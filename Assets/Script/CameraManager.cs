@@ -64,7 +64,9 @@ public class CameraManager : MonoBehaviour
                     }
                     routine = OnBlockCam();
                     StartCoroutine(routine);
-                }else
+                    _bColutine_OnBox = true;
+                }
+                else
                 if (_bCorutine_Action) {
                     Vector3 Rootpos = transform.root.position;
                     Vector3 Pscpos = PSc.transform.parent.position;
@@ -88,6 +90,7 @@ public class CameraManager : MonoBehaviour
                     }
                     routine = OnBridgeCam();
                     StartCoroutine(routine);
+                    _bColutine_OnBridge = true;
                 }
                 else
                 if (_bCorutine_Action) {
@@ -99,8 +102,7 @@ public class CameraManager : MonoBehaviour
     }
 
     IEnumerator OnBlockCam()
-    {
-        _bColutine_OnBox = true;
+    {   
         Vector3 rootPos = transform.root.position;
         Vector3 PlayerPos = PSc.transform.parent.position;
         rootPos.z = PlayerPos.z = 0;
@@ -120,7 +122,6 @@ public class CameraManager : MonoBehaviour
 
     IEnumerator OnBridgeCam()
     {
-        _bColutine_OnBridge = true;
         Vector3 StartPos = transform.position;
         Vector3 EndPos = PSc.transform.parent.position - Camera_Distance;
         float timer = 0;

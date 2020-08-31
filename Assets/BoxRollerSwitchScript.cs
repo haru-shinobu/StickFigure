@@ -10,11 +10,9 @@ public class BoxRollerSwitchScript : MonoBehaviour
     {
         get { return bRollWay; }
     }
-    GameData G_Data;
+    
     void Start()
     {
-        G_Data = GameObject.FindWithTag("BoxManager").GetComponent<GameData>();
-
         var ren = transform.parent.GetComponent<MeshRenderer>().bounds.extents;
         var pos = transform.position;
         if (pos.x == ren.x) pos.x += 0.001f;
@@ -40,9 +38,9 @@ public class BoxRollerSwitchScript : MonoBehaviour
 
     
     //舌か何かで動作させたとき
-    public void OnRoll()
+    public void OnRoll(SideColorBoxScript target)
     {
-        G_Data.P_Now_Box.GetComponent<SideColorBoxScript>().On_RollerSwitch(bRollWay);
+        target.On_RollerSwitch(bRollWay);
         StartCoroutine("Switch_Roller");
     }
     IEnumerator Switch_Roller()
