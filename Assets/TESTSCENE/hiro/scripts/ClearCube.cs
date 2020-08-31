@@ -5,31 +5,18 @@ using UnityEngine.SceneManagement;
 
 public class ClearCube : MonoBehaviour
 {
-    public GameObject hako_Clear;
+    public GameObject player;
     public GameObject goalText;
-    //public MeshRenderer tate_mesh;
     Vector3 Ppos;
-    void Awake()
+
+    public void Start()
     {
         goalText.gameObject.SetActive(false);
     }
-    public void Start()
+
+    private void OnCollisionStay(Collision other)
     {
-        Transform PTransform = transform;
-    }
-    /*public void mesher()
-    {
-       tate_mesh = transform.GetComponent<MeshRenderer>();
-        Vector3 tate = new Vector3(
-            Mathf.Abs(tate_mesh.bounds.size.x),
-            Mathf.Abs(tate_mesh.bounds.extents.y),
-            Mathf.Abs(tate_mesh.bounds.size.z));
-        Vector3 tate_Y = transform.position + tate;
-    }
-    */
-    private void OnCollisionStay(Collision collision)
-    {
-        if (collision.gameObject.tag == "Player")
+        if (other.gameObject.tag == "Player")
         {
             coRoutine();
             Debug.Log("A");
@@ -38,14 +25,7 @@ public class ClearCube : MonoBehaviour
 
     IEnumerator coRoutine()
     { 
-        //Transform PTransform = transform;
-     /*   tate_mesh = transform.GetComponent<MeshRenderer>();
-        Vector3 tate = new Vector3(
-            Mathf.Abs(tate_mesh.bounds.size.x),
-            Mathf.Abs(tate_mesh.bounds.extents.y),
-            Mathf.Abs(tate_mesh.bounds.size.z));
-        Vector3 tate_Y = transform.position + tate;*/
-        yield return new WaitForSeconds(10);
+        yield return new WaitForSeconds(10f);
         goalText.gameObject.SetActive(true);
         yield return new WaitForSeconds(15f);
         SceneManager.LoadScene("Clear");
