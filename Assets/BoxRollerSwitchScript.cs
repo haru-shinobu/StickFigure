@@ -13,6 +13,10 @@ public class BoxRollerSwitchScript : MonoBehaviour
     
     void Start()
     {
+        if (!GetRollWay)
+        {
+            transform.localScale = new Vector3(-1, 1, 1);
+        }
         var ren = transform.parent.GetComponent<MeshRenderer>().bounds.extents;
         var pos = transform.position;
         if (pos.x == ren.x) pos.x += 0.001f;
@@ -31,9 +35,8 @@ public class BoxRollerSwitchScript : MonoBehaviour
         if (scs.CollRollSwitch1 == null)
             scs.CollRollSwitch1 = this.gameObject;
         else
-        if (scs.CollRollSwitch1 == null)
+        if (scs.CollRollSwitch2 == null)
             scs.CollRollSwitch2 = this.gameObject;
-
     }
 
     
