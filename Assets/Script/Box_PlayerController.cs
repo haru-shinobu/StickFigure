@@ -686,8 +686,13 @@ public class Box_PlayerController : MonoBehaviour
                         //地面幅のなかにプレイヤーが存在するなら
                         if (ground.transform.position.x - exvec.x < transform.parent.position.x && transform.parent.position.x < ground.transform.position.x + exvec.x)
                         {
+
                             if (transform.parent.position.y < ground.transform.position.y)
-                                land = ground;
+                                if (land == null)
+                                    land = ground;
+                                else
+                                if (land.transform.position.y < ground.transform.position.y)
+                                    land = ground;
 
                             //その地面の上にプレイヤーがいるなら
                             if (transform.parent.position.y - Player_verticalhorizontal.y-0.1f < ground.transform.position.y + exvec.y
