@@ -5,7 +5,6 @@ using UnityEngine;
 public class playerclear : MonoBehaviour
 {
     public Vector3 playerpos;
-    public ClearCube mesh_Y;
     // Start is called before the first frame update
     void Start()
     {
@@ -26,16 +25,15 @@ public class playerclear : MonoBehaviour
     }
     IEnumerator coRoutine()
     {
-        Transform PTransform = transform;
-        mesh_Y.GetComponent<ClearCube>().mesher();
-        Vector3 playerpos = PTransform.position;
-        transform.position = new Vector3(Mathf.Sin(Time.time) * playerpos.x, +10.0f + playerpos.y, playerpos.z);
+        //Transform PTransform = transform;
+        //Vector3 playerpos = PTransform.position;
+        transform.position = new Vector3(Mathf.Sin(Time.time) * 5.0f+playerpos.x,  + playerpos.y, playerpos.z);
         yield return new WaitForSeconds(3f);
         Debug.Log("B");
         if (playerpos.y>=5)
         {
             //playerpos.x += 0.1f;
-            transform.position = new Vector3(Mathf.Sin(Time.time) * 5.0f + playerpos.x, playerpos.y, playerpos.z);
+            transform.position = new Vector3(Mathf.Sin(Time.time) *  playerpos.x, 5.0f +playerpos.y, playerpos.z);
             //timer += Time.deltaTime * 0.5f;
             yield return new WaitForEndOfFrame();
             //if (timer >= 1)
