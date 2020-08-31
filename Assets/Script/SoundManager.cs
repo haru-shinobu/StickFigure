@@ -84,10 +84,10 @@ public class SoundManager : MonoBehaviour
         {
             switch (sceneName)
             {
-                case "TitleScene": audioSource[0].clip = titleBGM; break;
-                case "MainScene": audioSource[0].clip = mainBGM; break;
+                case "Title": audioSource[0].clip = titleBGM; break;
+                case "GameMainScene": audioSource[0].clip = mainBGM; break;
                 case "GameOver": audioSource[0].clip = overBGM; break;
-                case "GameClear": audioSource[0].clip = clearBGM; break;
+                case "Clear": audioSource[0].clip = clearBGM; break;
             }
             Debug.Log("BGM" + sceneName);
             audioSource[0].Play();
