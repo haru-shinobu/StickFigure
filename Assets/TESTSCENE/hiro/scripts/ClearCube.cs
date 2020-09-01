@@ -6,11 +6,17 @@ using UnityEngine.SceneManagement;
 public class ClearCube : MonoBehaviour
 {
     public GameObject goalText;
+    //public GameObject Particle;
+    //public GameObject Particle_1;
+    //public GameObject Particle_2;
     Vector3 Ppos;
 
     public void Start()
     {
         goalText.gameObject.SetActive(false);
+        //Particle.gameObject.SetActive(false);
+        //Particle_1.gameObject.SetActive(false);
+        //Particle_2.gameObject.SetActive(false);
     }
     private void OnTriggerEnter(Collider other)
     {
@@ -28,8 +34,11 @@ public class ClearCube : MonoBehaviour
     private IEnumerator clear()
     {
         goalText.gameObject.SetActive(true);
-        yield return new WaitForSeconds(10f);
+        //Particle.gameObject.SetActive(true);
+        //Particle_1.gameObject.SetActive(true);
+        //Particle_2.gameObject.SetActive(true);
+        yield return new WaitForSeconds(2f);
         SceneManager.LoadScene("Clear");
-        yield return new WaitForSeconds(15f);
+        yield return new WaitForSeconds(5f);
     }
 }
