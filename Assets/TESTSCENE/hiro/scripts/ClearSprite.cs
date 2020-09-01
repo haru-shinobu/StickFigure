@@ -19,8 +19,7 @@ public class ClearSprite : MonoBehaviour
     }
     void Update()
     {
-        goal.GetComponent<ClearCube>();
-        if (goal == true) { 
+        if (goal) { 
         transform.position += deltaPos * Time.deltaTime;
         elapsedTime += Time.deltaTime;
             if (elapsedTime > time)

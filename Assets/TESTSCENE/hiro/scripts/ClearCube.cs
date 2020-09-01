@@ -5,7 +5,6 @@ using UnityEngine.SceneManagement;
 
 public class ClearCube : MonoBehaviour
 {
-    public GameObject player;
     public GameObject goalText;
     Vector3 Ppos;
 
@@ -13,21 +12,24 @@ public class ClearCube : MonoBehaviour
     {
         goalText.gameObject.SetActive(false);
     }
-
-    private void OnCollisionStay(Collision other)
+    private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Player")
-        {
-            coRoutine();
-            Debug.Log("A");
-        }
+        StartCoroutine(clear());
     }
+    //private void OnCollisionStay(Collision collision)
+    //{
+    //    Debug.Log(collision.gameObject.name);
+    //    if (collision.gameObject.layer == LayerMask.NameToLayer("Player"))
+    //    {
+    //        StartCoroutine(clear());
+    //    }
+    //}
 
-    IEnumerator coRoutine()
-    { 
-        yield return new WaitForSeconds(10f);
+    private IEnumerator clear()
+    {
         goalText.gameObject.SetActive(true);
-        yield return new WaitForSeconds(15f);
+        yield return new WaitForSeconds(10f);
         SceneManager.LoadScene("Clear");
+        yield return new WaitForSeconds(15f);
     }
 }
