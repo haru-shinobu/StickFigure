@@ -19,7 +19,7 @@ public class ClearSprite : MonoBehaviour
     }
     void Update()
     {
-        if (goal == true) { 
+        if (goal) { 
         transform.position += deltaPos * Time.deltaTime;
         elapsedTime += Time.deltaTime;
             if (elapsedTime > time)

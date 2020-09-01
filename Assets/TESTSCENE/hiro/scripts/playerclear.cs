@@ -11,11 +11,11 @@ public class playerclear : MonoBehaviour
         
     }
 
-    private void OnCollisionStay(Collision collision)
+    private void OnTriggerStay(Collider other)
     {
-        if (collision.gameObject.tag == "Clear")
+        if (other.tag == "Clear")
         {
-            coRoutine();
+            StartCoroutine(Run());
         }
     }
     // Update is called once per frame
@@ -23,21 +23,19 @@ public class playerclear : MonoBehaviour
     {
         
     }
-    IEnumerator coRoutine()
+    IEnumerator Run()
     {
         //Transform PTransform = transform;
         //Vector3 playerpos = PTransform.position;
-        transform.position = new Vector3(Mathf.Sin(Time.time) * 5.0f+playerpos.x,  + playerpos.y, playerpos.z);
+        transform.position = new Vector3(Mathf.Sin(Time.time) * 5.0f+playerpos.x,  playerpos.y, playerpos.z);
         yield return new WaitForSeconds(3f);
-        Debug.Log("B");
-        if (playerpos.y>=5)
+        if (playerpos.y>=15)
         {
             //playerpos.x += 0.1f;
             transform.position = new Vector3(Mathf.Sin(Time.time) *  playerpos.x, 5.0f +playerpos.y, playerpos.z);
             //timer += Time.deltaTime * 0.5f;
             yield return new WaitForEndOfFrame();
             //if (timer >= 1)
-            Debug.Log("C");
         }
     }
 }

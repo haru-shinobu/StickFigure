@@ -10,7 +10,6 @@ public class ClearScript : MonoBehaviour
     public float time;
     private Vector3 deltaPos;
     private float elapsedTime;
-    public ClearCube _goal;
     private bool bStartToEnd = true;
 
    void Start()
@@ -20,7 +19,6 @@ public class ClearScript : MonoBehaviour
     }
     void Update()
     {
-        if (_goal)
         {
             transform.position += deltaPos * Time.deltaTime;
             elapsedTime += Time.deltaTime;
