@@ -12,6 +12,8 @@ public class StarterScript : MonoBehaviour
     GameObject StartBox;
     GameData G_data;
 
+    GameObject SoundObj;
+
     [SerializeField]
     GameObject Wind;
     //==================================================================
@@ -35,6 +37,9 @@ public class StarterScript : MonoBehaviour
 
         G_data.Bases = GameObject.FindGameObjectsWithTag("BridgeBase");
         G_data.WindPrefab = Wind;
+
+        SoundObj = GameObject.Find("SoundObj");
+        SoundObj.GetComponent<SoundManager>().BGMState();
     }
     
     void Start()
