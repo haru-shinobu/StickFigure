@@ -64,7 +64,7 @@ public class Box_PlayerController : MonoBehaviour
         G_Data = GameObject.FindWithTag("BoxManager").GetComponent<GameData>();
 
         _UICanvas = _Canvas.GetComponent<UIScript>();
-        _UICanvas.nDeepCount = nDCount;
+        _UICanvas.ChangeNum(nDCount);
 
     }
 
@@ -614,7 +614,8 @@ public class Box_PlayerController : MonoBehaviour
         //生成
         BridgeObj = Instantiate(Bridge, _vec, Quaternion.Euler(180, 0, _Angle));
         nDCount--;
-        _UICanvas.nDeepCount = nDCount;
+        if (nDCount > 0)
+            _UICanvas.ChangeNum(nDCount);
         // ゲームオーバーか判定
         //--------------------------------------------------------------------
 

@@ -19,17 +19,12 @@ public class BridgeLineScript : MonoBehaviour
         var ren = transform.parent.GetComponent<MeshRenderer>().bounds.extents;
         var ppos = transform.parent.position;
         var pos = transform.position;
-        if (pos.x == ppos.x + ren.x) pos.x += 0.001f;
-        else
-        if (pos.x == ppos.x - ren.x) pos.x -= 0.001f;
-        else
-        if (pos.y == ppos.x + ren.y) pos.y += 0.001f;
-        else
-        if (pos.y == ppos.x - ren.y) pos.y -= 0.001f;
-        else
-        if (pos.z == ppos.x + ren.z) pos.z += 0.001f;
-        else
-        if (pos.z == ppos.x - ren.z) pos.z -= 0.001f;
+        if (pos.x == ppos.x + ren.x)  pos.x += 0.001f; 
+        if (pos.x == ppos.x - ren.x)  pos.x -= 0.001f; 
+        if (pos.y == ppos.y + ren.y)  pos.y += 0.001f; 
+        if (pos.y == ppos.y - ren.y)  pos.y -= 0.001f; 
+        if (pos.z == ppos.z + ren.z)  pos.z += 0.001f; 
+        if (pos.z == ppos.z - ren.z)  pos.z -= 0.001f; 
         transform.position = pos;
         if (transform.up == Vector3.up || transform.up == -Vector3.up)
         { if (b_enabled) b_enabled = false; }
