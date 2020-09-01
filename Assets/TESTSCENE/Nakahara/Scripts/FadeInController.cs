@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class FadeInController : MonoBehaviour
 {
     // フェードスピード
+    [SerializeField]
     private float _fadeSpeed = 0.001f;
 
     // 三原色

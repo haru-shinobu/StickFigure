@@ -10,10 +10,13 @@ public class Box_PlayerController : MonoBehaviour
     int MoveCount = 0;
     [SerializeField] int FlameCount = 10;
 
+    [SerializeField] GameObject _Canvas;
+    private UIScript _UICanvas;
+
     bool _bControll = false;
-    
+
     bool OnBridge = false;
-    
+
     bool GrapLing = false;
     private float offset = 0.05f;
     //プレイヤーの縦横の半分を記録
@@ -27,7 +30,7 @@ public class Box_PlayerController : MonoBehaviour
 
     [SerializeField, Header("橋Prefab")]
     GameObject Bridge;
-    
+
     private string bridgetag = "BridgeBase";
     Vector3 checkBridgeAriaLT, checkBridgeAriaRB;
     CameraManager camM;
@@ -41,9 +44,12 @@ public class Box_PlayerController : MonoBehaviour
     GameData G_Data;
     GameObject nextBase;
     Rigidbody rb;
+
+    private int nDCount = 5;
+
     enum SideRedLine
     {
-        T,B,L,R,Non,
+        T, B, L, R, Non,
     }
     SideRedLine RedSide = SideRedLine.Non;
     IEnumerator nowIE;
@@ -51,14 +57,18 @@ public class Box_PlayerController : MonoBehaviour
     void Start()
     {
         rb = transform.parent.GetComponent<Rigidbody>();
-        
+
         var sprvec = transform.GetComponent<MeshRenderer>();
         Player_verticalhorizontal = sprvec.bounds.extents;
         camM = Camera.main.GetComponent<CameraManager>();
         G_Data = GameObject.FindWithTag("BoxManager").GetComponent<GameData>();
+
+        _UICanvas = _Canvas.GetComponent<UIScript>();
+        _UICanvas.nDeepCount = nDCount;
+
     }
-    
-    
+
+
     void Update()
     {
         //落下速度制限
@@ -70,7 +80,7 @@ public class Box_PlayerController : MonoBehaviour
         {
             float horizontal = Input.GetAxis("Horizontal");
             float vartical = Input.GetAxis("Vertical");
-            
+
             // プレイヤー移動範囲チェック
             //橋の上でないとき
             if (!CheckMoveBridgeAria())
@@ -90,10 +100,10 @@ public class Box_PlayerController : MonoBehaviour
                         GameObject wind = Instantiate(G_Data.WindPrefab, sidebox.transform.position, Quaternion.identity);
                         //上下左右
                         var rollways = 0;
-                        if (T > Front_LeftTop.y) { rollways = 1;      wind.transform.rotation = Quaternion.Euler(0, 0, 90); }
-                        if (B < Front_RightBottom.y) { rollways = 2;  wind.transform.rotation = Quaternion.Euler(0, 0, -90); }
-                        if (L < Front_LeftTop.x) { rollways = 3;      wind.transform.rotation = Quaternion.Euler(0, 0, 180); }
-                        if (R > Front_RightBottom.x) { rollways = 4;  wind.transform.rotation = Quaternion.Euler(0, 0, 0); }
+                        if (T > Front_LeftTop.y) { rollways = 1; wind.transform.rotation = Quaternion.Euler(0, 0, 90); }
+                        if (B < Front_RightBottom.y) { rollways = 2; wind.transform.rotation = Quaternion.Euler(0, 0, -90); }
+                        if (L < Front_LeftTop.x) { rollways = 3; wind.transform.rotation = Quaternion.Euler(0, 0, 180); }
+                        if (R > Front_RightBottom.x) { rollways = 4; wind.transform.rotation = Quaternion.Euler(0, 0, 0); }
                         if (BridgeObj) Destroy(BridgeObj);
                         sidebox.ChangeBoxRoll(rollways);
                     }
@@ -144,7 +154,7 @@ public class Box_PlayerController : MonoBehaviour
         var B = pos.y - Player_verticalhorizontal.y;
         var R = pos.x + Player_verticalhorizontal.x;
         var L = pos.x - Player_verticalhorizontal.x;
-        
+
         //Debug.Log();
         //Debug.Log();
         if (Move_Aria_FLT.x >= L) transform.parent.position += Vector3.right * MoveSpeed;
@@ -165,7 +175,7 @@ public class Box_PlayerController : MonoBehaviour
             rb.velocity = Vector3.zero;
             rb.isKinematic = true;
         }
-    
+
     }
 
     //回転始動範囲(箱)
@@ -176,12 +186,12 @@ public class Box_PlayerController : MonoBehaviour
         var B = pos.y - Player_verticalhorizontal.y;
         var R = pos.x + Player_verticalhorizontal.x;
         var L = pos.x - Player_verticalhorizontal.x;
-        
+
         if (B <= Move_Aria_FRB.y + MoveSpeed)
             rb.isKinematic = true;
         else
             rb.isKinematic = false;
-        
+
         if (RollAriaLeftTop.x < L && R < RollAriaRightBottom.x)
             if (RollAriaRightBottom.y < B && T < RollAriaLeftTop.y)
             {
@@ -189,7 +199,7 @@ public class Box_PlayerController : MonoBehaviour
             }
         return true;
     }
-    
+
 
     //移動範囲確認(橋)
     bool CheckMoveBridgeAria()
@@ -197,13 +207,13 @@ public class Box_PlayerController : MonoBehaviour
         if (BridgeObj)
         {
             if (BridgeObj.transform.forward == Vector3.forward || BridgeObj.transform.forward == -Vector3.forward)
-            {   
+            {
                 var pos = transform.parent.position;
                 var T = pos.y + Player_verticalhorizontal.y;
                 var B = pos.y - Player_verticalhorizontal.y;
                 var R = pos.x + Player_verticalhorizontal.x;
                 var L = pos.x - Player_verticalhorizontal.x;
-                
+
                 //範囲内に触れたとき（プレイヤーが橋の上にいる）
                 if (BridgeAriaLT.x <= R && L <= BridgeAriaBR.x)
                     if (BridgeAriaBR.y <= T && B <= BridgeAriaLT.y)
@@ -221,7 +231,7 @@ public class Box_PlayerController : MonoBehaviour
         camM.Bridge = OnBridge = false;
         return OnBridge;
     }
-    
+
 
     //辺の赤範囲判定
     /// <summary>
@@ -231,15 +241,15 @@ public class Box_PlayerController : MonoBehaviour
     {
         //G_Data.RedLineは赤線の幅
         if (RollAriaLeftTop.x + G_Data.RedLine <= transform.parent.position.x - Player_verticalhorizontal.x && transform.parent.position.x + Player_verticalhorizontal.x <= RollAriaRightBottom.x - G_Data.RedLine)
-            if (RollAriaRightBottom.y + G_Data.RedLine <= transform.parent.position.y - Player_verticalhorizontal.y && transform.parent.position.y + Player_verticalhorizontal.y <= RollAriaLeftTop.y - G_Data.RedLine) 
+            if (RollAriaRightBottom.y + G_Data.RedLine <= transform.parent.position.y - Player_verticalhorizontal.y && transform.parent.position.y + Player_verticalhorizontal.y <= RollAriaLeftTop.y - G_Data.RedLine)
             {
                 RedSide = SideRedLine.Non;
                 return false;
             }
         //左右を優先
-        if (RollAriaLeftTop.x + G_Data.RedLine > transform.parent.position.x-Player_verticalhorizontal.x)
+        if (RollAriaLeftTop.x + G_Data.RedLine > transform.parent.position.x - Player_verticalhorizontal.x)
             RedSide = SideRedLine.L;
-        else if(transform.parent.position.x+ Player_verticalhorizontal.x > RollAriaRightBottom.x - G_Data.RedLine)
+        else if (transform.parent.position.x + Player_verticalhorizontal.x > RollAriaRightBottom.x - G_Data.RedLine)
             RedSide = SideRedLine.R;
         else
         if (RollAriaRightBottom.y + G_Data.RedLine > transform.parent.position.y - Player_verticalhorizontal.y)
@@ -254,7 +264,7 @@ public class Box_PlayerController : MonoBehaviour
     // プレイヤー移動
     //=======================================================================
     //this->
-    void Move(float horizontal,float vartical)
+    void Move(float horizontal, float vartical)
     {
         if (horizontal > 0)
         {
@@ -268,7 +278,7 @@ public class Box_PlayerController : MonoBehaviour
         //*********************************************************
         //**      ** 下を押したときの処理はここに描く    **      **
         //*********************************************************
-        if(vartical < 0)
+        if (vartical < 0)
         {
 
             bool slide = false;
@@ -345,7 +355,7 @@ public class Box_PlayerController : MonoBehaviour
                                     {
                                         bflag = true;
                                         sidebox.GetBridgeLine[i].SendMessage("SlipdroundLine");
-                                        if(BridgeObj)
+                                        if (BridgeObj)
                                         {
                                             Vector3 checkpos = new Vector3(BridgeObj.transform.position.x, BridgeAriaLT.y, BridgeObj.transform.position.z);
                                             if (FLT.x <= checkpos.x && checkpos.x <= BRB.x)
@@ -356,9 +366,9 @@ public class Box_PlayerController : MonoBehaviour
                             }
                         }
                     }
-                    if(!bflag)
-                    if (BridgeObj)
-                        BridgeObj.GetComponent<bridgeScript>().second_NoCollider();
+                    if (!bflag)
+                        if (BridgeObj)
+                            BridgeObj.GetComponent<bridgeScript>().second_NoCollider();
                 }
                 else
                     if (BridgeObj)
@@ -522,7 +532,7 @@ public class Box_PlayerController : MonoBehaviour
                 Vector3 bounds = Bridge.GetComponent<MeshRenderer>().bounds.extents * 2;
 
                 if (bounds.x > bounds.y) bounds.y = bounds.x;
-                
+
                 //生成方向準備
                 if (distance - 0.001f <= bounds.y)
                 {
@@ -548,7 +558,7 @@ public class Box_PlayerController : MonoBehaviour
                 else
                     GrapLinger();
             }
-            
+
             if (MakeOk)
                 MakeBridge(target, nextBase);
         }
@@ -560,7 +570,7 @@ public class Box_PlayerController : MonoBehaviour
 
 
     //this.MakeBridgeCheck()->
-    void MakeBridge(GameObject prevBB,GameObject nextBB)
+    void MakeBridge(GameObject prevBB, GameObject nextBB)
     {
 
         //前回の橋が残っているとき破棄
@@ -603,7 +613,10 @@ public class Box_PlayerController : MonoBehaviour
         _vec.z = transform.parent.position.z - 0.01f;
         //生成
         BridgeObj = Instantiate(Bridge, _vec, Quaternion.Euler(180, 0, _Angle));
-        
+        _UICanvas.nDeepCount--;
+        // ゲームオーバーか判定
+        //--------------------------------------------------------------------
+
         switch (RedSide)
         {
             case SideRedLine.Non: BridgeObj.transform.position += new Vector3(0, (BridgeObj.GetComponent<MeshRenderer>().bounds.extents.y)); break;
@@ -616,7 +629,7 @@ public class Box_PlayerController : MonoBehaviour
         if (BridgeObj)
         {
             BridgeObj.transform.SetParent(sidebox.transform);
-            
+
             MeshRenderer mesh = BridgeObj.transform.GetComponent<MeshRenderer>();
 
             var BSc = BridgeObj.GetComponent<bridgeScript>();
@@ -673,7 +686,7 @@ public class Box_PlayerController : MonoBehaviour
         {
             GameObject land = null;
             GameObject onebridgebase = null;
-            
+
             foreach (GameObject ground in sidebox.BoxInGround)
             {
                 //画像の縦横をとり、地面が横広のとき、グラップリング対象とする
@@ -695,7 +708,7 @@ public class Box_PlayerController : MonoBehaviour
                                     land = ground;
 
                             //その地面の上にプレイヤーがいるなら
-                            if (transform.parent.position.y - Player_verticalhorizontal.y-0.1f < ground.transform.position.y + exvec.y
+                            if (transform.parent.position.y - Player_verticalhorizontal.y - 0.1f < ground.transform.position.y + exvec.y
                                 && ground.transform.position.y < transform.parent.position.y)
                                 GrapOK = true;
                         }
@@ -705,15 +718,15 @@ public class Box_PlayerController : MonoBehaviour
 
             //間に地面がないとき
             if (land == null)
-            {   
-                foreach(GameObject obj in sidebox.GetBridgeLine)
+            {
+                foreach (GameObject obj in sidebox.GetBridgeLine)
                 {
                     Vector3 exvec = obj.GetComponent<SpriteRenderer>().bounds.extents;
-                    if (obj.transform.position.z <=sidebox.transform.position.z - exvec.z && exvec.x > exvec.y)
+                    if (obj.transform.position.z <= sidebox.transform.position.z - exvec.z && exvec.x > exvec.y)
                     {
                         if (transform.parent.position.y < obj.transform.position.y)
                         {
-                            if(obj.transform.position.x - exvec.x < transform.parent.position.x && transform.parent.position.x < obj.transform.position.x + exvec.x)
+                            if (obj.transform.position.x - exvec.x < transform.parent.position.x && transform.parent.position.x < obj.transform.position.x + exvec.x)
                             {
                                 onebridgebase = obj;
                             }
@@ -723,7 +736,7 @@ public class Box_PlayerController : MonoBehaviour
             }
 
             if (onebridgebase || land) Debug.Log("land base");
-            
+
             //グラップリング処理
             //ただし移動できない壁後付けするため注意。（製作途中）
             if (rb.isKinematic == true || rb.velocity.y == 0 || GrapOK)
@@ -731,7 +744,7 @@ public class Box_PlayerController : MonoBehaviour
                 if (!GrapLing)
                 {
 
-                    Vector3 pos,pos1, pos2, pos3, pos4, pos5;
+                    Vector3 pos, pos1, pos2, pos3, pos4, pos5;
                     pos = pos1 = pos2 = pos3 = pos4 = pos5 = Front_LeftTop;
                     //不透過壁があるか否か
                     //存在しないとき箱左上で返す
@@ -742,7 +755,7 @@ public class Box_PlayerController : MonoBehaviour
                     //存在しないとき箱左上で返す
                     pos1 = sidebox.FindBoxRollerSwitch();
                     if (a > pos1.y && pos1.y != Front_LeftTop.y) a = pos1.y;
-                    
+
                     //橋の下限の位置
                     if (BridgeObj)
                     {
@@ -779,8 +792,8 @@ public class Box_PlayerController : MonoBehaviour
                     pos5 = sidebox.UnPassWallPos();
                     if (a > pos5.y && pos5.y != Front_LeftTop.y) a = pos5.y;
 
-                    
-                    Debug.Log(a+"Flame"+pos.y+"Switch"+pos1.y + "Bridge" +pos2.y + "ground" +pos3.y + "Base" + pos4.y + "Wall" + pos5.y);
+
+                    Debug.Log(a + "Flame" + pos.y + "Switch" + pos1.y + "Bridge" + pos2.y + "ground" + pos3.y + "Base" + pos4.y + "Wall" + pos5.y);
                     if (a != Front_LeftTop.y)
                     {
                         if (a == pos1.y)
@@ -934,7 +947,7 @@ public class Box_PlayerController : MonoBehaviour
             var PPos = transform.parent.position;
             var B = PPos.y - Player_verticalhorizontal.y;
             var R = PPos.x + Player_verticalhorizontal.x;
-            
+
             if (R >= RollAriaRightBottom.x)
                 PPos.x = RollAriaRightBottom.x - Player_verticalhorizontal.x - offset;
             if (RollAriaRightBottom.y >= B)
@@ -942,7 +955,7 @@ public class Box_PlayerController : MonoBehaviour
             transform.parent.position = PPos;
         }
     }
-    
+
     //行動範囲左上記録
     public Vector3 Move_Aria_FLT
     {
@@ -986,7 +999,7 @@ public class Box_PlayerController : MonoBehaviour
         var Spos = transform.parent.position;//橋の移動基準となるポジションにするやつ
         Vector3 epos;
         Vector3 range = BridgeObj.GetComponent<MeshRenderer>().bounds.extents;
-        
+
         //横向きの橋
         if (range.x > range.y)
         {
@@ -1003,15 +1016,15 @@ public class Box_PlayerController : MonoBehaviour
             Spos = new Vector3(BridgeObj.transform.position.x, transform.parent.position.y, transform.parent.position.z);
             //Playerが橋の下側
             if (Spos.y < BridgeObj.transform.position.y)
-                epos =   BridgeObj.transform.position + new Vector3(0, range.y + (Player_verticalhorizontal.y + 0.01f));
+                epos = BridgeObj.transform.position + new Vector3(0, range.y + (Player_verticalhorizontal.y + 0.01f));
             else
                 epos = BridgeObj.transform.position - new Vector3(0, range.y + (Player_verticalhorizontal.y + 0.01f));
         }
-        
+
         //橋の中心線との距離を得て、橋の中心線に向けて移動させる
         var distance = (ppos - Spos).magnitude;
 
-        if (distance != 0)    distance = 1 / distance;
+        if (distance != 0) distance = 1 / distance;
 
         while (distance != 0)
         {
@@ -1024,7 +1037,7 @@ public class Box_PlayerController : MonoBehaviour
         }
 
         transform.parent.position = Spos;
-        
+
         //橋の向こう側に向けて移動させる
         timer = 0;
         while (true)
@@ -1075,7 +1088,7 @@ public class Box_PlayerController : MonoBehaviour
                 if (BRBvec.y < epos.y && epos.y < FLTvec.y)
                     nextBase = obj;
         }
-        
+
         if (nextBase != null)
         {
             //箱を登録
@@ -1099,7 +1112,7 @@ public class Box_PlayerController : MonoBehaviour
     //========================================================
     IEnumerator Graplinger(Vector3 point)
     {
-        SphereCollider sCollider =GetComponent<SphereCollider>();
+        SphereCollider sCollider = GetComponent<SphereCollider>();
         sCollider.enabled = false;
         Vector3 Ppos = transform.parent.position;
         float timer = 0;
