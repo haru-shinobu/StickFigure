@@ -39,7 +39,7 @@ public class StarterScript : MonoBehaviour
         G_data.WindPrefab = Wind;
 
         SoundObj = GameObject.Find("SoundObj");
-        SoundObj.GetComponent<SoundManager>().BGMState();
+        //SoundObj.GetComponent<SoundManager>().BGMState();
     }
     
     void Start()
