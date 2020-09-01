@@ -30,7 +30,7 @@ public class SideColorBoxScript : MonoBehaviour
     public GameObject CollRollSwitch1
     {
         get { return RollSwitch1; }
-        set { RollSwitch1 = value;Debug.Log(RollSwitch1.name); }
+        set { RollSwitch1 = value; }
     }
     public GameObject CollRollSwitch2
     {
