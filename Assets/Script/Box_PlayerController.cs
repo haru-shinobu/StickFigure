@@ -613,7 +613,8 @@ public class Box_PlayerController : MonoBehaviour
         _vec.z = transform.parent.position.z - 0.01f;
         //生成
         BridgeObj = Instantiate(Bridge, _vec, Quaternion.Euler(180, 0, _Angle));
-        _UICanvas.nDeepCount--;
+        nDCount--;
+        _UICanvas.nDeepCount = nDCount;
         // ゲームオーバーか判定
         //--------------------------------------------------------------------
 

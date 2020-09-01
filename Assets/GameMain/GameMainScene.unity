@@ -668,11 +668,16 @@ PrefabInstance:
     - target: {fileID: 2654532580767831045, guid: 97cac3012e2c9e34abeeb4057a024217,
         type: 3}
       propertyPath: m_Color.g
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2654532580767831045, guid: 97cac3012e2c9e34abeeb4057a024217,
         type: 3}
       propertyPath: m_Color.r
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2654532580767831045, guid: 97cac3012e2c9e34abeeb4057a024217,
+        type: 3}
+      propertyPath: m_Color.b
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -5791,7 +5796,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 13
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &403796369
 PrefabInstance:
