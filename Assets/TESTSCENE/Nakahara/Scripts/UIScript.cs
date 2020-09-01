@@ -13,6 +13,8 @@ public class UIScript : MonoBehaviour
     [SerializeField]
     Sprite[] spritePrefab;
 
+    public int nDeepCount = 0;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -25,13 +27,10 @@ public class UIScript : MonoBehaviour
         image_01 = ImageObj.GetComponent<Image>();
     }
 
-    
+
     // 一定フレームで処理
     private void FixedUpdate()
     {
-        // PlayerScriptから数値を取得
-        int nDeepCount = 12;
-
         image_10.sprite = spritePrefab[nDeepCount / 10];
         image_01.sprite = spritePrefab[nDeepCount % 10];
     }
