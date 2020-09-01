@@ -207,8 +207,6 @@ public class BoxScript : MonoBehaviour
             }
         }
         
-        //移動方向:現在壁=>次の壁Debug.Log("roll:" + ways + " " + wall.name + "=>" + returnObj);
-        
         return returnObj;
     }
     //=======================================================================

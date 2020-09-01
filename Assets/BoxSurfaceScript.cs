@@ -116,13 +116,11 @@ public class BoxSurfaceScript : MonoBehaviour
         if (Ppos.y < RightBottom.y) rollways = 2;
         if (Ppos.x < LeftTop.x) rollways = 3;
         if (Ppos.x > RightBottom.x) rollways = 4;
-
-        //Debug.Log("roll" + rollways +" "+ LeftTop + ":" + RightBottom);
+        
         nextwalls = boxroot.WallLocation(this.gameObject, rollways);
 
         if (nextwalls != null)
         {
-            //Ptrs.GetComponent<Box_PlayerController>().SetNextWall(nextwalls.GetComponent<BoxSurfaceScript>());
             Ptrs.SetParent(nextwalls.transform);
             //壁の回転
             boxroot.RollBlocks(rollways, this.gameObject, nextwalls);
