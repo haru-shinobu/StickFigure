@@ -5871,6 +5871,7 @@ MonoBehaviour:
   MoveSpeed: 0.1
   DropSpeed: 1
   FlameCount: 4
+  _Canvas: {fileID: 851101666}
   Bridge: {fileID: 1487617690276569714, guid: 5f3032556189df34389b26e109575ec8, type: 3}
 --- !u!136 &403796374
 CapsuleCollider:
@@ -6672,6 +6673,12 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8864069863093047068, guid: 7a0f7081c8e3fd44dbb07b4bb2b1cc19,
     type: 3}
   m_PrefabInstance: {fileID: 301775022}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &851101666 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 176726763669539174, guid: 9ef2d10351237384f89730a4952aea42,
+    type: 3}
+  m_PrefabInstance: {fileID: 1265297920}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &858297441
 PrefabInstance:
@@ -19185,6 +19192,7 @@ MonoBehaviour:
   MoveSpeed: 0.4
   DropSpeed: 1
   FlameCount: 10
+  _Canvas: {fileID: 0}
   Bridge: {fileID: 1487617690276569714, guid: 5f3032556189df34389b26e109575ec8, type: 3}
 --- !u!212 &2138393518
 SpriteRenderer:
