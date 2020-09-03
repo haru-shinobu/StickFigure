@@ -22,13 +22,13 @@ public class StarterScript : MonoBehaviour
     void Awake()
     {
         Box_PlayerController BoxPlayer = GameObject.FindWithTag("Player").GetComponent<Box_PlayerController>();
-        
+
         var sideBox = StartBox.GetComponent<SideColorBoxScript>();
         BoxPlayer.SetNextBox(sideBox);
         BoxPlayer.transform.parent.position = sideBox.transform.position;
 
         sideBox.SetBoxPos(BoxPlayer);
-        
+
         //REDline設定
         G_data = GetComponent<GameData>();
         G_data.RedLine = sideBox.transform.root.localScale.x;
@@ -39,9 +39,10 @@ public class StarterScript : MonoBehaviour
         G_data.WindPrefab = Wind;
 
         SoundObj = GameObject.Find("SoundObj");
-        //SoundObj.GetComponent<SoundManager>().BGMState();
+        if (SoundObj)
+            SoundObj.GetComponent<SoundManager>().BGMState();
     }
-    
+
     void Start()
     {
         Destroy(this);

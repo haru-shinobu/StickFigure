@@ -10,17 +10,17 @@ public class GroundScript : MonoBehaviour
         var ppos = transform.parent.position;
         var pos = transform.position;
         //右に等しい
-        if (pos.x == ppos.x + ren.x) {pos.x += 0.001f; Debug.Log(transform.root.name + transform.name + "x+" + (float)pos.x); }
+        if (pos.x == ppos.x + ren.x) pos.x += 0.001f;
         //左に等しい
-        if (pos.x == ppos.x - ren.x) {pos.x -= 0.001f; Debug.Log(transform.root.name + transform.name + "x-" + (float)pos.x); }
+        if (pos.x == ppos.x - ren.x) pos.x -= 0.001f;
         //上に等しい
-        if (pos.y == ppos.x + ren.y) {pos.y += 0.001f; Debug.Log(transform.root.name + transform.name + "y+" + (float)pos.y); }
+        if (pos.y == ppos.y + ren.y) pos.y += 0.001f;
         //下に等しい
-        if (pos.y == ppos.x - ren.y) {pos.y -= 0.001f; Debug.Log(transform.root.name + transform.name + "y-" + (float)pos.y); }
+        if (pos.y == ppos.y - ren.y) pos.y -= 0.001f;
         //奥に等しい
-        if (pos.z == ppos.x + ren.z) {pos.z += 0.001f; Debug.Log(transform.root.name + transform.name + "z+" + (float)pos.z); }
+        if (pos.z == ppos.z + ren.z) pos.z += 0.001f;
         //前に等しい
-        if (pos.z == ppos.x - ren.z) {pos.z -= 0.001f; Debug.Log(transform.root.name + transform.name + "z-" + (float)pos.z); }
+        if (pos.z == ppos.z - ren.z) pos.z -= 0.001f;
         
         transform.position = pos;
     }

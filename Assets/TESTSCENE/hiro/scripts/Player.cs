@@ -69,7 +69,6 @@ public class Player : MonoBehaviour
                 this.Move(horizontal, vartical);
             else
             {
-                Debug.Log("AriaOut");
                 this.Moving = false;
                 var Ppos = transform.position;
                 var T = transform.position.y + Player_verticalhorizontal.y;

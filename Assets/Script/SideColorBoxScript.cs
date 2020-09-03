@@ -30,7 +30,7 @@ public class SideColorBoxScript : MonoBehaviour
     public GameObject CollRollSwitch1
     {
         get { return RollSwitch1; }
-        set { RollSwitch1 = value;Debug.Log(RollSwitch1.name); }
+        set { RollSwitch1 = value; }
     }
     public GameObject CollRollSwitch2
     {
@@ -252,7 +252,7 @@ public class SideColorBoxScript : MonoBehaviour
 
 
         //プレイヤーの移動に関わる範囲
-        var ray = PSc.GetComponent<RayScript>();
+        var ray = PSc.transform.parent.GetComponent<RayScript>();
         var rayhitvecT = ray.Ray(position, Vector3.up,10, BoxAroundWallLayer);
         var rayhitvecB = ray.Ray(position, -Vector3.up,10, BoxAroundWallLayer);
         var rayhitvecR = ray.Ray(position, Vector3.right, 10,BoxAroundWallLayer);
@@ -380,17 +380,17 @@ public class SideColorBoxScript : MonoBehaviour
     public Vector3 FindBoxRollerSwitch()
     {
         float PposX = PSc.transform.parent.position.x;
-        Debug.Log("SwitchSerch");
+
         
         if (CollRollSwitch1) {
             if (CollRollSwitch1.transform.position.z <= F_LeftTop.z)
             {
-                Debug.Log("Serch");
+
                 var swichwide1 = CollRollSwitch1.GetComponent<SpriteRenderer>().bounds.extents;
                 if (CollRollSwitch1.transform.position.x - swichwide1.x <= PposX && PposX <= CollRollSwitch1.transform.position.x + swichwide1.x)
                 {
                     Switch = CollRollSwitch1;
-                    Debug.Log("SwitchFind" + Switch.transform.position);
+                    
                     return Switch.transform.position;
                 }
             }
@@ -403,7 +403,7 @@ public class SideColorBoxScript : MonoBehaviour
                 if (CollRollSwitch2.transform.position.x - swichwide2.x <= PposX && PposX <= CollRollSwitch2.transform.position.x + swichwide2.x)
                 {
                     Switch = CollRollSwitch2;
-                    Debug.Log("SwitchFind" + Switch.transform.position);
+                    
                     return Switch.transform.position;
                 }
             }
@@ -427,7 +427,7 @@ public class SideColorBoxScript : MonoBehaviour
     //=======================================================================
     public Vector3 UnPassWallPos()
     {
-        var ray = PSc.GetComponent<RayScript>();
+        var ray = PSc.transform.parent.GetComponent<RayScript>();
         var hit = ray.Ray(PSc.transform.position, Vector3.up, (int)(F_LeftTop.y - PSc.transform.position.y)+1, BoxinWallLayer);
         if (hit.collider != null)
         {
@@ -437,9 +437,9 @@ public class SideColorBoxScript : MonoBehaviour
     }
     public Vector3 sideWall()
     {
-        var ray = PSc.GetComponent<RayScript>();
+        var ray = PSc.transform.parent.GetComponent<RayScript>();
         var rayhitvecT = ray.Ray(PSc.transform.position, Vector3.up, (int)(F_LeftTop.y - F_RightBottom.y), BoxAroundWallLayer);
-        Debug.DrawRay(PSc.transform.position,Vector3.up* (int)(F_LeftTop.y - F_RightBottom.y), Color.red, 100);
+        //Debug.DrawRay(PSc.transform.position,Vector3.up* (int)(F_LeftTop.y - F_RightBottom.y), Color.red, 100);
         if (rayhitvecT.collider != null)
         {
             return rayhitvecT.point;

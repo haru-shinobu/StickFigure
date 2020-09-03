@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class Box_PlayerController : MonoBehaviour
 {
-    [SerializeField, Range(0.1f, 10)] float MoveSpeed = 0.4f;
+    [SerializeField, Range(0.1f, 10)] float MoveRange = 0.4f;
     [SerializeField, Range(0.1f, 10)] float DropSpeed = 1;
 
+    Vector3 NowPlauerMovePoint;
     int MoveCount = 0;
     [SerializeField] int FlameCount = 10;
 
@@ -58,24 +59,25 @@ public class Box_PlayerController : MonoBehaviour
     {
         rb = transform.parent.GetComponent<Rigidbody>();
 
-        var sprvec = transform.GetComponent<MeshRenderer>();
+        var sprvec = transform.GetChild(0).GetComponent<MeshRenderer>();
         Player_verticalhorizontal = sprvec.bounds.extents;
         camM = Camera.main.GetComponent<CameraManager>();
         G_Data = GameObject.FindWithTag("BoxManager").GetComponent<GameData>();
 
         _UICanvas = _Canvas.GetComponent<UIScript>();
-        _UICanvas.nDeepCount = nDCount;
-
+        _UICanvas.ChangeNum(nDCount);
+        NowPlauerMovePoint = transform.parent.position;
     }
 
 
     void Update()
     {
+        
         //落下速度制限
         Vector3 vel = rb.velocity;
         if (vel.y < -DropSpeed * 10) vel.y = -DropSpeed * 10;
         rb.velocity = vel;
-        Debug.Log(MoveAriaRightBottom + "M:R" + RollAriaRightBottom);
+
         if (Moving)
         {
             float horizontal = Input.GetAxis("Horizontal");
@@ -117,7 +119,11 @@ public class Box_PlayerController : MonoBehaviour
                             RePositionMoveAria();
                             this.Move(horizontal, vartical);
                         }
-
+                        else
+                        {
+                            if (NowPlauerMovePoint.y != transform.parent.position.y) NowPlauerMovePoint.y = transform.parent.position.y;
+                            transform.parent.position = Vector3.Lerp(transform.parent.position, NowPlauerMovePoint, MoveCount / FlameCount);
+                        }
                     }
 
                     if (Input.GetButton("Jump"))
@@ -154,12 +160,10 @@ public class Box_PlayerController : MonoBehaviour
         var B = pos.y - Player_verticalhorizontal.y;
         var R = pos.x + Player_verticalhorizontal.x;
         var L = pos.x - Player_verticalhorizontal.x;
-
-        //Debug.Log();
-        //Debug.Log();
-        if (Move_Aria_FLT.x >= L) transform.parent.position += Vector3.right * MoveSpeed;
-        if (R >= Move_Aria_FRB.x) transform.parent.position -= Vector3.right * MoveSpeed;
-        if (T >= Move_Aria_FLT.y) transform.parent.position -= Vector3.up * MoveSpeed;
+        
+        if (Move_Aria_FLT.x >= L) transform.parent.position += Vector3.right * MoveRange;
+        if (R >= Move_Aria_FRB.x) transform.parent.position -= Vector3.right * MoveRange;
+        if (T >= Move_Aria_FLT.y) transform.parent.position -= Vector3.up * MoveRange;
         if (Move_Aria_FRB.y == RollAriaRightBottom.y)
         {
             if (Move_Aria_FRB.y + G_Data.RedLine / 2 >= B)
@@ -171,7 +175,7 @@ public class Box_PlayerController : MonoBehaviour
         else
             if (Move_Aria_FRB.y >= B)
         {
-            transform.parent.position += new Vector3(0, Mathf.Abs(Move_Aria_FRB.y - B));
+            NowPlauerMovePoint = transform.parent.position += new Vector3(0, Mathf.Abs(Move_Aria_FRB.y - B));
             rb.velocity = Vector3.zero;
             rb.isKinematic = true;
         }
@@ -187,7 +191,7 @@ public class Box_PlayerController : MonoBehaviour
         var R = pos.x + Player_verticalhorizontal.x;
         var L = pos.x - Player_verticalhorizontal.x;
 
-        if (B <= Move_Aria_FRB.y + MoveSpeed)
+        if (B <= Move_Aria_FRB.y + MoveRange)
             rb.isKinematic = true;
         else
             rb.isKinematic = false;
@@ -218,11 +222,11 @@ public class Box_PlayerController : MonoBehaviour
                 if (BridgeAriaLT.x <= R && L <= BridgeAriaBR.x)
                     if (BridgeAriaBR.y <= T && B <= BridgeAriaLT.y)
                     {
-
+                        NowPlauerMovePoint = transform.parent.position;
                         pos.z = BridgeAriaLT.z;
                         transform.parent.position = pos;
                         camM.Bridge = OnBridge = true;
-                        //BridgeObj.GetComponent<bridgeScript>().second_NoCollider();
+                        
 
                         return OnBridge;
                     }
@@ -268,12 +272,12 @@ public class Box_PlayerController : MonoBehaviour
     {
         if (horizontal > 0)
         {
-            transform.parent.localPosition += Vector3.right * MoveSpeed;
+            NowPlauerMovePoint += Vector3.right * MoveRange;
         }
         else
         if (horizontal < 0)
         {
-            transform.parent.localPosition -= Vector3.right * MoveSpeed;
+            NowPlauerMovePoint -= Vector3.right * MoveRange;
         }
         //*********************************************************
         //**      ** 下を押したときの処理はここに描く    **      **
@@ -613,7 +617,9 @@ public class Box_PlayerController : MonoBehaviour
         _vec.z = transform.parent.position.z - 0.01f;
         //生成
         BridgeObj = Instantiate(Bridge, _vec, Quaternion.Euler(180, 0, _Angle));
-        _UICanvas.nDeepCount--;
+        nDCount--;
+        if (nDCount > 0)
+            _UICanvas.ChangeNum(nDCount);
         // ゲームオーバーか判定
         //--------------------------------------------------------------------
 
@@ -735,7 +741,7 @@ public class Box_PlayerController : MonoBehaviour
                 }
             }
 
-            if (onebridgebase || land) Debug.Log("land base");
+
 
             //グラップリング処理
             //ただし移動できない壁後付けするため注意。（製作途中）
@@ -793,7 +799,7 @@ public class Box_PlayerController : MonoBehaviour
                     if (a > pos5.y && pos5.y != Front_LeftTop.y) a = pos5.y;
 
 
-                    Debug.Log(a + "Flame" + pos.y + "Switch" + pos1.y + "Bridge" + pos2.y + "ground" + pos3.y + "Base" + pos4.y + "Wall" + pos5.y);
+
                     if (a != Front_LeftTop.y)
                     {
                         if (a == pos1.y)
@@ -932,7 +938,7 @@ public class Box_PlayerController : MonoBehaviour
             if (T >= RollAriaLeftTop.y)
                 PPos.y = RollAriaLeftTop.y - Player_verticalhorizontal.y - offset;
 
-            transform.parent.position = PPos;
+             NowPlauerMovePoint = transform.parent.position = PPos;
 
         }
     }
@@ -952,7 +958,7 @@ public class Box_PlayerController : MonoBehaviour
                 PPos.x = RollAriaRightBottom.x - Player_verticalhorizontal.x - offset;
             if (RollAriaRightBottom.y >= B)
                 PPos.y = RollAriaRightBottom.y + Player_verticalhorizontal.y + offset;
-            transform.parent.position = PPos;
+            NowPlauerMovePoint = transform.parent.position = PPos;
         }
     }
 
@@ -1036,7 +1042,7 @@ public class Box_PlayerController : MonoBehaviour
                 break;
         }
 
-        transform.parent.position = Spos;
+        NowPlauerMovePoint = transform.parent.position = Spos;
 
         //橋の向こう側に向けて移動させる
         timer = 0;
@@ -1050,7 +1056,7 @@ public class Box_PlayerController : MonoBehaviour
                 break;
         }
 
-        transform.parent.position = epos;
+        NowPlauerMovePoint = transform.parent.position = epos;
 
         //----------------------------------------------------
         //橋の外にたどり着いたので各種セット
@@ -1112,7 +1118,7 @@ public class Box_PlayerController : MonoBehaviour
     //========================================================
     IEnumerator Graplinger(Vector3 point)
     {
-        SphereCollider sCollider = GetComponent<SphereCollider>();
+        SphereCollider sCollider = transform.parent.GetComponent<SphereCollider>();
         sCollider.enabled = false;
         Vector3 Ppos = transform.parent.position;
         float timer = 0;
@@ -1132,7 +1138,7 @@ public class Box_PlayerController : MonoBehaviour
                 yield break;
             }
         }
-        transform.parent.position = point;
+        NowPlauerMovePoint = transform.parent.position = point;
         sCollider.enabled = true;
         GrapLing = false;
     }

@@ -13,7 +13,6 @@ public class UIScript : MonoBehaviour
     [SerializeField]
     Sprite[] spritePrefab;
 
-    public int nDeepCount = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -29,9 +28,9 @@ public class UIScript : MonoBehaviour
 
 
     // 一定フレームで処理
-    private void FixedUpdate()
+    public void ChangeNum(int nNum)
     {
-        image_10.sprite = spritePrefab[nDeepCount / 10];
-        image_01.sprite = spritePrefab[nDeepCount % 10];
+        image_10.sprite = spritePrefab[nNum / 10];
+        image_01.sprite = spritePrefab[nNum % 10];
     }
 }
