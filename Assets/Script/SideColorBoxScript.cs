@@ -45,10 +45,12 @@ public class SideColorBoxScript : MonoBehaviour
         get { return NoPassWall; }
         set { NoPassWall = value; }
     }
-    int BoxAroundWallLayer;
+    int BoxAroundWallLayer = 0;
     int BoxinWallLayer;
+    RayScript ray;
     void Awake()
     {
+        
         //箱枠レイヤー
         BoxAroundWallLayer = 1 << LayerMask.NameToLayer("sideWall");
         BoxinWallLayer = 1 << LayerMask.NameToLayer("UnPassWall");
@@ -58,7 +60,7 @@ public class SideColorBoxScript : MonoBehaviour
         if (!mesh)
             mesh = transform.GetComponent<MeshRenderer>();
 
-
+        ray = PSc.transform.parent.GetComponent<RayScript>();
         int num1 = 0;
         int num2 = 0;
         for (int i = 0; transform.childCount > i; i++)
@@ -252,13 +254,15 @@ public class SideColorBoxScript : MonoBehaviour
 
 
         //プレイヤーの移動に関わる範囲
-        var ray = PSc.transform.parent.GetComponent<RayScript>();
-        var rayhitvecT = ray.Ray(position, Vector3.up,10, BoxAroundWallLayer);
-        var rayhitvecB = ray.Ray(position, -Vector3.up,10, BoxAroundWallLayer);
-        var rayhitvecR = ray.Ray(position, Vector3.right, 10,BoxAroundWallLayer);
-        var rayhitvecL = ray.Ray(position, -Vector3.right,10, BoxAroundWallLayer);
+        if(BoxAroundWallLayer==0)
+            BoxAroundWallLayer = 1 << LayerMask.NameToLayer("sideWall");
+        
+        RaycastHit rayhitvecT = ray.Ray(position, Vector3.up,10, BoxAroundWallLayer);
+        RaycastHit rayhitvecB = ray.Ray(position, -Vector3.up,10, BoxAroundWallLayer);
+        RaycastHit rayhitvecR = ray.Ray(position, Vector3.right, 10,BoxAroundWallLayer);
+        RaycastHit rayhitvecL = ray.Ray(position, -Vector3.right,10, BoxAroundWallLayer);
 
-        if (rayhitvecT.collider != null) {if(rayhitvecT.transform.parent == transform) FLT.y = rayhitvecT.transform.position.y - rayhitvecT.transform.GetComponent<CapsuleCollider>().radius; }
+        if (rayhitvecT.collider != null) {if(rayhitvecT.transform.parent == transform) FLT.y = rayhitvecT.transform.position.y - rayhitvecT.transform.GetComponent<CapsuleCollider>().radius;}
         if (rayhitvecB.collider != null) {if(rayhitvecB.transform.parent == transform) BRB.y = rayhitvecB.transform.position.y + rayhitvecB.transform.GetComponent<CapsuleCollider>().radius;}
         if (rayhitvecR.collider != null) {if(rayhitvecR.transform.parent == transform) BRB.x = rayhitvecR.transform.position.x - rayhitvecR.transform.GetComponent<CapsuleCollider>().radius;}
         if (rayhitvecL.collider != null) {if(rayhitvecL.transform.parent == transform) FLT.x = rayhitvecL.transform.position.x + rayhitvecL.transform.GetComponent<CapsuleCollider>().radius;}
@@ -427,7 +431,7 @@ public class SideColorBoxScript : MonoBehaviour
     //=======================================================================
     public Vector3 UnPassWallPos()
     {
-        var ray = PSc.transform.parent.GetComponent<RayScript>();
+        //var ray = PSc.transform.parent.GetComponent<RayScript>();
         var hit = ray.Ray(PSc.transform.position, Vector3.up, (int)(F_LeftTop.y - PSc.transform.position.y)+1, BoxinWallLayer);
         if (hit.collider != null)
         {
@@ -437,7 +441,7 @@ public class SideColorBoxScript : MonoBehaviour
     }
     public Vector3 sideWall()
     {
-        var ray = PSc.transform.parent.GetComponent<RayScript>();
+        //var ray = PSc.transform.parent.GetComponent<RayScript>();
         var rayhitvecT = ray.Ray(PSc.transform.position, Vector3.up, (int)(F_LeftTop.y - F_RightBottom.y), BoxAroundWallLayer);
         //Debug.DrawRay(PSc.transform.position,Vector3.up* (int)(F_LeftTop.y - F_RightBottom.y), Color.red, 100);
         if (rayhitvecT.collider != null)

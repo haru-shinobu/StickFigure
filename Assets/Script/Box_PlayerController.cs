@@ -7,7 +7,7 @@ public class Box_PlayerController : MonoBehaviour
     [SerializeField, Range(0.1f, 10)] float MoveRange = 0.4f;
     [SerializeField, Range(0.1f, 10)] float DropSpeed = 1;
 
-    Vector3 NowPlauerMovePoint;
+    Vector3 NowPlayerMovePoint;
     int MoveCount = 0;
     [SerializeField] int FlameCount = 10;
 
@@ -66,7 +66,7 @@ public class Box_PlayerController : MonoBehaviour
 
         _UICanvas = _Canvas.GetComponent<UIScript>();
         _UICanvas.ChangeNum(nDCount);
-        NowPlauerMovePoint = transform.parent.position;
+        NowPlayerMovePoint = transform.parent.position;
     }
 
 
@@ -121,8 +121,8 @@ public class Box_PlayerController : MonoBehaviour
                         }
                         else
                         {
-                            if (NowPlauerMovePoint.y != transform.parent.position.y) NowPlauerMovePoint.y = transform.parent.position.y;
-                            transform.parent.position = Vector3.Lerp(transform.parent.position, NowPlauerMovePoint, MoveCount / FlameCount);
+                            if (NowPlayerMovePoint.y != transform.parent.position.y) NowPlayerMovePoint.y = transform.parent.position.y;
+                            transform.parent.position = Vector3.Lerp(transform.parent.position, NowPlayerMovePoint, MoveCount / FlameCount);
                         }
                     }
 
@@ -175,7 +175,7 @@ public class Box_PlayerController : MonoBehaviour
         else
             if (Move_Aria_FRB.y >= B)
         {
-            NowPlauerMovePoint = transform.parent.position += new Vector3(0, Mathf.Abs(Move_Aria_FRB.y - B));
+            NowPlayerMovePoint = transform.parent.position += new Vector3(0, Mathf.Abs(Move_Aria_FRB.y - B));
             rb.velocity = Vector3.zero;
             rb.isKinematic = true;
         }
@@ -222,7 +222,7 @@ public class Box_PlayerController : MonoBehaviour
                 if (BridgeAriaLT.x <= R && L <= BridgeAriaBR.x)
                     if (BridgeAriaBR.y <= T && B <= BridgeAriaLT.y)
                     {
-                        NowPlauerMovePoint = transform.parent.position;
+                        NowPlayerMovePoint = transform.parent.position;
                         pos.z = BridgeAriaLT.z;
                         transform.parent.position = pos;
                         camM.Bridge = OnBridge = true;
@@ -237,7 +237,7 @@ public class Box_PlayerController : MonoBehaviour
     }
 
 
-    //辺の赤範囲判定
+    //辺の枠範囲判定
     /// <summary>
     /// OnRedLine = true;
     /// </summary>
@@ -272,12 +272,12 @@ public class Box_PlayerController : MonoBehaviour
     {
         if (horizontal > 0)
         {
-            NowPlauerMovePoint += Vector3.right * MoveRange;
+            NowPlayerMovePoint += Vector3.right * MoveRange;
         }
         else
         if (horizontal < 0)
         {
-            NowPlauerMovePoint -= Vector3.right * MoveRange;
+            NowPlayerMovePoint -= Vector3.right * MoveRange;
         }
         //*********************************************************
         //**      ** 下を押したときの処理はここに描く    **      **
@@ -687,7 +687,6 @@ public class Box_PlayerController : MonoBehaviour
     void GrapLinger()
     {
         bool GrapOK = false;
-
         if (!GrapLing)
         {
             GameObject land = null;
@@ -697,12 +696,12 @@ public class Box_PlayerController : MonoBehaviour
             {
                 //画像の縦横をとり、地面が横広のとき、グラップリング対象とする
                 Vector3 exvec = ground.GetComponent<SpriteRenderer>().bounds.extents;
-                //正面に来ている地面のみ
+                //正面に来ている足場のみ
                 if (ground.transform.position.z <= sidebox.transform.position.z - exvec.z)
                 {
                     if (exvec.x > exvec.y)
                     {
-                        //地面幅のなかにプレイヤーが存在するなら
+                        //足場幅のなかにプレイヤーが存在するなら
                         if (ground.transform.position.x - exvec.x < transform.parent.position.x && transform.parent.position.x < ground.transform.position.x + exvec.x)
                         {
 
@@ -713,6 +712,26 @@ public class Box_PlayerController : MonoBehaviour
                                 if (land.transform.position.y < ground.transform.position.y)
                                     land = ground;
 
+                            //その足場の上にプレイヤーがいるなら
+                            if (transform.parent.position.y - Player_verticalhorizontal.y - 0.1f < ground.transform.position.y + exvec.y
+                                && ground.transform.position.y < transform.parent.position.y)
+                                GrapOK = true;
+                        }
+                    }
+                }
+            }
+            foreach (GameObject ground in sidebox.NPWall)
+            {
+                //画像の縦横をとり、地面(不透過壁)が横広のとき、グラップリング対象とする
+                Vector3 exvec = ground.GetComponent<SpriteRenderer>().bounds.extents;
+                //正面に来ている地面のみ
+                if (ground.transform.position.z <= sidebox.transform.position.z - exvec.z)
+                {
+                    if (exvec.x > exvec.y)
+                    {
+                        //地面幅のなかにプレイヤーが存在するなら
+                        if (ground.transform.position.x - exvec.x < transform.parent.position.x && transform.parent.position.x < ground.transform.position.x + exvec.x)
+                        {
                             //その地面の上にプレイヤーがいるなら
                             if (transform.parent.position.y - Player_verticalhorizontal.y - 0.1f < ground.transform.position.y + exvec.y
                                 && ground.transform.position.y < transform.parent.position.y)
@@ -721,8 +740,7 @@ public class Box_PlayerController : MonoBehaviour
                     }
                 }
             }
-
-            //間に地面がないとき
+            //間に足場がないとき
             if (land == null)
             {
                 foreach (GameObject obj in sidebox.GetBridgeLine)
@@ -773,7 +791,7 @@ public class Box_PlayerController : MonoBehaviour
                             if (BridgeObj.transform.position.x - ran.x < transform.parent.position.x && transform.parent.position.x < BridgeObj.transform.position.x + ran.x)
                                 a = pos2.y;
                     }
-                    //地面の位置
+                    //足場の位置
                     if (land)
                     {
                         pos3 = land.transform.position;
@@ -938,7 +956,7 @@ public class Box_PlayerController : MonoBehaviour
             if (T >= RollAriaLeftTop.y)
                 PPos.y = RollAriaLeftTop.y - Player_verticalhorizontal.y - offset;
 
-             NowPlauerMovePoint = transform.parent.position = PPos;
+             NowPlayerMovePoint = transform.parent.position = PPos;
 
         }
     }
@@ -958,7 +976,7 @@ public class Box_PlayerController : MonoBehaviour
                 PPos.x = RollAriaRightBottom.x - Player_verticalhorizontal.x - offset;
             if (RollAriaRightBottom.y >= B)
                 PPos.y = RollAriaRightBottom.y + Player_verticalhorizontal.y + offset;
-            NowPlauerMovePoint = transform.parent.position = PPos;
+            NowPlayerMovePoint = transform.parent.position = PPos;
         }
     }
 
@@ -1042,7 +1060,7 @@ public class Box_PlayerController : MonoBehaviour
                 break;
         }
 
-        NowPlauerMovePoint = transform.parent.position = Spos;
+        NowPlayerMovePoint = transform.parent.position = Spos;
 
         //橋の向こう側に向けて移動させる
         timer = 0;
@@ -1056,7 +1074,7 @@ public class Box_PlayerController : MonoBehaviour
                 break;
         }
 
-        NowPlauerMovePoint = transform.parent.position = epos;
+        NowPlayerMovePoint = transform.parent.position = epos;
 
         //----------------------------------------------------
         //橋の外にたどり着いたので各種セット
@@ -1118,7 +1136,7 @@ public class Box_PlayerController : MonoBehaviour
     //========================================================
     IEnumerator Graplinger(Vector3 point)
     {
-        SphereCollider sCollider = transform.parent.GetComponent<SphereCollider>();
+        SphereCollider sCollider = transform.GetComponent<SphereCollider>();
         sCollider.enabled = false;
         Vector3 Ppos = transform.parent.position;
         float timer = 0;
@@ -1138,7 +1156,7 @@ public class Box_PlayerController : MonoBehaviour
                 yield break;
             }
         }
-        NowPlauerMovePoint = transform.parent.position = point;
+        NowPlayerMovePoint = transform.parent.position = point;
         sCollider.enabled = true;
         GrapLing = false;
     }

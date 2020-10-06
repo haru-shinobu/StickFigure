@@ -684,6 +684,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2cc5a57efece24248a16a971b6db77e7, type: 3}
+--- !u!1 &812047243 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 176726763669539174, guid: 9ef2d10351237384f89730a4952aea42,
+    type: 3}
+  m_PrefabInstance: {fileID: 1018630368}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &874039622
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -908,6 +914,7 @@ GameObject:
   m_Component:
   - component: {fileID: 952867547}
   - component: {fileID: 952867548}
+  - component: {fileID: 952867549}
   m_Layer: 0
   m_Name: PlayerBase
   m_TagString: Untagged
@@ -946,6 +953,18 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 120
   m_CollisionDetection: 0
+--- !u!114 &952867549
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 952867546}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 747542c69c778fe43b203fcef2086c07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &956431473
 GameObject:
   m_ObjectHideFlags: 0
@@ -25875,20 +25894,8 @@ MonoBehaviour:
   MoveRange: 0.4
   DropSpeed: 1
   FlameCount: 10
-  _Canvas: {fileID: 0}
+  _Canvas: {fileID: 812047243}
   Bridge: {fileID: 1487617690276569714, guid: 5f3032556189df34389b26e109575ec8, type: 3}
---- !u!114 &2067053133
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2067053131}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 747542c69c778fe43b203fcef2086c07, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!135 &2067053134
 SphereCollider:
   m_ObjectHideFlags: 0
