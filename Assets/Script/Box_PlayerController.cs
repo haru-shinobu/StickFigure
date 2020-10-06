@@ -48,6 +48,8 @@ public class Box_PlayerController : MonoBehaviour
 
     private int nDCount = 5;
 
+    ParticleSystem FootStamp;
+
     enum SideRedLine
     {
         T, B, L, R, Non,
@@ -59,7 +61,7 @@ public class Box_PlayerController : MonoBehaviour
     {
         rb = transform.parent.GetComponent<Rigidbody>();
 
-        var sprvec = transform.GetChild(0).GetComponent<MeshRenderer>();
+        var sprvec = transform.GetChild(0).GetChild(0).GetComponent<MeshRenderer>();
         Player_verticalhorizontal = sprvec.bounds.extents;
         camM = Camera.main.GetComponent<CameraManager>();
         G_Data = GameObject.FindWithTag("BoxManager").GetComponent<GameData>();
@@ -67,6 +69,8 @@ public class Box_PlayerController : MonoBehaviour
         _UICanvas = _Canvas.GetComponent<UIScript>();
         _UICanvas.ChangeNum(nDCount);
         NowPlayerMovePoint = transform.parent.position;
+        FootStamp = transform.parent.GetChild(1).GetComponent<ParticleSystem>();
+        
     }
 
 
@@ -273,13 +277,22 @@ public class Box_PlayerController : MonoBehaviour
         if (horizontal > 0)
         {
             NowPlayerMovePoint += Vector3.right * MoveRange;
-            transform.localScale = Vector3.one;
+            //画像反転用
+            transform.GetChild(0).localScale = Vector3.one;
+            //足跡反転用
+            var romain = FootStamp.main;
+            romain.startRotation = new ParticleSystem.MinMaxCurve(1.396f, 1.745f);
         }
         else
         if (horizontal < 0)
         {
             NowPlayerMovePoint -= Vector3.right * MoveRange;
-            transform.localScale = new Vector3(-1, 0, 0);
+            //画像反転用
+            transform.GetChild(0).localScale = new Vector3(-1, 1, 1);
+            //足跡反転用
+            var romain = FootStamp.main;
+            romain.startRotation = new ParticleSystem.MinMaxCurve(-1.396f, -1.745f);
+            
         }
         //*********************************************************
         //**      ** 下を押したときの処理はここに描く    **      **
