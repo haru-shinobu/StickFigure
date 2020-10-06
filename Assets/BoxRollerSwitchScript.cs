@@ -38,12 +38,19 @@ public class BoxRollerSwitchScript : MonoBehaviour
         if (scs.CollRollSwitch2 == null)
             scs.CollRollSwitch2 = this.gameObject;
     }
-
     
     //舌か何かで動作させたとき
+    SideColorBoxScript Onetime_target;
     public void OnRoll(SideColorBoxScript target)
     {
-        target.On_RollerSwitch(bRollWay);
+        GameObject obj = (GameObject)Resources.Load("Needle");
+        Instantiate(obj, transform.parent.position, Quaternion.Euler(-90, 0, 0));
+        Onetime_target = target;
+        Invoke("RollStart", 0.3f);
+    }
+    void RollStart()
+    {
+        Onetime_target.On_RollerSwitch(bRollWay);
         StartCoroutine("Switch_Roller");
     }
     IEnumerator Switch_Roller()

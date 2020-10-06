@@ -273,11 +273,13 @@ public class Box_PlayerController : MonoBehaviour
         if (horizontal > 0)
         {
             NowPlayerMovePoint += Vector3.right * MoveRange;
+            transform.localScale = Vector3.one;
         }
         else
         if (horizontal < 0)
         {
             NowPlayerMovePoint -= Vector3.right * MoveRange;
+            transform.localScale = new Vector3(-1, 0, 0);
         }
         //*********************************************************
         //**      ** 下を押したときの処理はここに描く    **      **
@@ -720,6 +722,8 @@ public class Box_PlayerController : MonoBehaviour
                     }
                 }
             }
+
+            if (sidebox.NPWall != null) 
             foreach (GameObject ground in sidebox.NPWall)
             {
                 //画像の縦横をとり、地面(不透過壁)が横広のとき、グラップリング対象とする
@@ -1136,7 +1140,7 @@ public class Box_PlayerController : MonoBehaviour
     //========================================================
     IEnumerator Graplinger(Vector3 point)
     {
-        SphereCollider sCollider = transform.GetComponent<SphereCollider>();
+        SphereCollider sCollider = transform.parent.GetComponent<SphereCollider>();
         sCollider.enabled = false;
         Vector3 Ppos = transform.parent.position;
         float timer = 0;
