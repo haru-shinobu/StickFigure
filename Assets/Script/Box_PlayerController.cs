@@ -79,7 +79,13 @@ public class Box_PlayerController : MonoBehaviour
         
         //落下速度制限
         Vector3 vel = rb.velocity;
-        if (vel.y < -DropSpeed * 10) vel.y = -DropSpeed * 10;
+        if (vel.y < -DropSpeed * 10)
+        {
+            vel.y = -DropSpeed * 10;
+            //足跡下向き用
+            var romain = FootStamp.main;
+            romain.startRotation = new ParticleSystem.MinMaxCurve(-0.1746f*79, 0.1746f*79);
+        }
         rb.velocity = vel;
 
         if (Moving)
@@ -412,19 +418,7 @@ public class Box_PlayerController : MonoBehaviour
     public void MakeBridgeCheck()
     {
         GameObject target = null;
-
-        if (CheckRedAria())
-        {
-            /*
-            if (RollAriaLeftTop.x + G_Data.RedLine <= transform.parent.position.x - Player_verticalhorizontal.x &&
-            transform.parent.position.x + Player_verticalhorizontal.x <= RollAriaRightBottom.x - G_Data.RedLine)
-            if (RollAriaRightBottom.y + G_Data.RedLine <= transform.parent.position.y - Player_verticalhorizontal.y && transform.parent.position.y + Player_verticalhorizontal.y <= RollAriaLeftTop.y - G_Data.RedLine)
-             */
-            //Debug.Log("LT:"+RollAriaLeftTop + " RB:" + RollAriaRightBottom + " PL" + transform.parent.position);
-            //Debug.Log("RedAria?");
-            //Debug.Log("PR" + transform.parent.position.x + Player_verticalhorizontal.x + "R" + (RollAriaRightBottom.x - G_Data.RedLine));
-        }
-
+        
         if (RedSide != SideRedLine.Non)
         {
             //橋ベースの長い方向を記録する用
@@ -591,7 +585,6 @@ public class Box_PlayerController : MonoBehaviour
     //this.MakeBridgeCheck()->
     void MakeBridge(GameObject prevBB, GameObject nextBB)
     {
-
         //前回の橋が残っているとき破棄
         if (BridgeObj)
             Destroy(BridgeObj);
@@ -784,6 +777,10 @@ public class Box_PlayerController : MonoBehaviour
             {
                 if (!GrapLing)
                 {
+                    //足跡上向き用
+                    var romain = FootStamp.main;
+                    romain.startRotation = new ParticleSystem.MinMaxCurve(-0.1746f, 0.1746f);
+                    
 
                     Vector3 pos, pos1, pos2, pos3, pos4, pos5;
                     pos = pos1 = pos2 = pos3 = pos4 = pos5 = Front_LeftTop;
