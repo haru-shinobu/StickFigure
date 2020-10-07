@@ -7,7 +7,7 @@ public class Box_PlayerController : MonoBehaviour
     [SerializeField, Range(0.1f, 10)] float MoveRange = 0.4f;
     [SerializeField, Range(0.1f, 10)] float DropSpeed = 1;
 
-    Vector3 NowPlayerMovePoint;
+    Vector3 NowPlayerMovePoint, OldPlayerMovePoint, horizontalPlayerMovePoint;
     int MoveCount = 0;
     [SerializeField] int FlameCount = 10;
 
@@ -70,21 +70,23 @@ public class Box_PlayerController : MonoBehaviour
         _UICanvas.ChangeNum(nDCount);
         NowPlayerMovePoint = transform.parent.position;
         FootStamp = transform.parent.GetChild(1).GetComponent<ParticleSystem>();
-        
+        horizontalPlayerMovePoint = Vector3.zero;
     }
 
 
     void Update()
     {
-        
         //落下速度制限
         Vector3 vel = rb.velocity;
         if (vel.y < -DropSpeed * 10)
         {
             vel.y = -DropSpeed * 10;
-            //足跡下向き用
+        }
+        if (vel.y < 0)
+        {
+            //足跡下降用
             var romain = FootStamp.main;
-            romain.startRotation = new ParticleSystem.MinMaxCurve(-0.1746f*79, 0.1746f*79);
+            romain.startRotation = new ParticleSystem.MinMaxCurve(2.967f, 3.316f);
         }
         rb.velocity = vel;
 
@@ -122,17 +124,19 @@ public class Box_PlayerController : MonoBehaviour
                     else
                     {
                         // 一定フレームで処理
-                        if (FlameCount < MoveCount++)
+                        if (FlameCount <= ++MoveCount)
                         {
                             MoveCount = 0;
                             // プレイヤー移動範囲チェック
                             RePositionMoveAria();
+                            OldPlayerMovePoint = NowPlayerMovePoint;
                             this.Move(horizontal, vartical);
                         }
                         else
                         {
-                            if (NowPlayerMovePoint.y != transform.parent.position.y) NowPlayerMovePoint.y = transform.parent.position.y;
-                            transform.parent.position = Vector3.Lerp(transform.parent.position, NowPlayerMovePoint, MoveCount / FlameCount);
+                            NowPlayerMovePoint.y = transform.parent.position.y;
+                            NowPlayerMovePoint += (horizontalPlayerMovePoint / FlameCount);
+                            transform.parent.position = NowPlayerMovePoint;
                         }
                     }
 
@@ -140,7 +144,6 @@ public class Box_PlayerController : MonoBehaviour
                     {
                         //橋の判定など
                         MakeBridgeCheck();
-
                     }
                 }
             }
@@ -280,19 +283,21 @@ public class Box_PlayerController : MonoBehaviour
     //this->
     void Move(float horizontal, float vartical)
     {
+        horizontalPlayerMovePoint = Vector3.zero;
         if (horizontal > 0)
         {
-            NowPlayerMovePoint += Vector3.right * MoveRange;
+            horizontalPlayerMovePoint = Vector3.right * MoveRange;
             //画像反転用
             transform.GetChild(0).localScale = Vector3.one;
             //足跡反転用
             var romain = FootStamp.main;
-            romain.startRotation = new ParticleSystem.MinMaxCurve(1.396f, 1.745f);
+            //romain.startRotation = new ParticleSystem.MinMaxCurve(1.396f, 1.745f);
+            romain.startRotation = new ParticleSystem.MinMaxCurve(0.1f, 0.1f);
         }
         else
         if (horizontal < 0)
         {
-            NowPlayerMovePoint -= Vector3.right * MoveRange;
+            horizontalPlayerMovePoint = -Vector3.right * MoveRange;
             //画像反転用
             transform.GetChild(0).localScale = new Vector3(-1, 1, 1);
             //足跡反転用
@@ -305,7 +310,6 @@ public class Box_PlayerController : MonoBehaviour
         //*********************************************************
         if (vartical < 0)
         {
-
             bool slide = false;
             //すり抜けられる床かどうか
             foreach (GameObject ground in sidebox.BoxInGround)
@@ -319,12 +323,17 @@ public class Box_PlayerController : MonoBehaviour
                     {
                         //地面幅のなかにプレイヤーが存在し、なおかつその地面の上にプレイヤーがいるなら
                         if (ground.transform.position.x - exvec.x < transform.parent.position.x && transform.parent.position.x < ground.transform.position.x + exvec.x)
-                            if (transform.parent.position.y - Player_verticalhorizontal.y - 0.1f < ground.transform.position.y &&
+                        {
+                            Debug.DrawLine(transform.parent.position + new Vector3(0, - Player_verticalhorizontal.y - 0.1f),
+                                transform.parent.position +new Vector3(0,-Player_verticalhorizontal.y - 0.1f) + Vector3.right,
+                                Color.red,100);
+                            if (transform.parent.position.y - Player_verticalhorizontal.y - 0.1f < ground.transform.position.y+exvec.y &&
                                 ground.transform.position.y < transform.parent.position.y)
                             {
                                 ground.GetComponent<GroundScript>().SlipDown();
                                 slide = true;
                             }
+                        }
                     }
                 }
             }
@@ -401,13 +410,6 @@ public class Box_PlayerController : MonoBehaviour
             }
             rb.isKinematic = false;
         }
-        /*
-        if (vartical > 0)
-            transform.parent.localPosition += Vector3.up * Speed;
-        else
-        if (vartical < 0)
-            transform.parent.localPosition -= Vector3.up * Speed;
-        */
     }
 
 
@@ -418,7 +420,9 @@ public class Box_PlayerController : MonoBehaviour
     public void MakeBridgeCheck()
     {
         GameObject target = null;
-        
+        if(CheckRedAria())
+        {
+        }
         if (RedSide != SideRedLine.Non)
         {
             //橋ベースの長い方向を記録する用
@@ -550,22 +554,6 @@ public class Box_PlayerController : MonoBehaviour
                 if (distance - 0.001f <= bounds.y)
                 {
                     MakeOk = true;
-                    /*
-                    Vector3 once = target.GetComponent<SpriteRenderer>().bounds.extents;
-                    if (once.y < once.x)
-                    {
-                        if (transform.parent.position.y < target.transform.position.y)
-                            RedSide = SideRedLine.T;
-                        else
-                            RedSide = SideRedLine.B;
-                    }
-                    else
-                    {
-                        if (transform.parent.position.x < target.transform.position.x)
-                            RedSide = SideRedLine.R;
-                        else
-                            RedSide = SideRedLine.L;
-                    }*/
                 }
                 //橋基地同士の距離が橋以上のとき
                 else
@@ -592,7 +580,7 @@ public class Box_PlayerController : MonoBehaviour
         //各生成場所セット
         Vector3 _vec = transform.parent.position;
         float _Angle = 0f;
-
+        
         //プレイヤー位置を基準とするのではなく、赤ラインの半分(0.5f分)を基準とする。(橋の役割とき)
         switch (RedSide)
         {
@@ -686,11 +674,8 @@ public class Box_PlayerController : MonoBehaviour
 
             BridgeAriaLT = FLT;
             BridgeAriaBR = BRB;
-
         }
     }
-
-
     //this.MakeBridgeCheck()->
     void GrapLinger()
     {
@@ -768,8 +753,7 @@ public class Box_PlayerController : MonoBehaviour
                     }
                 }
             }
-
-
+            
 
             //グラップリング処理
             //ただし移動できない壁後付けするため注意。（製作途中）
@@ -1154,7 +1138,7 @@ public class Box_PlayerController : MonoBehaviour
         sCollider.enabled = false;
         Vector3 Ppos = transform.parent.position;
         float timer = 0;
-
+        Debug.Log(NowPlayerMovePoint);
         while (!OnBridge)
         {
             transform.parent.position = Vector3.Lerp(Ppos, point, timer);
@@ -1171,9 +1155,11 @@ public class Box_PlayerController : MonoBehaviour
             }
         }
         NowPlayerMovePoint = transform.parent.position = point;
+        Debug.Log(NowPlayerMovePoint+"N*P"+transform.parent.position);
         sCollider.enabled = true;
         GrapLing = false;
     }
+    
     //========================================================
     // グラップアタックしたときのプレイヤー処理
     //========================================================
