@@ -15,6 +15,7 @@ TagManager:
   - NoPassWall
   - SideWall
   - Clear
+  - PlayerBase
   layers:
   - Default
   - TransparentFX
