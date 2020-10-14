@@ -20,7 +20,6 @@ public class NeedleSc : MonoBehaviour
         while (timer <= 1)
         {
             timer += Time.deltaTime * 6;
-            Debug.Log(timer);
             yield return new WaitForEndOfFrame();
             transform.position = Vector3.Lerp(pos, stingpos, timer);
         }

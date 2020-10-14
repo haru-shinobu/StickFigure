@@ -31,4 +31,14 @@ public class GameData : MonoBehaviour
         get { return BridgeBases; }
         set { BridgeBases = value; }
     }
+
+    float SW_Offset;
+    /// <summary>
+    /// SideWall_Offset half
+    /// </summary>
+    public float SideWall_Offset
+    {
+        get { return SW_Offset; }
+        set { SW_Offset = value; }
+    }
 }

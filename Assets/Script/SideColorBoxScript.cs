@@ -249,26 +249,28 @@ public class SideColorBoxScript : MonoBehaviour
 
         PSc.Front_LeftTop = F_LeftTop = FLT;
         PSc.Front_RightBottom = F_RightBottom = BRB;
+        
+        //プレイヤーの移動に関わる範囲
+        if (BoxAroundWallLayer == 0)
+            BoxAroundWallLayer = 1 << LayerMask.NameToLayer("sideWall");
+        PSc.sidewallstate(0);
+
         var position = transform.position;
         position.z = -mesh.bounds.extents.z;
-
-
-        //プレイヤーの移動に関わる範囲
-        if(BoxAroundWallLayer==0)
-            BoxAroundWallLayer = 1 << LayerMask.NameToLayer("sideWall");
+        RaycastHit rayhitvecT = ray.Ray(position, Vector3.up, 10, BoxAroundWallLayer);
+        RaycastHit rayhitvecB = ray.Ray(position, -Vector3.up, 10, BoxAroundWallLayer);
+        RaycastHit rayhitvecR = ray.Ray(position, Vector3.right, 10, BoxAroundWallLayer);
+        RaycastHit rayhitvecL = ray.Ray(position, -Vector3.right, 10, BoxAroundWallLayer);
         
-        RaycastHit rayhitvecT = ray.Ray(position, Vector3.up,10, BoxAroundWallLayer);
-        RaycastHit rayhitvecB = ray.Ray(position, -Vector3.up,10, BoxAroundWallLayer);
-        RaycastHit rayhitvecR = ray.Ray(position, Vector3.right, 10,BoxAroundWallLayer);
-        RaycastHit rayhitvecL = ray.Ray(position, -Vector3.right,10, BoxAroundWallLayer);
-
-        if (rayhitvecT.collider != null) {if(rayhitvecT.transform.parent == transform) FLT.y = rayhitvecT.transform.position.y - rayhitvecT.transform.GetComponent<CapsuleCollider>().radius;}
-        if (rayhitvecB.collider != null) {if(rayhitvecB.transform.parent == transform) BRB.y = rayhitvecB.transform.position.y + rayhitvecB.transform.GetComponent<CapsuleCollider>().radius;}
-        if (rayhitvecR.collider != null) {if(rayhitvecR.transform.parent == transform) BRB.x = rayhitvecR.transform.position.x - rayhitvecR.transform.GetComponent<CapsuleCollider>().radius;}
-        if (rayhitvecL.collider != null) {if(rayhitvecL.transform.parent == transform) FLT.x = rayhitvecL.transform.position.x + rayhitvecL.transform.GetComponent<CapsuleCollider>().radius;}
+        if (rayhitvecR.collider != null) {if(rayhitvecR.transform.parent == transform){ BRB.x = rayhitvecR.transform.position.x - rayhitvecR.transform.GetComponent<CapsuleCollider>().radius; PSc.sidewallstate(1); }}
+        if (rayhitvecL.collider != null) {if(rayhitvecL.transform.parent == transform){ FLT.x = rayhitvecL.transform.position.x + rayhitvecL.transform.GetComponent<CapsuleCollider>().radius; PSc.sidewallstate(-1); }}
+        if (rayhitvecB.collider != null) {if(rayhitvecB.transform.parent == transform){ BRB.y = rayhitvecB.transform.position.y + rayhitvecB.transform.GetComponent<CapsuleCollider>().radius; PSc.sidewallstate(2); }}
+        if (rayhitvecT.collider != null) {if(rayhitvecT.transform.parent == transform){ FLT.y = rayhitvecT.transform.position.y - rayhitvecT.transform.GetComponent<CapsuleCollider>().radius; }}
+        
 
         PSc.Move_Aria_FLT = FLT;
         PSc.Move_Aria_FRB = BRB;
+        
     }
     //==================================================================
     //BoxRollerSwitchからの信号用
