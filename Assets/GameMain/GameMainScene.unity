@@ -2807,7 +2807,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 0.25
+      scalar: 1
       minScalar: 0.5
       maxCurve:
         serializedVersion: 2
@@ -8093,6 +8093,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 54377829234141353, guid: 9ef2d10351237384f89730a4952aea42,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 142366304101285741, guid: 9ef2d10351237384f89730a4952aea42,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: 176726763669539174, guid: 9ef2d10351237384f89730a4952aea42,
         type: 3}
       propertyPath: m_Name
@@ -8203,6 +8213,11 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2892604881291022362, guid: 9ef2d10351237384f89730a4952aea42,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 3668571056685633269, guid: 9ef2d10351237384f89730a4952aea42,
         type: 3}
       propertyPath: m_RootOrder
@@ -8217,6 +8232,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_RootOrder
       value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 5351613296689287929, guid: 9ef2d10351237384f89730a4952aea42,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 5783603248039515556, guid: 9ef2d10351237384f89730a4952aea42,
         type: 3}

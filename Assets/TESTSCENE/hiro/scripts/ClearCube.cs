@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class ClearCube : MonoBehaviour
 {
-    //private Vector3 offset;
+    CameraManager camera;
     public GameObject goalText;
     Vector3 Ppos;
     [SerializeField]
@@ -21,7 +21,7 @@ public class ClearCube : MonoBehaviour
         Particle.gameObject.SetActive(false);
         Particle_1.gameObject.SetActive(false);
         Particle_2.gameObject.SetActive(false);
-        //offset = transform.position - Particle.transform.position;
+        camera = GetComponent<CameraManager>();
     }
     private void OnTriggerEnter(Collider other)
     {
@@ -38,19 +38,23 @@ public class ClearCube : MonoBehaviour
 
     private IEnumerator clear()
     {
+         //camera.transform.position= new goalText.transform();
         goalText.gameObject.SetActive(true);
         //紙吹雪
         //transform.position = Particle.transform.position + offset;
         Particle.gameObject.SetActive(true);
         Particle.Simulate(4.0f, true, false);
+        //camera =Particle;
         Particle.Play();
         //クラッカー1
         Particle_1.gameObject.SetActive(true);
         Particle_1.Simulate(4.0f, true, false);
+        //camera = Particle_1.transform;
         Particle_1.Play();
         //クラッカー2
         Particle_2.gameObject.SetActive(true);
         Particle_2.Simulate(4.0f, true, false);
+        //camera = Particle_2.transform;
         Particle_2.Play();
         yield return new WaitForSeconds(2f);
         SceneManager.LoadScene("Clear");
