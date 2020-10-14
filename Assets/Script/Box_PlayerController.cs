@@ -484,9 +484,7 @@ public class Box_PlayerController : MonoBehaviour
     public void MakeBridgeCheck()
     {
         GameObject target = null;
-        if(CheckRedAria())
-        {
-        }
+        CheckRedAria();
         if (RedSide != SideRedLine.Non)
         {
             //橋ベースの長い方向を記録する用
@@ -744,6 +742,7 @@ public class Box_PlayerController : MonoBehaviour
     void GrapLinger()
     {
         bool GrapOK = false;
+
         if (!GrapLing)
         {
             GameObject land = null;
@@ -763,12 +762,13 @@ public class Box_PlayerController : MonoBehaviour
                         {
 
                             if (transform.parent.position.y < ground.transform.position.y)
+                            {
                                 if (land == null)
                                     land = ground;
                                 else
-                                if (land.transform.position.y < ground.transform.position.y)
+                                if (land.transform.position.y > ground.transform.position.y)
                                     land = ground;
-
+                            }
                             //その足場の上にプレイヤーがいるなら
                             if (transform.parent.position.y - Player_verticalhorizontal.y - 0.1f < ground.transform.position.y + exvec.y
                                 && ground.transform.position.y < transform.parent.position.y)
@@ -811,7 +811,7 @@ public class Box_PlayerController : MonoBehaviour
                         {
                             if (obj.transform.position.x - exvec.x < transform.parent.position.x && transform.parent.position.x < obj.transform.position.x + exvec.x)
                             {
-                                onebridgebase = obj;
+                                onebridgebase = obj;//足場の中で最も近い足場を得ている
                             }
                         }
                     }
@@ -1193,7 +1193,6 @@ public class Box_PlayerController : MonoBehaviour
             }
         }
         Moving = true;
-        //rb.isKinematic = true;のままで！(仮)
     }
     //========================================================
     // グラップリングしたときのプレイヤー処理

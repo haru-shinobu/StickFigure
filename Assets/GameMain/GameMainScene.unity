@@ -215,6 +215,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   goalText: {fileID: 255913558}
+  Particle: {fileID: 266586293}
+  Particle_1: {fileID: 861330466}
+  Particle_2: {fileID: 1666588384}
 --- !u!136 &108692250
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -401,6 +404,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   goalText: {fileID: 255913558}
+  Particle: {fileID: 0}
+  Particle_1: {fileID: 0}
+  Particle_2: {fileID: 0}
 --- !u!65 &144742428
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5548,7 +5554,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!199 &266586292
 ParticleSystemRenderer:
   serializedVersion: 6
@@ -11171,6 +11177,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   goalText: {fileID: 0}
+  Particle: {fileID: 0}
+  Particle_1: {fileID: 0}
+  Particle_2: {fileID: 0}
 --- !u!1001 &512222073
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11844,7 +11853,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!199 &861330465
 ParticleSystemRenderer:
   serializedVersion: 6
@@ -18551,7 +18560,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!199 &1666588383
 ParticleSystemRenderer:
   serializedVersion: 6
