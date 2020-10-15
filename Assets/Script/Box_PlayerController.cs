@@ -57,6 +57,52 @@ public class Box_PlayerController : MonoBehaviour
     SideRedLine RedSide = SideRedLine.Non;
     IEnumerator nowIE;
 
+    enum SideState
+    {
+        left_wall,
+        normal,
+        right_wall,
+        left_right_wall,
+        bottom_wall,
+        right_bottom_wall,
+        left_bottom_wall,
+        left_right_bottom_wall,
+    }
+    SideState sideState = SideState.normal;
+    public void sidewallstate(int value)
+    {
+        switch(value)
+        {
+            case 0:
+                sideState = SideState.normal;
+                break;
+            case 1:
+                if (sideState == SideState.left_wall)
+                    sideState = SideState.left_right_wall;
+                else
+                    sideState = SideState.right_wall;
+                break;
+            case -1:
+                if (sideState == SideState.right_wall)
+                    sideState = SideState.left_right_wall;
+                else
+                    sideState = SideState.left_wall;
+                break;
+            case 2:
+                if (sideState == SideState.right_wall)
+                    sideState = SideState.right_bottom_wall;
+                else
+                if (sideState == SideState.left_wall)
+                    sideState = SideState.left_bottom_wall;
+                else
+                if (sideState == SideState.left_right_wall)
+                    sideState = SideState.left_right_bottom_wall;
+                else
+                    sideState = SideState.bottom_wall;
+                break;
+        }
+    }
+
     void Start()
     {
         rb = transform.parent.GetComponent<Rigidbody>();
@@ -114,10 +160,10 @@ public class Box_PlayerController : MonoBehaviour
                         GameObject wind = Instantiate(G_Data.WindPrefab, sidebox.transform.position, Quaternion.identity);
                         //上下左右
                         var rollways = 0;
-                        if (T > Front_LeftTop.y) { rollways = 1; wind.transform.rotation = Quaternion.Euler(0, 0, 90); }
-                        if (B < Front_RightBottom.y) { rollways = 2; wind.transform.rotation = Quaternion.Euler(0, 0, -90); }
-                        if (L < Front_LeftTop.x) { rollways = 3; wind.transform.rotation = Quaternion.Euler(0, 0, 180); }
-                        if (R > Front_RightBottom.x) { rollways = 4; wind.transform.rotation = Quaternion.Euler(0, 0, 0); }
+                        if (T >= Front_LeftTop.y) { rollways = 1; wind.transform.rotation = Quaternion.Euler(0, 0, 90); }
+                        if (B <= Front_RightBottom.y) { rollways = 2; wind.transform.rotation = Quaternion.Euler(0, 0, -90); }
+                        if (L <= Front_LeftTop.x) { rollways = 3; wind.transform.rotation = Quaternion.Euler(0, 0, 180); }
+                        if (R >= Front_RightBottom.x) { rollways = 4; wind.transform.rotation = Quaternion.Euler(0, 0, 0); }
                         if (BridgeObj) Destroy(BridgeObj);
                         sidebox.ChangeBoxRoll(rollways);
                     }
@@ -131,6 +177,8 @@ public class Box_PlayerController : MonoBehaviour
                             RePositionMoveAria();
                             OldPlayerMovePoint = NowPlayerMovePoint;
                             this.Move(horizontal, vartical);
+                            //落下しないときrigidbodyやエリア計算スキップできるようにする…？
+
                         }
                         else
                         {
@@ -168,16 +216,16 @@ public class Box_PlayerController : MonoBehaviour
     //移動範囲確認(箱)
     void RePositionMoveAria()
     {
-        var pos = transform.parent.position;
+        var pos = NowPlayerMovePoint = transform.parent.position;
         var T = pos.y + Player_verticalhorizontal.y;
         var B = pos.y - Player_verticalhorizontal.y;
         var R = pos.x + Player_verticalhorizontal.x;
         var L = pos.x - Player_verticalhorizontal.x;
         
-        if (Move_Aria_FLT.x >= L) transform.parent.position += Vector3.right * MoveRange;
-        if (R >= Move_Aria_FRB.x) transform.parent.position -= Vector3.right * MoveRange;
-        if (T >= Move_Aria_FLT.y) transform.parent.position -= Vector3.up * MoveRange;
-        if (Move_Aria_FRB.y == RollAriaRightBottom.y)
+        if (Move_Aria_FLT.x >= L) NowPlayerMovePoint += Vector3.right * MoveRange;
+        if (R >= Move_Aria_FRB.x) NowPlayerMovePoint -= Vector3.right * MoveRange;
+        if (T >= Move_Aria_FLT.y) NowPlayerMovePoint -= Vector3.up * MoveRange;
+        if (Move_Aria_FRB.y == Front_RightBottom.y)
         {
             if (Move_Aria_FRB.y + G_Data.RedLine / 2 >= B)
             {
@@ -204,16 +252,31 @@ public class Box_PlayerController : MonoBehaviour
         var R = pos.x + Player_verticalhorizontal.x;
         var L = pos.x - Player_verticalhorizontal.x;
 
+        
         if (B <= Move_Aria_FRB.y + MoveRange)
             rb.isKinematic = true;
         else
             rb.isKinematic = false;
 
-        if (RollAriaLeftTop.x < L && R < RollAriaRightBottom.x)
-            if (RollAriaRightBottom.y < B && T < RollAriaLeftTop.y)
+        if (Front_LeftTop.x < L && R < Front_RightBottom.x)
+            if (Front_RightBottom.y < B && T < Front_LeftTop.y)
             {
                 return false;
             }
+        if(sideState == SideState.right_wall ||
+            sideState == SideState.left_right_wall ||
+            sideState == SideState.right_bottom_wall ||
+            sideState == SideState.left_right_bottom_wall)
+        {
+            if (R > Front_RightBottom.x) return false;
+        }
+        else if (sideState == SideState.left_wall ||
+            sideState == SideState.left_right_wall ||
+            sideState == SideState.left_bottom_wall || 
+            sideState == SideState.left_right_bottom_wall)
+        {
+            if (Front_LeftTop.x > L)  return false;
+        }
         return true;
     }
 
@@ -257,21 +320,21 @@ public class Box_PlayerController : MonoBehaviour
     public bool CheckRedAria()
     {
         //G_Data.RedLineは赤線の幅
-        if (RollAriaLeftTop.x + G_Data.RedLine <= transform.parent.position.x - Player_verticalhorizontal.x && transform.parent.position.x + Player_verticalhorizontal.x <= RollAriaRightBottom.x - G_Data.RedLine)
-            if (RollAriaRightBottom.y + G_Data.RedLine <= transform.parent.position.y - Player_verticalhorizontal.y && transform.parent.position.y + Player_verticalhorizontal.y <= RollAriaLeftTop.y - G_Data.RedLine)
+        if (Front_LeftTop.x + G_Data.RedLine <= transform.parent.position.x - Player_verticalhorizontal.x && transform.parent.position.x + Player_verticalhorizontal.x <= Front_RightBottom.x - G_Data.RedLine)
+            if (Front_RightBottom.y + G_Data.RedLine <= transform.parent.position.y - Player_verticalhorizontal.y && transform.parent.position.y + Player_verticalhorizontal.y <= Front_LeftTop.y - G_Data.RedLine)
             {
                 RedSide = SideRedLine.Non;
                 return false;
             }
         //左右を優先
-        if (RollAriaLeftTop.x + G_Data.RedLine > transform.parent.position.x - Player_verticalhorizontal.x)
+        if (Front_LeftTop.x + G_Data.RedLine > transform.parent.position.x - Player_verticalhorizontal.x)
             RedSide = SideRedLine.L;
-        else if (transform.parent.position.x + Player_verticalhorizontal.x > RollAriaRightBottom.x - G_Data.RedLine)
+        else if (transform.parent.position.x + Player_verticalhorizontal.x > Front_RightBottom.x - G_Data.RedLine)
             RedSide = SideRedLine.R;
         else
-        if (RollAriaRightBottom.y + G_Data.RedLine > transform.parent.position.y - Player_verticalhorizontal.y)
+        if (Front_RightBottom.y + G_Data.RedLine > transform.parent.position.y - Player_verticalhorizontal.y)
             RedSide = SideRedLine.B;
-        else if (transform.parent.position.y - Player_verticalhorizontal.y > RollAriaLeftTop.y - G_Data.RedLine)
+        else if (transform.parent.position.y - Player_verticalhorizontal.y > Front_LeftTop.y - G_Data.RedLine)
             RedSide = SideRedLine.T;
         return true;
     }
@@ -291,8 +354,7 @@ public class Box_PlayerController : MonoBehaviour
             transform.GetChild(0).localScale = Vector3.one;
             //足跡反転用
             var romain = FootStamp.main;
-            //romain.startRotation = new ParticleSystem.MinMaxCurve(1.396f, 1.745f);
-            romain.startRotation = new ParticleSystem.MinMaxCurve(0.1f, 0.1f);
+            romain.startRotation = new ParticleSystem.MinMaxCurve(1.396f, 1.745f);
         }
         else
         if (horizontal < 0)
@@ -324,9 +386,6 @@ public class Box_PlayerController : MonoBehaviour
                         //地面幅のなかにプレイヤーが存在し、なおかつその地面の上にプレイヤーがいるなら
                         if (ground.transform.position.x - exvec.x < transform.parent.position.x && transform.parent.position.x < ground.transform.position.x + exvec.x)
                         {
-                            Debug.DrawLine(transform.parent.position + new Vector3(0, - Player_verticalhorizontal.y - 0.1f),
-                                transform.parent.position +new Vector3(0,-Player_verticalhorizontal.y - 0.1f) + Vector3.right,
-                                Color.red,100);
                             if (transform.parent.position.y - Player_verticalhorizontal.y - 0.1f < ground.transform.position.y+exvec.y &&
                                 ground.transform.position.y < transform.parent.position.y)
                             {
@@ -407,12 +466,17 @@ public class Box_PlayerController : MonoBehaviour
                 else
                     if (BridgeObj)
                     BridgeObj.GetComponent<bridgeScript>().second_NoCollider();
+                //ここに下回転する前の下移動の処理を書く
+                if (sideState != SideState.left_right_bottom_wall &&
+                    sideState != SideState.left_bottom_wall &&
+                    sideState != SideState.right_bottom_wall &&
+                    sideState != SideState.bottom_wall)
+                    horizontalPlayerMovePoint -= Vector3.up * MoveRange;
             }
             rb.isKinematic = false;
         }
     }
-
-
+    
     //=======================================================================
     // 橋
     //=======================================================================
@@ -420,9 +484,7 @@ public class Box_PlayerController : MonoBehaviour
     public void MakeBridgeCheck()
     {
         GameObject target = null;
-        if(CheckRedAria())
-        {
-        }
+        CheckRedAria();
         if (RedSide != SideRedLine.Non)
         {
             //橋ベースの長い方向を記録する用
@@ -680,6 +742,7 @@ public class Box_PlayerController : MonoBehaviour
     void GrapLinger()
     {
         bool GrapOK = false;
+
         if (!GrapLing)
         {
             GameObject land = null;
@@ -699,12 +762,13 @@ public class Box_PlayerController : MonoBehaviour
                         {
 
                             if (transform.parent.position.y < ground.transform.position.y)
+                            {
                                 if (land == null)
                                     land = ground;
                                 else
-                                if (land.transform.position.y < ground.transform.position.y)
+                                if (land.transform.position.y > ground.transform.position.y)
                                     land = ground;
-
+                            }
                             //その足場の上にプレイヤーがいるなら
                             if (transform.parent.position.y - Player_verticalhorizontal.y - 0.1f < ground.transform.position.y + exvec.y
                                 && ground.transform.position.y < transform.parent.position.y)
@@ -747,7 +811,7 @@ public class Box_PlayerController : MonoBehaviour
                         {
                             if (obj.transform.position.x - exvec.x < transform.parent.position.x && transform.parent.position.x < obj.transform.position.x + exvec.x)
                             {
-                                onebridgebase = obj;
+                                onebridgebase = obj;//足場の中で最も近い足場を得ている
                             }
                         }
                     }
@@ -890,11 +954,12 @@ public class Box_PlayerController : MonoBehaviour
                         //間に何もないとき
                         if (Front_LeftTop.y <= pos.y && Front_LeftTop.y <= pos5.y)
                         {
+                            GrapLing = true;
                             //上限まで伸ばす
-                            Vector3 point = new Vector3(transform.parent.position.x, RollAriaLeftTop.y - Player_verticalhorizontal.y + 0.1f, transform.parent.position.z);
+                            Vector3 point = new Vector3(transform.parent.position.x, Front_LeftTop.y - Player_verticalhorizontal.y + 0.1f, transform.parent.position.z);
                             nowIE = Graplinger(point);
                             StartCoroutine(nowIE);
-                            GrapLing = true;
+                            
                         }
                     }
                 }
@@ -991,6 +1056,7 @@ public class Box_PlayerController : MonoBehaviour
         get { return MoveAriaRightBottom; }
         set { MoveAriaRightBottom = value; }
     }
+    
     //========================================================
     // 橋の上に乗ったときのプレイヤー処理
     //========================================================
@@ -1127,7 +1193,6 @@ public class Box_PlayerController : MonoBehaviour
             }
         }
         Moving = true;
-        //rb.isKinematic = true;のままで！(仮)
     }
     //========================================================
     // グラップリングしたときのプレイヤー処理
@@ -1138,10 +1203,10 @@ public class Box_PlayerController : MonoBehaviour
         sCollider.enabled = false;
         Vector3 Ppos = transform.parent.position;
         float timer = 0;
-        Debug.Log(NowPlayerMovePoint);
+
         while (!OnBridge)
         {
-            transform.parent.position = Vector3.Lerp(Ppos, point, timer);
+            transform.parent.position = NowPlayerMovePoint = Vector3.Lerp(Ppos, point, timer);
             timer += Time.deltaTime;
             yield return new WaitForEndOfFrame();
 
@@ -1155,7 +1220,7 @@ public class Box_PlayerController : MonoBehaviour
             }
         }
         NowPlayerMovePoint = transform.parent.position = point;
-        Debug.Log(NowPlayerMovePoint+"N*P"+transform.parent.position);
+
         sCollider.enabled = true;
         GrapLing = false;
     }
