@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class Box_PlayerController : MonoBehaviour
 {
-    [SerializeField, Range(0.1f, 10)] float MoveRange = 0.4f;
+    [SerializeField, Range(0.1f, 1)] float MoveRange = 0.4f;
     [SerializeField, Range(0.1f, 10)] float DropSpeed = 1;
 
+    Inputmanager inputer;
     Vector3 NowPlayerMovePoint, OldPlayerMovePoint, horizontalPlayerMovePoint;
     int MoveCount = 0;
     [SerializeField] int FlameCount = 10;
@@ -117,9 +118,9 @@ public class Box_PlayerController : MonoBehaviour
         NowPlayerMovePoint = transform.parent.position;
         FootStamp = transform.parent.GetChild(1).GetComponent<ParticleSystem>();
         horizontalPlayerMovePoint = Vector3.zero;
+        inputer = GameObject.FindWithTag("BoxManager").GetComponent<Inputmanager>();
     }
-
-
+        
     void Update()
     {
         //落下速度制限
@@ -138,9 +139,6 @@ public class Box_PlayerController : MonoBehaviour
 
         if (Moving)
         {
-            float horizontal = Input.GetAxis("Horizontal");
-            float vartical = Input.GetAxis("Vertical");
-
             // プレイヤー移動範囲チェック
             //橋の上でないとき
             if (!CheckMoveBridgeAria())
@@ -176,7 +174,7 @@ public class Box_PlayerController : MonoBehaviour
                             // プレイヤー移動範囲チェック
                             RePositionMoveAria();
                             OldPlayerMovePoint = NowPlayerMovePoint;
-                            this.Move(horizontal, vartical);
+                            this.Move(inputer.player_move_input[0], inputer.player_move_input[1]);
                             //落下しないときrigidbodyやエリア計算スキップできるようにする…？
 
                         }
@@ -188,7 +186,7 @@ public class Box_PlayerController : MonoBehaviour
                         }
                     }
 
-                    if (Input.GetButton("Jump"))
+                    if (inputer.player_jump_input)
                     {
                         //橋の判定など
                         MakeBridgeCheck();
@@ -996,7 +994,13 @@ public class Box_PlayerController : MonoBehaviour
     public bool Moving
     {
         get { return _bControll; }
-        set { _bControll = value; /*rb.isKinematic = false; */}
+        set { _bControll = value;
+            FootStamp.gameObject.SetActive(true);
+        }
+    }
+    public bool FootStampActive
+    {
+        set { FootStamp.gameObject.SetActive(value); }
     }
     public Rigidbody P_rb
     {

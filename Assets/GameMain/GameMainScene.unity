@@ -10839,7 +10839,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f18e6e626b0b030469091b4e0743b9ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MoveRange: 0.1
+  MoveRange: 0.5
   DropSpeed: 1
   FlameCount: 4
   _Canvas: {fileID: 851101666}
@@ -24187,6 +24187,7 @@ GameObject:
   - component: {fileID: 2082146977}
   - component: {fileID: 2082146976}
   - component: {fileID: 2082146975}
+  - component: {fileID: 2082146978}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: BoxManager
@@ -24235,6 +24236,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2082146978
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2082146974}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c91759154b235f44fbd0835c51c2cb08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2138393513
 GameObject:
   m_ObjectHideFlags: 0
