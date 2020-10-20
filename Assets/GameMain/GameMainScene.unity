@@ -10843,6 +10843,8 @@ MonoBehaviour:
   DropSpeed: 1
   FlameCount: 4
   _Canvas: {fileID: 851101666}
+  mat_right: {fileID: 2100000, guid: 25b5f9c3234f6744bad3d9cd5191fe44, type: 2}
+  mat_left: {fileID: 2100000, guid: d0b0a01b3197dba4e9b24583064ba41b, type: 2}
   Bridge: {fileID: 1487617690276569714, guid: 5f3032556189df34389b26e109575ec8, type: 3}
 --- !u!114 &403796378
 MonoBehaviour:
@@ -24328,6 +24330,8 @@ MonoBehaviour:
   DropSpeed: 1
   FlameCount: 10
   _Canvas: {fileID: 0}
+  mat_right: {fileID: 0}
+  mat_left: {fileID: 0}
   Bridge: {fileID: 1487617690276569714, guid: 5f3032556189df34389b26e109575ec8, type: 3}
 --- !u!212 &2138393518
 SpriteRenderer:
