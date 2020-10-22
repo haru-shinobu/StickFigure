@@ -34,12 +34,7 @@ public class Box_PlayerController : MonoBehaviour
     Vector3 RollAriaLeftTop, RollAriaRightBottom;
     ///橋の縦横移動範囲設定、橋かけるたび再記録
     Vector3 BridgeAriaLeftTop, BridgeAriaRightBottom;
-
-    //向き変更時のキャラ画像用
-    MeshRenderer face;
-    [SerializeField]
-    Material mat_right, mat_left;
-
+    
     [SerializeField, Header("橋Prefab")]
     GameObject Bridge;
 
@@ -129,7 +124,6 @@ public class Box_PlayerController : MonoBehaviour
         FootStamp = transform.parent.GetChild(1).GetComponent<ParticleSystem>();
         horizontalPlayerMovePoint = Vector3.zero;
         inputer = GameObject.FindWithTag("BoxManager").GetComponent<Inputmanager>();
-        face = transform.GetChild(0).GetChild(0).GetComponent<MeshRenderer>();
     }
         
     void Update()
@@ -365,8 +359,6 @@ public class Box_PlayerController : MonoBehaviour
             //足跡反転用
             var romain = FootStamp.main;
             romain.startRotation = new ParticleSystem.MinMaxCurve(1.396f, 1.745f);
-            //キャラ向き対応画像用
-            face.material = mat_left;
         }
         else
         if (horizontal < 0)
@@ -377,8 +369,6 @@ public class Box_PlayerController : MonoBehaviour
             //足跡反転用
             var romain = FootStamp.main;
             romain.startRotation = new ParticleSystem.MinMaxCurve(-1.396f, -1.745f);
-            //キャラ向き対応画像用
-            face.material = mat_right;
         }
         if (BridgeObj)
             if (bridgestate == BridgeAriaState.ignore)
