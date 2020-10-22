@@ -18,7 +18,12 @@ public class Box_PlayerController : MonoBehaviour
     bool _bControll = false;
 
     bool OnBridge = false;
-
+    enum BridgeAriaState
+    {
+        ignore = 0,
+        action = 1,
+    }
+    BridgeAriaState bridgestate = BridgeAriaState.ignore;
     bool GrapLing = false;
     private float offset = 0.05f;
     //プレイヤーの縦横の半分を記録
@@ -194,6 +199,8 @@ public class Box_PlayerController : MonoBehaviour
 
                     if (inputer.player_jump_input)
                     {
+                        if (bridgestate == BridgeAriaState.ignore)
+                            bridgestate = BridgeAriaState.action;
                         //橋の判定など
                         MakeBridgeCheck();
                     }
@@ -290,27 +297,26 @@ public class Box_PlayerController : MonoBehaviour
     {
         if (BridgeObj)
         {
-            if (BridgeObj.transform.forward == Vector3.forward || BridgeObj.transform.forward == -Vector3.forward)
-            {
-                var pos = transform.parent.position;
-                var T = pos.y + Player_verticalhorizontal.y;
-                var B = pos.y - Player_verticalhorizontal.y;
-                var R = pos.x + Player_verticalhorizontal.x;
-                var L = pos.x - Player_verticalhorizontal.x;
-
-                //範囲内に触れたとき（プレイヤーが橋の上にいる）
-                if (BridgeAriaLT.x <= R && L <= BridgeAriaBR.x)
-                    if (BridgeAriaBR.y <= T && B <= BridgeAriaLT.y)
-                    {
-                        NowPlayerMovePoint = transform.parent.position;
-                        pos.z = BridgeAriaLT.z;
-                        transform.parent.position = pos;
-                        camM.Bridge = OnBridge = true;
-                        
-
-                        return OnBridge;
-                    }
-            }
+            if (bridgestate == BridgeAriaState.action)
+                if (BridgeObj.transform.forward == Vector3.forward || BridgeObj.transform.forward == -Vector3.forward)
+                {
+                    var pos = transform.parent.position;
+                    var T = pos.y + Player_verticalhorizontal.y;
+                    var B = pos.y - Player_verticalhorizontal.y;
+                    var R = pos.x + Player_verticalhorizontal.x;
+                    var L = pos.x - Player_verticalhorizontal.x;
+                    //範囲内に触れたとき（プレイヤーが橋の上にいる）
+                    if (BridgeAriaLT.x < R && L < BridgeAriaBR.x)
+                        if (BridgeAriaBR.y < T && B < BridgeAriaLT.y)
+                        {
+                            NowPlayerMovePoint = transform.parent.position;
+                            pos.z = BridgeAriaLT.z;
+                            transform.parent.position = pos;
+                            camM.Bridge = OnBridge = true;
+                            Debug.Log("OnBridge" + BridgeAriaLT.x + "L:R" + BridgeAriaBR.x + "R" + R + "L" + L);
+                            return OnBridge;
+                        }
+                }
         }
         camM.Bridge = OnBridge = false;
         return OnBridge;
@@ -373,8 +379,23 @@ public class Box_PlayerController : MonoBehaviour
             romain.startRotation = new ParticleSystem.MinMaxCurve(-1.396f, -1.745f);
             //キャラ向き対応画像用
             face.material = mat_right;
-
         }
+        if (BridgeObj)
+            if (bridgestate == BridgeAriaState.ignore)
+            {
+                if (horizontal != 0)
+                {
+                    if (transform.parent.position.x < BridgeObj.transform.position.x)
+                        if (horizontal < 0) bridgestate = BridgeAriaState.action;
+                        else
+                        if (horizontal > 0) bridgestate = BridgeAriaState.ignore;
+                }
+                if (vartical < 0)
+                {
+                    if (transform.parent.position.y > BridgeObj.transform.position.y)
+                        if (horizontal < 0) bridgestate = BridgeAriaState.action;
+                }
+            }
         //*********************************************************
         //**      ** 下を押したときの処理はここに描く    **      **
         //*********************************************************
@@ -1108,9 +1129,9 @@ public class Box_PlayerController : MonoBehaviour
             Spos = new Vector3(transform.parent.position.x, BridgeObj.transform.position.y, transform.parent.position.z);
             //Playerが橋の左側
             if (Spos.x < BridgeObj.transform.position.x)
-                epos = BridgeObj.transform.position + new Vector3(range.x + (Player_verticalhorizontal.x + 0.01f), 0);
+                epos = BridgeObj.transform.position + new Vector3(range.x + (Player_verticalhorizontal.x + 0.03f), 0);
             else
-                epos = BridgeObj.transform.position - new Vector3(range.x + (Player_verticalhorizontal.x + 0.01f), 0);
+                epos = BridgeObj.transform.position - new Vector3(range.x + (Player_verticalhorizontal.x + 0.03f), 0);
         }
         //縦向きの橋
         else
@@ -1118,9 +1139,9 @@ public class Box_PlayerController : MonoBehaviour
             Spos = new Vector3(BridgeObj.transform.position.x, transform.parent.position.y, transform.parent.position.z);
             //Playerが橋の下側
             if (Spos.y < BridgeObj.transform.position.y)
-                epos = BridgeObj.transform.position + new Vector3(0, range.y + (Player_verticalhorizontal.y + 0.01f));
+                epos = BridgeObj.transform.position + new Vector3(0, range.y + (Player_verticalhorizontal.y + 0.03f));
             else
-                epos = BridgeObj.transform.position - new Vector3(0, range.y + (Player_verticalhorizontal.y + 0.01f));
+                epos = BridgeObj.transform.position - new Vector3(0, range.y + (Player_verticalhorizontal.y + 0.03f));
         }
 
         //橋の中心線との距離を得て、橋の中心線に向けて移動させる
@@ -1139,6 +1160,8 @@ public class Box_PlayerController : MonoBehaviour
         }
 
         NowPlayerMovePoint = transform.parent.position = Spos;
+        Debug.Log(NowPlayerMovePoint+"N:P"+transform.parent.position);
+        
 
         //橋の向こう側に向けて移動させる
         timer = 0;
@@ -1151,7 +1174,7 @@ public class Box_PlayerController : MonoBehaviour
             if (timer >= 1)
                 break;
         }
-
+        horizontalPlayerMovePoint = Vector3.zero;
         NowPlayerMovePoint = transform.parent.position = epos;
 
         //----------------------------------------------------
@@ -1206,6 +1229,7 @@ public class Box_PlayerController : MonoBehaviour
                 G_Data.P_Now_Box = sidebox.gameObject;
             }
         }
+        bridgestate = BridgeAriaState.ignore;
         Moving = true;
     }
     //========================================================
