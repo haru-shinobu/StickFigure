@@ -25,6 +25,8 @@ public class playerclear : MonoBehaviour
     }
     IEnumerator Run()
     {
+        //歩行アニメーション
+        transform.GetComponent<Box_PlayerController>().Move_Anim(true);
         //Transform PTransform = transform;
         //Vector3 playerpos = PTransform.position;
         transform.position = new Vector3(Mathf.Sin(Time.time) * 5.0f+playerpos.x,  playerpos.y, playerpos.z);
@@ -37,5 +39,7 @@ public class playerclear : MonoBehaviour
             yield return new WaitForEndOfFrame();
             //if (timer >= 1)
         }
+        //歩行アニメーション・停止
+        transform.GetComponent<Box_PlayerController>().Move_Anim(false);
     }
 }
