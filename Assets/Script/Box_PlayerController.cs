@@ -55,7 +55,8 @@ public class Box_PlayerController : MonoBehaviour
     private int nDCount = 5;
 
     // キャラクタのアニメーション
-    Animator[] aChilAnim;
+    Animator[] aChilAnim = new Animator[4];
+    /*[SerializeField]*/ GameObject[] ChildObj;
 
 
     ParticleSystem FootStamp;
@@ -135,13 +136,13 @@ public class Box_PlayerController : MonoBehaviour
 
     private void SetAnim()
     {
-        GameObject[] ChildObj ={
-            this.transform.Find("RightHand").gameObject,
-            this.transform.Find("RightLeg").gameObject,
-            this.transform.Find("LeftHand").gameObject,
-            this.transform.Find("LeftLeg").gameObject,
-            //this.transform.Find("Hair").gameObject
-        };
+        //GameObject[] ChildObj ={
+        //    this.transform.Find("RightHand").gameObject,
+        //    this.transform.Find("RightLeg").gameObject,
+        //    this.transform.Find("LeftHand").gameObject,
+        //    this.transform.Find("LeftLeg").gameObject,
+        //    //this.transform.Find("Hair").gameObject
+        //};
 
         for (int i = 0; i < ChildObj.Length; i++)
         {
