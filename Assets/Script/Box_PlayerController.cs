@@ -695,7 +695,7 @@ public class Box_PlayerController : MonoBehaviour
         //生成
         BridgeObj = Instantiate(Bridge, _vec, Quaternion.Euler(180, 0, _Angle));
         nDCount--;
-        if (nDCount > 0)
+        if (nDCount >= 0)
             _UICanvas.ChangeNum(nDCount);
         // ゲームオーバーか判定
         //--------------------------------------------------------------------
