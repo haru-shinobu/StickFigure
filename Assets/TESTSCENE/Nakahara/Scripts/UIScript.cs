@@ -26,10 +26,26 @@ public class UIScript : MonoBehaviour
         image_01 = ImageObj.GetComponent<Image>();
     }
 
+    private void SetObj()
+    {
+        ImageObj = GameObject.Find("Image_10");
+        image_10 = ImageObj.GetComponent<Image>();
+        ImageObj = GameObject.Find("Image_01");
+        image_01 = ImageObj.GetComponent<Image>();
+    }
+
 
     // 一定フレームで処理
     public void ChangeNum(int nNum)
     {
+        if (image_10)
+            Debug.Log("true");
+        else
+        {
+            Debug.Log("false");
+            SetObj();
+        }
+
         image_10.sprite = spritePrefab[nNum / 10];
         image_01.sprite = spritePrefab[nNum % 10];
     }
