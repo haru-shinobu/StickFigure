@@ -629,7 +629,7 @@ public class Box_PlayerController : MonoBehaviour
                 //橋基地同士の距離が橋以下のとき
                 Vector3 bounds = Bridge.GetComponent<MeshRenderer>().bounds.extents * 2;
 
-                if (bounds.x > bounds.y) bounds.y = bounds.x;
+                if (bounds.x > bounds.y) bounds.y = bounds.x;//念のため
 
                 //生成方向準備
                 if (distance - 0.001f <= bounds.y)
