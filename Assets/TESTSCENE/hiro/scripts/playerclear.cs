@@ -5,10 +5,11 @@ using UnityEngine;
 public class playerclear : MonoBehaviour
 {
     public Vector3 playerpos;
+    private GameManager gameManager;
     // Start is called before the first frame update
     void Start()
     {
-        
+        gameManager = GameObject.FindWithTag("BoxManager").GetComponent<GameManager>();
     }
 
     private void OnTriggerStay(Collider other)
@@ -16,6 +17,7 @@ public class playerclear : MonoBehaviour
         if (other.tag == "Clear")
         {
             StartCoroutine(Run());
+            gameManager.GameClear();
         }
     }
     // Update is called once per frame

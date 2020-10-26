@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     //Player
@@ -25,7 +25,7 @@ public class GameManager : MonoBehaviour
     //現在の箱
     SideColorBoxScript sideBox;
     //箱の登録
-    GameObject[] Boxs = GameObject.FindGameObjectsWithTag("Box");
+    GameObject[] Boxs;
     [SerializeField, Header("回転速度"), Range(0.5f, 2)]
     float ChangeSpeed = 1;
 
@@ -40,6 +40,9 @@ public class GameManager : MonoBehaviour
     GameObject _Canvas;
     [SerializeField, Header("UI_script")]//橋カウント用
     UIScript _UIScript;
+    //GameOver
+    bool _bGOflag = false;
+    IEnumerator IE_GO;
 
     //橋カウント用
     private int nDCount = 5;
@@ -61,6 +64,10 @@ public class GameManager : MonoBehaviour
         ControllerActivater = new bool[System.Enum.GetNames(typeof(Controll_Target)).Length];
         for (int i = 0; i < ControllerActivater.Length; i++)
             ControllerActivater[i] = false;
+        
+        GameObject[] boxes  = GameObject.FindGameObjectsWithTag("Box");
+        Boxs = new GameObject[boxes.Length];
+        Boxs = boxes;
     }
 
     void Start()
@@ -71,14 +78,59 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //if (ControllerActivater[(int)Controll_Target.Player])
+        //    player.Moving = true;
+    }
+    //橋カウントチェック
+    public bool nDCountCheck()
+    {
+        return (nDCount > 0) ? true : false;
+    }
+    //橋カウント・UI
+    public void nDCountDown()
+    {
         nDCount--;
-        if (nDCount > 0)
+        if (nDCount >= 0)
             _UIScript.ChangeNum(nDCount);
-        else
-            //GameOver処理をここに。
-            _UIScript.ChangeNum(nDCount);
-
-        if (ControllerActivater[(int)Controll_Target.Player])
-            player.Moving = true;
+        if (nDCount == 0)
+        {
+            IE_GO = GameOver_before();
+            StartCoroutine(IE_GO);
+        }
+    }
+    public void CheckBridgeNum()
+    {
+        if (nDCount <= 0)
+        {
+            _bGOflag = true;
+        }
+    }
+    public void CheckBridgeGoal()
+    {
+        if (nDCount <= 0)
+        {
+            _bGOflag = true;
+        }
+    }
+    //GameOver寸前判定処理をここに。
+    IEnumerator GameOver_before()
+    {
+        while (!_bGOflag)
+        {
+            yield return new WaitForEndOfFrame();
+        }
+        yield return new WaitForSeconds(0.5f);
+        GameOver();
+    }
+    //GameOver処理をここに。
+    public void GameOver()
+    {
+        SceneManager.LoadScene("GameOver");
+    }
+    public void GameClear()
+    {
+        _bGOflag = false;
+        if (IE_GO == GameOver_before())
+            StopCoroutine(IE_GO);
     }
 }
