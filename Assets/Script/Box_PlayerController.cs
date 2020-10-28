@@ -198,7 +198,6 @@ public class Box_PlayerController : MonoBehaviour
                             transform.parent.position = NowPlayerMovePoint;
                         }
                     }
-
                     if (inputer.player_jump_input)
                     {
                         bridgestate = BridgeAriaState.action;
@@ -298,37 +297,41 @@ public class Box_PlayerController : MonoBehaviour
     {
         if (BridgeObj)
         {
-            
             if (bridgestate == BridgeAriaState.action)
+            {
                 if (BridgeObj.transform.forward == Vector3.forward || BridgeObj.transform.forward == -Vector3.forward)
                 {
-                    var pos = transform.parent.position;
-                    var T = pos.y + Player_verticalhorizontal.y;
-                    var B = pos.y - Player_verticalhorizontal.y;
-                    var R = pos.x + Player_verticalhorizontal.x;
-                    var L = pos.x - Player_verticalhorizontal.x;
-                    Debug.DrawLine(new Vector3(pos.x, T,pos.z), new Vector3(pos.x, T,pos.z) + Vector3.right, Color.red, 10);
-                    Debug.Log(((BridgeAriaLT.x < R) ? "true" : "false")+ "L:R" + ((L < BridgeAriaBR.x) ? "true" :" false"));
-                    Debug.Log(((BridgeAriaBR.y < T) ? "true" : "false") + "T:B" + ((B < BridgeAriaLT.y) ? "true" : " false"));
-                    //範囲内に触れたとき（プレイヤーが橋の上にいる）
-                    if (BridgeAriaLT.x < R && L < BridgeAriaBR.x)
-                        if (BridgeAriaBR.y < T && B < BridgeAriaLT.y)
-                        {
-                            Debug.Log(bridgestate);
-                            NowPlayerMovePoint = transform.parent.position;
-                            pos.z = BridgeAriaLT.z;
-                            transform.parent.position = pos;
-                            camM.Bridge = OnBridge = true;
-                            Debug.Log("OnBridge" + BridgeAriaLT.x + "L:R" + BridgeAriaBR.x + "R" + R + "L" + L);
-                            return OnBridge;
-                        }
+                    if (CheckInBridgeAria())
+                    {
+                        NowPlayerMovePoint = transform.parent.position;
+                        camM.Bridge = OnBridge = true;
+                        return OnBridge;
+                    }
                 }
+            }
         }
         camM.Bridge = OnBridge = false;
         return OnBridge;
     }
 
-
+    bool CheckInBridgeAria()
+    {
+        var pos = transform.parent.position;
+        var T = pos.y + Player_verticalhorizontal.y;
+        var B = pos.y - Player_verticalhorizontal.y;
+        var R = pos.x + Player_verticalhorizontal.x;
+        var L = pos.x - Player_verticalhorizontal.x;
+        
+        Debug.DrawLine(new Vector3(L, T, pos.z), new Vector3(L, B, pos.z), Color.red, 1);
+        Debug.DrawLine(new Vector3(R, T, pos.z), new Vector3(R, B, pos.z), Color.red, 1);
+        Debug.DrawLine(new Vector3(L, T, pos.z), new Vector3(R, T, pos.z), Color.red, 1);
+        Debug.DrawLine(new Vector3(L, B, pos.z), new Vector3(R, B, pos.z), Color.red, 1);
+        //範囲内に触れたとき（プレイヤーが橋の上にいる）
+        if (BridgeAriaLT.x < R && L < BridgeAriaBR.x)
+            if (BridgeAriaBR.y < T && B < BridgeAriaLT.y)
+                return true;
+        return false;
+    }
     //辺の枠範囲判定
     /// <summary>
     /// OnRedLine = true;
@@ -397,10 +400,12 @@ public class Box_PlayerController : MonoBehaviour
             Move_Anim(false);
         
         if (BridgeObj)
-            BridgeSideCheckIgnore(vartical, horizontal);
-        //*********************************************************
+            // 橋渡り終えたときの再判定による帰還バグ対策用
+            if (bridgestate == BridgeAriaState.ignore && !CheckInBridgeAria())
+                bridgestate = BridgeAriaState.action;
+        //---------------------------------------------------------
         //**      ** 下を押したときの処理はここに描く    **      **
-        //*********************************************************
+        //---------------------------------------------------------
         if (vartical < 0)
         {
             bool slide = false;
@@ -507,24 +512,7 @@ public class Box_PlayerController : MonoBehaviour
             rb.isKinematic = false;
         }
     }
-    void BridgeSideCheckIgnore(float vartical,float horizontal)
-    {
-        if (bridgestate == BridgeAriaState.ignore)
-        {
-            if (horizontal != 0)
-            {
-                bridgestate = (transform.parent.position.x < BridgeObj.transform.position.x) ?
-                    ((horizontal < 0) ?  BridgeAriaState.action :  BridgeAriaState.ignore)
-                    :
-                    ((horizontal > 0) ?  BridgeAriaState.action :  BridgeAriaState.ignore);
-            }
-            if (vartical < 0)
-            {
-                if (transform.parent.position.y > BridgeObj.transform.position.y)
-                    bridgestate = (vartical < 0) ? BridgeAriaState.action : BridgeAriaState.ignore;
-            }
-        }
-    }
+    
     //=======================================================================
     // 橋
     //=======================================================================
@@ -533,6 +521,7 @@ public class Box_PlayerController : MonoBehaviour
     {
         GameObject target = null;
         CheckRedAria();
+        Debug.Log(RedSide);
         if (RedSide != SideRedLine.Non)
         {
             //橋ベースの長い方向を記録する用
@@ -719,7 +708,7 @@ public class Box_PlayerController : MonoBehaviour
         }
         //めり込むため位置微調整
         _vec.z = transform.parent.position.z - 0.01f;
-
+        bool skip = false;
         //前回の橋が残っているとき
         if (BridgeObj)
         {
@@ -730,20 +719,25 @@ public class Box_PlayerController : MonoBehaviour
             {
                 //橋位置をプレイヤー位置に対応させる。
                 //(渡し側・受け側両方の)橋ベース範囲内にとどめること!
-                
+
                 BridgeObj.transform.position = _vec;
                 BridgeObj.transform.rotation = Quaternion.Euler(180, 0, _Angle);
-                return;
+                skip = true;
             }
-            //破棄する場合
-            Destroy(BridgeObj);
-            gameManager.CheckBridgeNum();
+            else
+            {
+                //破棄する場合
+                Destroy(BridgeObj);
+                gameManager.CheckBridgeNum();
+            }
         }
-        
-        //生成
-        BridgeObj = Instantiate(Bridge, _vec, Quaternion.Euler(180, 0, _Angle));
-        // ゲームオーバーか判定はGaameManagerスクリプトで制御
-        gameManager.nDCountDown();
+        if (!skip)
+        {
+            //生成
+            BridgeObj = Instantiate(Bridge, _vec, Quaternion.Euler(180, 0, _Angle));
+            // ゲームオーバーか判定はGaameManagerスクリプトで制御
+            gameManager.nDCountDown();
+        }
         //--------------------------------------------------------------------
 
         switch (RedSide)
@@ -1183,7 +1177,8 @@ public class Box_PlayerController : MonoBehaviour
             else
                 epos = BridgeObj.transform.position - new Vector3(0, range.y + (Player_verticalhorizontal.y + 0.03f));
         }
-
+        
+         
         //橋の中心線との距離を得て、橋の中心線に向けて移動させる
         Move_Anim(true);
         var distance = (ppos - Spos).magnitude;
@@ -1218,6 +1213,8 @@ public class Box_PlayerController : MonoBehaviour
         horizontalPlayerMovePoint = Vector3.zero;
         NowPlayerMovePoint = transform.parent.position = epos;
         Move_Anim(false);
+        if (BridgeObj)
+            BridgeObj.transform.GetComponent<bridgeScript>().OnBridgeCollider();
         //----------------------------------------------------
         //橋の外にたどり着いたので各種セット
         // playerを範囲内に含む橋ベースオブジェクト探索
@@ -1320,5 +1317,12 @@ public class Box_PlayerController : MonoBehaviour
             if (timer > 1) break;
         }
         GrapLing = false;
+    }
+    public void SceneEndBridgeBreak()
+    {
+        if (BridgeObj)
+        {
+            Destroy(BridgeObj);
+        }
     }
 }

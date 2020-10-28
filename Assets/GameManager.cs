@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
+    //現在使用していない(後で整理)=============================================
     //Player
     [SerializeField]
     Box_PlayerController player;
@@ -16,7 +17,6 @@ public class GameManager : MonoBehaviour
     //移動制限範囲
     Vector3 MoveAriaLT, MoveAriaRB;
     
-    
     //橋の存在とそのエリア
     bool _bLiveBridge;
     GameObject BridgeObj;
@@ -28,21 +28,17 @@ public class GameManager : MonoBehaviour
     GameObject[] Boxs;
     [SerializeField, Header("回転速度"), Range(0.5f, 2)]
     float ChangeSpeed = 1;
-
-
+    
     //Prefab
     [SerializeField, Header("橋Prefab")]
     GameObject Bridge;
-
-
+    
     //UI
     [SerializeField, Header("UI_Canvas")]
     GameObject _Canvas;
     [SerializeField, Header("UI_script")]//橋カウント用
     UIScript _UIScript;
-    //GameOver
-    bool _bGOflag = false;
-    IEnumerator IE_GO;
+    
 
     //橋カウント用
     private int nDCount = 5;
@@ -50,8 +46,15 @@ public class GameManager : MonoBehaviour
     //カメラ
     [SerializeField,Header("カメラマネージャ")]
     CameraManager camM;
+    // ↑現在使用していない(後で整理)=============================================
 
-    
+    //ゲームオーバーアニメーション用
+    [SerializeField]
+    GameOverScript GOsc;
+
+    //GameOver
+    bool _bGOflag = false;
+    IEnumerator IE_GO;
 
     //Updateを起動するかON・OFF切り替えするターゲットを登録
     enum Controll_Target
@@ -119,11 +122,11 @@ public class GameManager : MonoBehaviour
         {
             yield return new WaitForEndOfFrame();
         }
-        yield return new WaitForSeconds(0.5f);
-        GameOver();
+        yield return new WaitForEndOfFrame();
+        GOsc.GameOver(this);
     }
     //GameOver処理をここに。
-    public void GameOver()
+    public void ChangeSceneGameOver()
     {
         SceneManager.LoadScene("GameOver");
     }
