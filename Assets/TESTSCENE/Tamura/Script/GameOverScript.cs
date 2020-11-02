@@ -7,12 +7,15 @@ public class GameOverScript : MonoBehaviour
 {
     [SerializeField, Header("ゲームオーバー用キャンバス")]
     Canvas overCanvas;
+    GameObject ImageSprite;
     GameManager gm;
     bool Flag = false;
+    GameObject MainCam;
     // Start is called before the first frame update
     void Start()
     {
-
+        ImageSprite = overCanvas.transform.GetChild(0).gameObject;
+        ImageSprite.SetActive(false);
     }
     
     public void GameOver(GameManager gmsc)
@@ -20,6 +23,8 @@ public class GameOverScript : MonoBehaviour
         //橋Destroyしたとき呼ばれるメソッドがあるため、シーン切り替え前に一応破棄できるように。
         GameObject.FindWithTag("Player").GetComponent<Box_PlayerController>().SceneEndBridgeBreak();
         gm = gmsc;
+        MainCam = transform.parent.gameObject;
+        transform.SetParent(MainCam.transform.parent);
         StartCoroutine(Capture());
         StartCoroutine(GameOverProminence());        
     }
@@ -43,17 +48,16 @@ public class GameOverScript : MonoBehaviour
 
         //先ほど作ったSpriteに画像をいれる
         Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
-        Debug.Log("c");
 
         //Spriteを使用するオブジェクトに指定する
         //     今回はUIのImage
-        overCanvas.transform.GetChild(0).GetComponent<Image>().sprite = sprite;
+        ImageSprite.GetComponent<Image>().sprite = sprite;
 
         // サイズ変更
-        overCanvas.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta = new Vector2(texture.width, texture.height);
+        ImageSprite.GetComponent<RectTransform>().sizeDelta = new Vector2(texture.width, texture.height);
 
         //imageをアクティブにする
-        overCanvas.transform.GetChild(0).gameObject.SetActive(true);
+        ImageSprite.gameObject.SetActive(true);
         Flag = true;
     }
 
@@ -63,15 +67,15 @@ public class GameOverScript : MonoBehaviour
         {
             yield return new WaitForEndOfFrame();
         }
-        
+        MainCam.SetActive(false);
         //マテリアル動作
-        var mat = overCanvas.transform.GetChild(0).GetComponent<Image>().material;
+        var mat = ImageSprite.GetComponent<Image>().material;
         mat.SetFloat("_Progress", 1.0f);
         float Value = mat.GetFloat("_Progress");
         while(Value > -1.0f)
         {
             yield return new WaitForEndOfFrame();
-            Value -= 1f * Time.deltaTime;
+            Value -= 0.25f * Time.deltaTime;
             mat.SetFloat("_Progress", Value);
             
         }
