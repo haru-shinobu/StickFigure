@@ -37,7 +37,7 @@ public class BridgeLineScript : MonoBehaviour
     {
         if (transform.position.z <= side.GetFLT.z)
         {
-            //橋基礎がより低い時
+            //橋基礎が横長
             if (transform.up == Vector3.up || transform.up == -Vector3.up)
             {
                 if (!b_enabled)
@@ -90,5 +90,13 @@ public class BridgeLineScript : MonoBehaviour
     public void enable(bool value)
     {
         b_enabled = value;
+    }
+    public void Antienable()
+    {
+        b_enabled = !b_enabled;
+    }
+    public void ResetFaceWay()
+    {
+        transform.forward = Vector3.forward;
     }
 }

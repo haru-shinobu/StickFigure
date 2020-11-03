@@ -246,6 +246,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8535969891764688613}
+  - component: {fileID: 8973627914218689009}
   m_Layer: 0
   m_Name: faseWayBase
   m_TagString: Untagged
@@ -277,6 +278,20 @@ Transform:
   m_Father: {fileID: 7510560371633620719}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8973627914218689009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 704950094173694219}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99446f45a20647b4b9ca75b0b15d193e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mat_right: {fileID: 2100000, guid: 25b5f9c3234f6744bad3d9cd5191fe44, type: 2}
+  mat_left: {fileID: 2100000, guid: d0b0a01b3197dba4e9b24583064ba41b, type: 2}
 --- !u!1 &2198091761776317677
 GameObject:
   m_ObjectHideFlags: 0

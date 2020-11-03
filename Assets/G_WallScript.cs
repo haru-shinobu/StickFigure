@@ -19,14 +19,18 @@ public class G_WallScript : MonoBehaviour
     }
     void OnCollisionEnter(Collision collision)
     {
-        if(collision.transform.tag == "Player")
+        if (collision.transform.tag == "PlayerBase")
         {
-            if (transform.up == Vector3.up || transform.up == -Vector3.up)
+            var ex = transform.GetComponent<SpriteRenderer>().bounds.extents;
+            if (ex.x < ex.y)
             {
-                if (collision.transform.position.x < transform.position.x)
-                    collision.transform.position -= Vector3.right;
-                else
-                    collision.transform.position += Vector3.right;
+                var pos = transform.position - collision.transform.position;
+                pos.y = 0;
+                pos.z = 0;
+                collision.transform.GetChild(0).SendMessage("playerMovePoint",
+                    (collision.transform.position.x < transform.position.x) ?
+                -pos : pos
+                );
             }
         }
     }

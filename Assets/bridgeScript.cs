@@ -28,13 +28,13 @@ public class bridgeScript : MonoBehaviour
     {
         transform.GetChild(1).gameObject.SetActive(false);
         transform.GetChild(0).gameObject.SetActive(false);
-        BridgeBasePrev.GetComponent<BridgeLineScript>().DownBridge();
-        BridgeBaseNext.GetComponent<BridgeLineScript>().DownBridge();
+        BasePrev.GetComponent<BridgeLineScript>().DownBridge();
+        BaseNext.GetComponent<BridgeLineScript>().DownBridge();
         Invoke("ReActiveCollider", 0.5f);
     }
     void ReActiveCollider()
     {
-        if (transform.right == Vector3.right || transform.right == -transform.right)
+        if (transform.right == Vector3.right || transform.right == -Vector3.right)
             transform.GetChild(0).gameObject.SetActive(true);
         else
             transform.GetChild(1).gameObject.SetActive(true);
@@ -95,5 +95,17 @@ public class bridgeScript : MonoBehaviour
 
         //BridgeBasePrev.GetComponent<BridgeLineScript>().SlipdroundLine();
         //BridgeBaseNext.GetComponent<BridgeLineScript>().SlipdroundLine();
+    }
+    public void OnBridgeCollider()
+    {
+        if (transform.right == Vector3.right || transform.right == -Vector3.right)
+            transform.GetChild(0).gameObject.SetActive(true);
+        else
+            transform.GetChild(1).gameObject.SetActive(true);
+    }
+    void OnDestroy()
+    {
+        BasePrev.GetComponent<BridgeLineScript>().Antienable();
+        BaseNext.GetComponent<BridgeLineScript>().Antienable();
     }
 }

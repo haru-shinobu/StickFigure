@@ -147,6 +147,7 @@ public class SideColorBoxScript : MonoBehaviour
     }
     IEnumerator BlockRoller(Vector3 way_vec)
     {
+        PSc.FootStampActive = false;
         float minAngle = 0.0f;
         float maxAngle = 90.0f;
         float timer = 0;
@@ -189,6 +190,22 @@ public class SideColorBoxScript : MonoBehaviour
         transform.SetParent(rootTrs);
 
 
+        foreach (GameObject obj in GetBridgeLine)
+        {
+            Vector3 exvec = obj.GetComponent<SpriteRenderer>().bounds.extents;
+            if (obj.transform.position.z <= transform.position.z - exvec.z)
+            {
+                Vector3 rot = obj.transform.rotation.eulerAngles;
+                var x = rot.x % 90;
+                var y = rot.y % 90;
+                var z = rot.z % 90;
+                rot.x += (x < 45) ? -x : x;
+                rot.y += (y < 45) ? -y : y;
+                rot.z += (z < 45) ? -z : z;
+                obj.transform.rotation = Quaternion.Euler(rot);
+            }
+        }
+
         //プレイヤーとの親子関係解除
         PSc.transform.parent.SetParent(null);
         //プレイヤー回転ズレ防止
@@ -200,6 +217,7 @@ public class SideColorBoxScript : MonoBehaviour
         //念のため1拍おいた
         yield return new WaitForEndOfFrame();
         //行動許可
+        PSc.FootStampActive = true;
         PSc.Moving = true;
     }
     //==================================================================
@@ -283,6 +301,7 @@ public class SideColorBoxScript : MonoBehaviour
     //this.OnRollerSwitch()->
     IEnumerator BlockRoller(bool flag)
     {
+        PSc.FootStampActive = false;
         //プレイヤーを箱の子に。
         PSc.transform.parent.SetParent(transform);
         //プレイヤーの移動禁止
@@ -352,6 +371,7 @@ public class SideColorBoxScript : MonoBehaviour
         yield return new WaitForEndOfFrame();
         //行動許可
         PSc.P_rb.isKinematic = false;
+        PSc.FootStampActive = true;
         PSc.Moving = true;
     }
     //==================================================================
@@ -391,13 +411,15 @@ public class SideColorBoxScript : MonoBehaviour
         if (CollRollSwitch1) {
             if (CollRollSwitch1.transform.position.z <= F_LeftTop.z)
             {
-
-                var swichwide1 = CollRollSwitch1.GetComponent<SpriteRenderer>().bounds.extents;
-                if (CollRollSwitch1.transform.position.x - swichwide1.x <= PposX && PposX <= CollRollSwitch1.transform.position.x + swichwide1.x)
+                if (PSc.transform.parent.position.y < CollRollSwitch1.transform.position.y) 
                 {
-                    Switch = CollRollSwitch1;
-                    
-                    return Switch.transform.position;
+                    var swichwide1 = CollRollSwitch1.GetComponent<SpriteRenderer>().bounds.extents;
+                    if (CollRollSwitch1.transform.position.x - swichwide1.x <= PposX && PposX <= CollRollSwitch1.transform.position.x + swichwide1.x)
+                    {
+                        Switch = CollRollSwitch1;
+
+                        return Switch.transform.position;
+                    }
                 }
             }
         }
@@ -405,12 +427,15 @@ public class SideColorBoxScript : MonoBehaviour
         if (CollRollSwitch2)
             if (CollRollSwitch2.transform.position.z <= F_LeftTop.z)
             {
-                var swichwide2 = CollRollSwitch2.GetComponent<SpriteRenderer>().bounds.extents;
-                if (CollRollSwitch2.transform.position.x - swichwide2.x <= PposX && PposX <= CollRollSwitch2.transform.position.x + swichwide2.x)
+                if (PSc.transform.parent.position.y < CollRollSwitch2.transform.position.y)
                 {
-                    Switch = CollRollSwitch2;
-                    
-                    return Switch.transform.position;
+                    var swichwide2 = CollRollSwitch2.GetComponent<SpriteRenderer>().bounds.extents;
+                    if (CollRollSwitch2.transform.position.x - swichwide2.x <= PposX && PposX <= CollRollSwitch2.transform.position.x + swichwide2.x)
+                    {
+                        Switch = CollRollSwitch2;
+
+                        return Switch.transform.position;
+                    }
                 }
             }
         return F_LeftTop;
