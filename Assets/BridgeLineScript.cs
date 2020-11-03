@@ -95,4 +95,8 @@ public class BridgeLineScript : MonoBehaviour
     {
         b_enabled = !b_enabled;
     }
+    public void ResetFaceWay()
+    {
+        transform.forward = Vector3.forward;
+    }
 }

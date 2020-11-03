@@ -190,6 +190,22 @@ public class SideColorBoxScript : MonoBehaviour
         transform.SetParent(rootTrs);
 
 
+        foreach (GameObject obj in GetBridgeLine)
+        {
+            Vector3 exvec = obj.GetComponent<SpriteRenderer>().bounds.extents;
+            if (obj.transform.position.z <= transform.position.z - exvec.z)
+            {
+                Vector3 rot = obj.transform.rotation.eulerAngles;
+                var x = rot.x % 90;
+                var y = rot.y % 90;
+                var z = rot.z % 90;
+                rot.x += (x < 45) ? -x : x;
+                rot.y += (y < 45) ? -y : y;
+                rot.z += (z < 45) ? -z : z;
+                obj.transform.rotation = Quaternion.Euler(rot);
+            }
+        }
+
         //プレイヤーとの親子関係解除
         PSc.transform.parent.SetParent(null);
         //プレイヤー回転ズレ防止
