@@ -2797,7 +2797,7 @@ MonoBehaviour:
   StartCamSpeed: 6
   redline_cam_move_time: 0.5
   StartCamera_Distance: {x: 0, y: 0, z: 40}
-  Camera_Distance: {x: 0, y: 0, z: 20}
+  Camera_Distance: {x: 0, y: 0, z: 15}
 --- !u!81 &1187529080
 AudioListener:
   m_ObjectHideFlags: 0
