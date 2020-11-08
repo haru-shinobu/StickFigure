@@ -29,7 +29,7 @@ public class ClearCube : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
-        if(this.gameObject.CompareTag("PlayerBase"))
+        if(other.gameObject.tag=="PlayerBase")
         {
             StartCoroutine(clear());
         }
