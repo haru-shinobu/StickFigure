@@ -55,6 +55,8 @@ public class Box_PlayerController : MonoBehaviour
 
     ParticleSystem FootStamp;
 
+    [SerializeField] Animator[] aChildAnim = new Animator[4];
+
     enum SideRedLine
     {
         T, B, L, R, Non,
@@ -362,8 +364,10 @@ public class Box_PlayerController : MonoBehaviour
     //=======================================================================
     public void Move_Anim(bool flag)
     {
-
+        foreach (Animator x in aChildAnim)
+            x.SetBool("work", flag);
     }
+
     //=======================================================================
     // プレイヤー移動
     //=======================================================================

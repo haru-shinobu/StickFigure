@@ -333,9 +333,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   goalText: {fileID: 255913558}
+<<<<<<< HEAD
   Particle_kami: {fileID: 266586293}
   Particle_kura1: {fileID: 861330466}
   Particle_kura2: {fileID: 1666588384}
+=======
+  Particle_kami: {fileID: 0}
+  Particle_kura1: {fileID: 0}
+  Particle_kura2: {fileID: 0}
+>>>>>>> af25223985c592d8a4ab0096588761c6b1bba022
 --- !u!136 &108692250
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -509,6 +515,25 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 1109377133}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+=======
+--- !u!114 &144742427
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 144742426}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a17298ecea8eee54bb90917d599ce79e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  goalText: {fileID: 255913558}
+  Particle_kami: {fileID: 0}
+  Particle_kura1: {fileID: 0}
+  Particle_kura2: {fileID: 0}
+>>>>>>> af25223985c592d8a4ab0096588761c6b1bba022
 --- !u!65 &144742428
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -19694,6 +19719,11 @@ MonoBehaviour:
   FlameCount: 10
   gameManager: {fileID: 0}
   Bridge: {fileID: 1487617690276569714, guid: 5f3032556189df34389b26e109575ec8, type: 3}
+  aChildAnim:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!212 &2138393518
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -19899,6 +19929,26 @@ PrefabInstance:
       propertyPath: MoveRange
       value: 0.3
       objectReference: {fileID: 0}
+    - target: {fileID: 801162564064042022, guid: bae94501a5d94834aa5fb27546af60dd,
+        type: 3}
+      propertyPath: aChildAnim.Array.data[0]
+      value: 
+      objectReference: {fileID: 533378538}
+    - target: {fileID: 801162564064042022, guid: bae94501a5d94834aa5fb27546af60dd,
+        type: 3}
+      propertyPath: aChildAnim.Array.data[1]
+      value: 
+      objectReference: {fileID: 108494498}
+    - target: {fileID: 801162564064042022, guid: bae94501a5d94834aa5fb27546af60dd,
+        type: 3}
+      propertyPath: aChildAnim.Array.data[2]
+      value: 
+      objectReference: {fileID: 618503648}
+    - target: {fileID: 801162564064042022, guid: bae94501a5d94834aa5fb27546af60dd,
+        type: 3}
+      propertyPath: aChildAnim.Array.data[3]
+      value: 
+      objectReference: {fileID: 1888138683}
     - target: {fileID: 1223984307229289140, guid: bae94501a5d94834aa5fb27546af60dd,
         type: 3}
       propertyPath: m_Layer
