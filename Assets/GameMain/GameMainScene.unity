@@ -332,10 +332,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a17298ecea8eee54bb90917d599ce79e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  goalText: {fileID: 0}
-  Particle_kami: {fileID: 0}
-  Particle_kura1: {fileID: 0}
-  Particle_kura2: {fileID: 0}
+  goalText: {fileID: 1917113092}
+  Particle_kami: {fileID: 1776141989}
+  Particle_kura1: {fileID: 198343634}
+  Particle_kura2: {fileID: 2030113647}
 --- !u!136 &108692250
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -790,6 +790,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 97cac3012e2c9e34abeeb4057a024217, type: 3}
+--- !u!198 &198343634 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 6041276902488697241, guid: 706041a7e6cb25144aba7744b424d073,
+    type: 3}
+  m_PrefabInstance: {fileID: 1856936493}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &242558031
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4283,6 +4289,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ef22d5a34ab407742b9098d2c72fbd6d, type: 3}
+--- !u!198 &1776141989 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 6041276901877185806, guid: 706041a7e6cb25144aba7744b424d073,
+    type: 3}
+  m_PrefabInstance: {fileID: 1856936493}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1779335341
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4919,6 +4931,12 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!1 &1917113092 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6041276901883534317, guid: 706041a7e6cb25144aba7744b424d073,
+    type: 3}
+  m_PrefabInstance: {fileID: 1856936493}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1949398110
 GameObject:
   m_ObjectHideFlags: 0
@@ -5088,6 +5106,12 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!198 &2030113647 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 6041276903294020443, guid: 706041a7e6cb25144aba7744b424d073,
+    type: 3}
+  m_PrefabInstance: {fileID: 1856936493}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2082146974
 GameObject:
   m_ObjectHideFlags: 0
