@@ -24,16 +24,13 @@ public class ClearCube : MonoBehaviour
         Particle_kami.Stop();
         Particle_kura1.Stop();
         Particle_kura2.Stop();
-        Debug.Log("off");
         //GameObject.Find("goalText").SetActive(false);
         camera = GetComponent<CameraManager>();
     }
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("touch_1");
-        if(other.gameObject.tag=="PlayerBase")
+        if(this.gameObject.CompareTag("PlayerBase"))
         {
-            Debug.Log("touch_2");
             StartCoroutine(clear());
         }
     }
@@ -48,10 +45,9 @@ public class ClearCube : MonoBehaviour
 
     private IEnumerator clear()
     {
-        //camera.transform.position= new goalText.transform();
+         //camera.transform.position= new goalText.transform();
         //goalText.gameObject.SetActive(true);
         //transform.position = Particle.transform.position + offset;
-        Debug.Log("touch");
         Particle_kami.gameObject.SetActive(true);
         Particle_kura1.gameObject.SetActive(true);
         Particle_kura2.gameObject.SetActive(true);
