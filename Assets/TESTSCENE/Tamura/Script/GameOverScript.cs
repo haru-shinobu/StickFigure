@@ -72,12 +72,13 @@ public class GameOverScript : MonoBehaviour
         var mat = ImageSprite.GetComponent<Image>().material;
         mat.SetFloat("_Progress", 1.0f);
         float Value = mat.GetFloat("_Progress");
-        while(Value > -1.0f)
+        //予備
+        MainCam.SetActive(false);
+        while (Value > -0.8f)
         {
             yield return new WaitForEndOfFrame();
             Value -= 0.25f * Time.deltaTime;
             mat.SetFloat("_Progress", Value);
-            
         }
         yield return new WaitForEndOfFrame();
         //ゲームマネージャのゲームオーバー用シーンチェンジ呼び出し
