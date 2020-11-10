@@ -35,7 +35,7 @@ public class ClearScript : MonoBehaviour
             }
             if (Input.GetMouseButtonDown(0))
             {
-                SceneManager.LoadScene("");
+                SceneManager.LoadScene("Title");
             }
         }
     }
