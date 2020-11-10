@@ -81,7 +81,11 @@ Material:
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
+<<<<<<< HEAD
     - _Progress: -1.0015393
+=======
+    - _Progress: -1.001112
+>>>>>>> 19c3ca20d10796210c4e2f4509a26285665979e4
     - _RangeIn: 0.034
     - _RangeOut: 0.001
     - _SmoothnessTextureChannel: 0

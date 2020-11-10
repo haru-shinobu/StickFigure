@@ -5,27 +5,34 @@ using UnityEngine.SceneManagement;
 
 public class ClearCube : MonoBehaviour
 {
-    //private Vector3 offset;
+
+    CameraManager camera;
     public GameObject goalText;
     Vector3 Ppos;
-    [SerializeField]
-    ParticleSystem Particle;
-    [SerializeField]
-    ParticleSystem Particle_1;
-    [SerializeField]
-    ParticleSystem Particle_2;
+    public ParticleSystem Particle_kami;
+    public ParticleSystem Particle_kura1;
+    public ParticleSystem Particle_kura2;
+
+    //public void Awake()
+    //{
+    //    GameObject.Find("goalText").SetActive(true);
+    //}
 
     public void Start()
     {
         goalText.gameObject.SetActive(false);
-        Particle.gameObject.SetActive(false);
-        Particle_1.gameObject.SetActive(false);
-        Particle_2.gameObject.SetActive(false);
-        //offset = transform.position - Particle.transform.position;
+        Particle_kami.Stop();
+        Particle_kura1.Stop();
+        Particle_kura2.Stop();
+        //GameObject.Find("goalText").SetActive(false);
+        camera = GetComponent<CameraManager>();
     }
     private void OnTriggerEnter(Collider other)
     {
-        StartCoroutine(clear());
+        if(other.gameObject.tag=="PlayerBase")
+        {
+            StartCoroutine(clear());
+        }
     }
     //private void OnCollisionStay(Collision collision)
     //{
@@ -38,20 +45,16 @@ public class ClearCube : MonoBehaviour
 
     private IEnumerator clear()
     {
-        goalText.gameObject.SetActive(true);
-        //紙吹雪
+         //camera.transform.position= new goalText.transform();
+        //goalText.gameObject.SetActive(true);
         //transform.position = Particle.transform.position + offset;
-        Particle.gameObject.SetActive(true);
-        Particle.Simulate(4.0f, true, false);
-        Particle.Play();
-        //クラッカー1
-        Particle_1.gameObject.SetActive(true);
-        Particle_1.Simulate(4.0f, true, false);
-        Particle_1.Play();
-        //クラッカー2
-        Particle_2.gameObject.SetActive(true);
-        Particle_2.Simulate(4.0f, true, false);
-        Particle_2.Play();
+        Particle_kami.gameObject.SetActive(true);
+        Particle_kura1.gameObject.SetActive(true);
+        Particle_kura2.gameObject.SetActive(true);
+        //camera =Particle;
+        Particle_kami.Play();
+        Particle_kura1.Play();
+        Particle_kura2.Play();
         yield return new WaitForSeconds(2f);
         SceneManager.LoadScene("Clear");
         yield return new WaitForSeconds(5f);

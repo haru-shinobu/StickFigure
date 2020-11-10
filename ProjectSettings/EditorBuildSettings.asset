@@ -6,21 +6,21 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/TESTSCENE/Nakahara/Scenes/Test_FadeOut.unity
-    guid: e338a443c2f23b74890e39dc4fd422e0
-  - enabled: 1
-    path: Assets/TESTSCENE/Nakahara/Scenes/Test_FadeIn.unity
-    guid: d03ef3d9f69feb24fbc250010081db5b
+    path: Assets/TESTSCENE/Tamura/Scene/Title.unity
+    guid: 27f633a2c5a1c9649801c4760b8b7a51
   - enabled: 1
     path: Assets/GameMain/GameMainScene.unity
     guid: 94005d0e4c49f5844a0c9a28cb89721d
-  - enabled: 1
-    path: Assets/TESTSCENE/Tamura/Scene/Title.unity
-    guid: 27f633a2c5a1c9649801c4760b8b7a51
   - enabled: 1
     path: Assets/TESTSCENE/Tamura/Scene/GameOver.unity
     guid: 08140ed22fdece94ca015a6a05f862a2
   - enabled: 1
     path: Assets/TESTSCENE/Tamura/Scene/Clear.unity
     guid: 193d8fe88dc40fa439646de9b6c7da4d
+  - enabled: 1
+    path: Assets/TESTSCENE/Nakahara/Scenes/Test_FadeOut.unity
+    guid: e338a443c2f23b74890e39dc4fd422e0
+  - enabled: 1
+    path: Assets/TESTSCENE/Nakahara/Scenes/Test_FadeIn.unity
+    guid: d03ef3d9f69feb24fbc250010081db5b
   m_configObjects: {}
