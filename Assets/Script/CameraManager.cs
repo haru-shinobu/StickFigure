@@ -28,7 +28,7 @@ public class CameraManager : MonoBehaviour
     [SerializeField]
     Vector3 Camera_Distance = new Vector3(0, 0, 20);
     GameObject NowBox;
-
+    
     void Start()
     {
         NowBox = StartObj;
@@ -142,14 +142,11 @@ public class CameraManager : MonoBehaviour
     //this.Start()->
     IEnumerator Starter(Vector3 spos,Vector3 epos)
     {
-        GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        Destroy(sphere.GetComponent<SphereCollider>());
-        Destroy(sphere.GetComponent<MeshRenderer>());
-        Destroy(sphere.GetComponent<MeshFilter>());
-        sphere.transform.position = epos;
+        Transform target = transform.root;
+        transform.root.transform.position = epos;
         Camera.main.transform.position = epos - StartCamera_Distance;
-        transform.SetParent(sphere.transform);
-        transform.LookAt(sphere.transform);
+        transform.SetParent(target);
+        transform.LookAt(target);
         Vector3 vec = epos - spos;
         float length = vec.magnitude;// = 5
         
@@ -160,27 +157,27 @@ public class CameraManager : MonoBehaviour
         var variation = 360 / (1 / cam_moveSpeed);
         while (true)
         {
-            sphere.transform.position = Vector3.Slerp(spos, epos, timer * cam_moveSpeed);
+            target.position = Vector3.Slerp(spos, epos, timer * cam_moveSpeed);
             //カメラの起点となるSphereを回転させる。(timerが１になったときy1回転終わってる状態で)
-            sphere.transform.Rotate(0, variation * Time.deltaTime, 0);
+            target.Rotate(0, variation * Time.deltaTime, 0);
             timer += Time.deltaTime;
             if (timer * cam_moveSpeed > 1)
             {
-                sphere.transform.position = epos;
-                sphere.transform.localRotation = Quaternion.Euler(0, 0, 0);
+                target.position = epos;
+                target.localRotation = Quaternion.Euler(0, 0, 0);
                 break;
             }
             yield return new WaitForEndOfFrame();
         }
         timer = 0;
-        var spherePos = sphere.transform.position;
+        var spherePos = target.position;
         while (true)
         {
             transform.position = Vector3.Slerp(spherePos - StartCamera_Distance, spherePos - Camera_Distance, timer);
             timer += Time.deltaTime * cam_moveSpeed * 2;
             if(timer > 1)
             {
-                transform.position = sphere.transform.position - Camera_Distance;
+                transform.position = target.position - Camera_Distance;
                 break;
             }
             yield return new WaitForEndOfFrame();
