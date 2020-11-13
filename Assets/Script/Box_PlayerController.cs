@@ -323,11 +323,12 @@ public class Box_PlayerController : MonoBehaviour
         var B = pos.y - Player_verticalhorizontal.y;
         var R = pos.x + Player_verticalhorizontal.x;
         var L = pos.x - Player_verticalhorizontal.x;
-
+/*
         Debug.DrawLine(new Vector3(L, T, pos.z), new Vector3(L, B, pos.z), Color.red, 1);
         Debug.DrawLine(new Vector3(R, T, pos.z), new Vector3(R, B, pos.z), Color.red, 1);
         Debug.DrawLine(new Vector3(L, T, pos.z), new Vector3(R, T, pos.z), Color.red, 1);
         Debug.DrawLine(new Vector3(L, B, pos.z), new Vector3(R, B, pos.z), Color.red, 1);
+*/
         //範囲内に触れたとき（プレイヤーが橋の上にいる）
         if (BridgeAriaLT.x < R && L < BridgeAriaBR.x)
             if (BridgeAriaBR.y < T && B < BridgeAriaLT.y)

@@ -181,6 +181,7 @@ public class SideColorBoxScript : MonoBehaviour
 
         transform.root.localEulerAngles = euAngle;
 
+
         //ブロックの親子を解除
         var rootTrs = transform.root;
         transform.SetParent(null);
@@ -195,14 +196,14 @@ public class SideColorBoxScript : MonoBehaviour
             Vector3 exvec = obj.GetComponent<SpriteRenderer>().bounds.extents;
             if (obj.transform.position.z <= transform.position.z - exvec.z)
             {
-                Vector3 rot = obj.transform.rotation.eulerAngles;
-                var x = rot.x % 90;
-                var y = rot.y % 90;
-                var z = rot.z % 90;
+                Vector3 rot = obj.transform.localRotation.eulerAngles;
+                var x = Mathf.Abs(rot.x % 90);
+                var y = Mathf.Abs(rot.y % 90);
+                var z = Mathf.Abs(rot.z % 90);
                 rot.x += (x < 45) ? -x : x;
                 rot.y += (y < 45) ? -y : y;
                 rot.z += (z < 45) ? -z : z;
-                obj.transform.rotation = Quaternion.Euler(rot);
+                obj.transform.localRotation = Quaternion.Euler(rot);
             }
         }
 
@@ -214,6 +215,8 @@ public class SideColorBoxScript : MonoBehaviour
 
         //プレイヤーのｚ座標を箱前面と統一、箱範囲内に収めさせる
         SetAria(PSc);
+
+        //BridgeBaseLines.
         //念のため1拍おいた
         yield return new WaitForEndOfFrame();
         //行動許可

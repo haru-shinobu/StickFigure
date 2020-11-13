@@ -72,6 +72,8 @@ public class CameraManager : MonoBehaviour
                     Vector3 Pscpos = PSc.transform.parent.position;
                     Rootpos.z = Pscpos.z = 0;
                     Vector3 pos = (Rootpos - Pscpos);
+                    pos.x /= 2;
+                    pos.y /= 2;
                     transform.position = Pscpos - pos - Camera_Distance;
                     transform.LookAt(transform.root.position);
                 }
@@ -109,6 +111,8 @@ public class CameraManager : MonoBehaviour
         Vector3 pos = rootPos - PlayerPos;
         Vector3 StartPos = transform.position;
         Vector3 EndPos = PlayerPos - pos - Camera_Distance;
+        EndPos.x /= 2;
+        EndPos.y /= 2;
         float timer = 0;
         while (timer>=1)
         {
