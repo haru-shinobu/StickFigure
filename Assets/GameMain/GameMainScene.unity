@@ -2956,6 +2956,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   overCanvas: {fileID: 43402987}
+  countCanvas: {fileID: 1265297922}
 --- !u!1001 &1242124791
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3086,6 +3087,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Camera
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 176726763669539173, guid: 9ef2d10351237384f89730a4952aea42,
+        type: 3}
+      propertyPath: m_RenderMode
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 176726763669539174, guid: 9ef2d10351237384f89730a4952aea42,
         type: 3}
@@ -3231,6 +3237,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6997146ee4be9b64b94580033c6feca7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!223 &1265297922 stripped
+Canvas:
+  m_CorrespondingSourceObject: {fileID: 176726763669539173, guid: 9ef2d10351237384f89730a4952aea42,
+    type: 3}
+  m_PrefabInstance: {fileID: 1265297920}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1282371363 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7989854334359116136, guid: 2cc5a57efece24248a16a971b6db77e7,
