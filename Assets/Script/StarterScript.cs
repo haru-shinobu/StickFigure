@@ -18,9 +18,7 @@ public class StarterScript : MonoBehaviour
     GameObject Wind;
     [SerializeField]
     GameObject SideWall_child;
-
-    [SerializeField, Header("Arrow")]
-    GameObject Arrow;
+    
     //==================================================================
     // ゲームスタート時のプレイヤーの開始壁をセット
     //==================================================================
@@ -48,9 +46,6 @@ public class StarterScript : MonoBehaviour
             SoundObj.GetComponent<SoundManager>().BGMState();
         var ex = SideWall_child.GetComponent<SpriteRenderer>().bounds.extents;
         G_data.SideWall_Offset = (ex.x < ex.y) ? ex.x : ex.y;
-        var arrowobj = Instantiate(Arrow, StartBox.transform.position - new Vector3(0, 0, StartBox.GetComponent<MeshRenderer>().bounds.extents.z), Quaternion.identity);
-        arrowobj.transform.position -= Vector3.forward;
-
     }
 
     void Start()
