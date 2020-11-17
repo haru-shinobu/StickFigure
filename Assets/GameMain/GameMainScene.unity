@@ -5255,6 +5255,7 @@ MonoBehaviour:
   StartBox: {fileID: 1789494416}
   Wind: {fileID: 4762941626521320300, guid: 172560073d6d56e46aadfa0a6db8d385, type: 3}
   SideWall_child: {fileID: 519628055}
+  Arrow: {fileID: 6958878798831620523, guid: 867ca5a9de64f7740abd46097b75cb31, type: 3}
 --- !u!114 &2082146976
 MonoBehaviour:
   m_ObjectHideFlags: 0
