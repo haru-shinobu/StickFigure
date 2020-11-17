@@ -17,7 +17,7 @@ public class GameOverScript : MonoBehaviour
     void Start()
     {
         ImageSprite = overCanvas.transform.GetChild(0).gameObject;
-        ImageSprite.SetActive(false);
+        ImageSprite.SetActive(false);       
     }
     
     public void GameOver(GameManager gmsc)
@@ -97,6 +97,7 @@ public class GameOverScript : MonoBehaviour
             (diffleft*(1-pivot.x)) + (diffright*pivot.x),
         (diffbottom * (1 - pivot.y)) + (difftop * pivot.y));
         //-------------------------------------------------
+
         
         //UI位置変化・大きさ変更
         var CountPos = UICountImageRectTrans.position;
