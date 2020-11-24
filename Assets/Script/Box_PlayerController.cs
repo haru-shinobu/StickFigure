@@ -109,6 +109,12 @@ public class Box_PlayerController : MonoBehaviour
                 break;
         }
     }
+    public bool TopCollidersideState = false;
+    //グラップリングできるかどうか
+    bool GraplingJudge = false;
+    //落下できるかどうか
+    bool FolldownJudge = false;
+
 
     void Start()
     {
@@ -200,6 +206,7 @@ public class Box_PlayerController : MonoBehaviour
                             transform.parent.position = NowPlayerMovePoint;
                         }
                     }
+
                     if (inputer.player_jump_input)
                     {
                         bridgestate = BridgeAriaState.action;
@@ -323,12 +330,12 @@ public class Box_PlayerController : MonoBehaviour
         var B = pos.y - Player_verticalhorizontal.y;
         var R = pos.x + Player_verticalhorizontal.x;
         var L = pos.x - Player_verticalhorizontal.x;
-/*
-        Debug.DrawLine(new Vector3(L, T, pos.z), new Vector3(L, B, pos.z), Color.red, 1);
-        Debug.DrawLine(new Vector3(R, T, pos.z), new Vector3(R, B, pos.z), Color.red, 1);
-        Debug.DrawLine(new Vector3(L, T, pos.z), new Vector3(R, T, pos.z), Color.red, 1);
-        Debug.DrawLine(new Vector3(L, B, pos.z), new Vector3(R, B, pos.z), Color.red, 1);
-*/
+        /*
+                Debug.DrawLine(new Vector3(L, T, pos.z), new Vector3(L, B, pos.z), Color.red, 1);
+                Debug.DrawLine(new Vector3(R, T, pos.z), new Vector3(R, B, pos.z), Color.red, 1);
+                Debug.DrawLine(new Vector3(L, T, pos.z), new Vector3(R, T, pos.z), Color.red, 1);
+                Debug.DrawLine(new Vector3(L, B, pos.z), new Vector3(R, B, pos.z), Color.red, 1);
+        */
         //範囲内に触れたとき（プレイヤーが橋の上にいる）
         if (BridgeAriaLT.x < R && L < BridgeAriaBR.x)
             if (BridgeAriaBR.y < T && B < BridgeAriaLT.y)
@@ -452,63 +459,45 @@ public class Box_PlayerController : MonoBehaviour
                 if (CheckRedAria())
                 {
                     bool bflag = false;
-                    for (int i = 0; i < sidebox.GetBridgeLine.Length; i++)
+
+                    GameObject obj = GetPlayerInBridgeBase();
+                    if (obj)
                     {
-                        if (sidebox.GetBridgeLine[i].tag == bridgetag)
+                        bflag = true;
+                        obj.SendMessage("SlipdroundLine");
+                        if (BridgeObj)
                         {
-                            if (sidebox.GetBridgeLine[i].transform.position.z <= Front_LeftTop.z)
+                            var bridgebaseline = obj.transform.GetComponent<SpriteRenderer>().bounds.extents;
+                            Vector3 _vec = new Vector3(
+                                -Mathf.Abs(bridgebaseline.x),
+                                 Mathf.Abs(bridgebaseline.y),
+                                 Mathf.Abs(bridgebaseline.z));
+                            Vector3 FLT = obj.transform.position + _vec;
+                            Vector3 BRB = obj.transform.position - _vec;
+
+                            if (FLT.x > BRB.x)
                             {
-                                var bridgebaseline = sidebox.GetBridgeLine[i].transform.GetComponent<SpriteRenderer>().bounds.extents;
-                                Vector3 _vec = new Vector3(
-                                    -Mathf.Abs(bridgebaseline.x),
-                                     Mathf.Abs(bridgebaseline.y),
-                                     Mathf.Abs(bridgebaseline.z));
-                                Vector3 FLT = sidebox.GetBridgeLine[i].transform.position + _vec;
-
-                                _vec = new Vector3(
-                                     Mathf.Abs(bridgebaseline.x),
-                                    -Mathf.Abs(bridgebaseline.y),
-                                    -Mathf.Abs(bridgebaseline.z));
-                                Vector3 BRB = sidebox.GetBridgeLine[i].transform.position + _vec;
-
-                                if (FLT.x > BRB.x)
-                                {
-                                    float sub = BRB.x;
-                                    BRB.x = FLT.x;
-                                    FLT.x = sub;
-                                }
-                                if (FLT.y < BRB.y)
-                                {
-                                    float sub = BRB.y;
-                                    BRB.y = FLT.y;
-                                    FLT.y = sub;
-                                }
-                                if (FLT.z < BRB.z)
-                                    BRB.z = FLT.z;
-                                else
-                                    FLT.z = BRB.z;
-                                Vector3 pos = transform.parent.position;
-                                float T = pos.y + Player_verticalhorizontal.y;
-                                float B = pos.y - Player_verticalhorizontal.y;
-                                float R = pos.x + Player_verticalhorizontal.x;
-                                float L = pos.x - Player_verticalhorizontal.x;
-                                //範囲内のとき
-                                if (FLT.x <= R && L <= BRB.x)
-                                    if (BRB.y <= T && B <= FLT.y)
-                                    {
-                                        bflag = true;
-                                        sidebox.GetBridgeLine[i].SendMessage("SlipdroundLine");
-                                        if (BridgeObj)
-                                        {
-                                            Vector3 checkpos = new Vector3(BridgeObj.transform.position.x, BridgeAriaLT.y, BridgeObj.transform.position.z);
-                                            if (FLT.x <= checkpos.x && checkpos.x <= BRB.x)
-                                                if (BRB.y <= checkpos.y && checkpos.y <= FLT.y)
-                                                    BridgeObj.GetComponent<bridgeScript>().second_NoCollider();
-                                        }
-                                    }
+                                float sub = BRB.x;
+                                BRB.x = FLT.x;
+                                FLT.x = sub;
                             }
+                            if (FLT.y < BRB.y)
+                            {
+                                float sub = BRB.y;
+                                BRB.y = FLT.y;
+                                FLT.y = sub;
+                            }
+                            if (FLT.z < BRB.z)
+                                BRB.z = FLT.z;
+                            else
+                                FLT.z = BRB.z;
+                            Vector3 checkpos = new Vector3(BridgeObj.transform.position.x, BridgeAriaLT.y, BridgeObj.transform.position.z);
+                            if (FLT.x <= checkpos.x && checkpos.x <= BRB.x)
+                                if (BRB.y <= checkpos.y && checkpos.y <= FLT.y)
+                                    BridgeObj.GetComponent<bridgeScript>().second_NoCollider();
                         }
                     }
+                                
                     if (!bflag)
                         if (BridgeObj)
                             BridgeObj.GetComponent<bridgeScript>().second_NoCollider();
@@ -534,158 +523,165 @@ public class Box_PlayerController : MonoBehaviour
         NowPlayerMovePoint = (transform.parent.position + value);
     }
     //=======================================================================
+    // 橋ベース(プレイヤーが内にいる橋ベースを返す)ないならnull
+    //=======================================================================
+    GameObject GetPlayerInBridgeBase()
+    {
+        //前面にある橋のベースを探索
+        for (int i = 0; i < sidebox.GetBridgeLine.Length; i++)
+        {
+            if (sidebox.GetBridgeLine[i].tag == bridgetag)
+            {
+                if (sidebox.GetBridgeLine[i].transform.position.z <= Front_LeftTop.z)
+                {
+                    var bridgebaseline = sidebox.GetBridgeLine[i].transform.GetComponent<SpriteRenderer>().bounds.extents;
+
+                    Vector3 _vec = new Vector3(
+                        -Mathf.Abs(bridgebaseline.x),
+                         Mathf.Abs(bridgebaseline.y),
+                         Mathf.Abs(bridgebaseline.z));
+                    Vector3 FLT = sidebox.GetBridgeLine[i].transform.position + _vec;
+                    Vector3 BRB = sidebox.GetBridgeLine[i].transform.position - _vec;
+                    //念のため
+                    if (FLT.x > BRB.x)
+                    {
+                        var sub = BRB.x;
+                        BRB.x = FLT.x;
+                        FLT.x = sub;
+                    }
+
+                    if (FLT.y < BRB.y)
+                    {
+                        var sub = BRB.y;
+                        BRB.y = FLT.y;
+                        FLT.y = sub;
+                    }
+
+                    if (FLT.z < BRB.z)
+                        BRB.z = FLT.z;
+                    else
+                        FLT.z = BRB.z;
+
+
+                    var pos = transform.parent.position;
+                    float T = pos.y + Player_verticalhorizontal.y;
+                    float B = pos.y - Player_verticalhorizontal.y;
+                    float R = pos.x + Player_verticalhorizontal.x;
+                    float L = pos.x - Player_verticalhorizontal.x;
+
+                    //範囲内のとき
+                    if (FLT.x <= R && L <= BRB.x)
+                        if (BRB.y <= T && B <= FLT.y)
+                            return sidebox.GetBridgeLine[i].gameObject;
+                }
+            }
+        }
+        return null;
+    }
+    //=======================================================================
+    // Groundの上にいるときそのGroundを返す(プレイヤーが上に居ないならnull)
+    //=======================================================================
+    GameObject GetPlayerOnGround()
+    {
+        foreach (GameObject ground in sidebox.BoxInGround)
+        {
+            //画像の縦横をとり、地面が横広のとき、グラップリング対象とする
+            Vector3 exvec = ground.GetComponent<SpriteRenderer>().bounds.extents;
+            //正面に来ている足場のみ
+            if (ground.transform.position.z <= Front_LeftTop.z)
+            {
+                if (exvec.x > exvec.y)
+                {
+                    //足場幅のなかにプレイヤーが存在するなら
+                    if (ground.transform.position.x - exvec.x < transform.parent.position.x && transform.parent.position.x < ground.transform.position.x + exvec.x)
+                    {
+                        //その足場の上にプレイヤーがいるなら
+                        if (transform.parent.position.y - Player_verticalhorizontal.y - 0.1f < ground.transform.position.y + exvec.y
+                            && ground.transform.position.y < transform.parent.position.y)
+                            return ground;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+    //=======================================================================
     // 橋
     //=======================================================================
     //this->
     public void MakeBridgeCheck()
     {
-        GameObject target = null;
         CheckRedAria();
-        Debug.Log(RedSide);
-        if (RedSide != SideRedLine.Non)
+        GameObject target = (RedSide != SideRedLine.Non) ? GetPlayerInBridgeBase() : null;
+
+        //橋のベースの範囲内にプレイヤーがいたとき、そのベースがnullでなくなる
+        if (target != null)
         {
-            //橋ベースの長い方向を記録する用
-            int BridgeWay = 0;
+            //取得全ベースから現在の箱と同じ箱についている橋のベース以外で一番近い橋Baseを得る
+            nextBase = null;
+            float distance = float.MaxValue;
+            Vector3 posA = target.transform.position;
 
-            //前面にある橋のベースを探索
-            for (int i = 0; i < sidebox.GetBridgeLine.Length; i++)
+            bool check;
+            Color colord = target.GetComponent<SpriteRenderer>().color;
+            foreach (GameObject obj in G_Data.Bases)
             {
-                if (sidebox.GetBridgeLine[i].tag == bridgetag)
+                check = true;
+                for (int i = 0; i < sidebox.GetBridgeLine.Length; i++)
                 {
-                    if (sidebox.GetBridgeLine[i].transform.position.z <= Front_LeftTop.z)
+                    if (sidebox.GetBridgeLine[i].gameObject == obj)
                     {
-                        var bridgebaseline = sidebox.GetBridgeLine[i].transform.GetComponent<SpriteRenderer>().bounds.extents;
-
-                        Vector3 _vec = new Vector3(
-                            -Mathf.Abs(bridgebaseline.x),
-                             Mathf.Abs(bridgebaseline.y),
-                             Mathf.Abs(bridgebaseline.z));
-                        Vector3 FLT = sidebox.GetBridgeLine[i].transform.position + _vec;
-
-                        _vec = new Vector3(
-                             Mathf.Abs(bridgebaseline.x),
-                            -Mathf.Abs(bridgebaseline.y),
-                            -Mathf.Abs(bridgebaseline.z));
-                        Vector3 BRB = sidebox.GetBridgeLine[i].transform.position + _vec;
-
-                        if (FLT.x > BRB.x)
-                        {
-                            var sub = BRB.x;
-                            BRB.x = FLT.x;
-                            FLT.x = sub;
-                        }
-
-                        if (FLT.y < BRB.y)
-                        {
-                            var sub = BRB.y;
-                            BRB.y = FLT.y;
-                            FLT.y = sub;
-                        }
-
-                        if (FLT.z < BRB.z)
-                            BRB.z = FLT.z;
-                        else
-                            FLT.z = BRB.z;
-
-
-                        var pos = transform.parent.position;
-                        var T = pos.y + Player_verticalhorizontal.y;
-                        var B = pos.y - Player_verticalhorizontal.y;
-                        var R = pos.x + Player_verticalhorizontal.x;
-                        var L = pos.x - Player_verticalhorizontal.x;
-
-                        //範囲内のとき
-                        if (FLT.x <= R && L <= BRB.x)
-                            if (BRB.y <= T && B <= FLT.y)
-                            {
-                                target = sidebox.GetBridgeLine[i].gameObject;
-
-                                //橋ベースがy軸方向の方が長いかどうか
-                                if (target.transform.localScale.x < target.transform.localScale.y)
-                                    BridgeWay = -1;
-                                else
-                                    BridgeWay = 1;
-                            }
-                    }
-                }
-            }
-
-            bool MakeOk = false;
-
-            //橋のベースの範囲内にプレイヤーがいたとき、そのベースがnullでなくなる
-            if (target != null)
-            {
-                //取得全ベースから現在の箱と同じ箱についている橋のベース以外で一番近い橋Baseを得る
-                nextBase = null;
-                float distance = float.MaxValue;
-                Vector3 posA = target.transform.position;
-                bool check;
-
-                foreach (GameObject obj in G_Data.Bases)
-                {
-                    check = true;
-                    for (int i = 0; i < sidebox.GetBridgeLine.Length; i++)
-                    {
-                        if (sidebox.GetBridgeLine[i].gameObject == obj)
-                        {
-                            check = false;
-                            break;
-                        }
-                    }
-                    if (target.GetComponent<SpriteRenderer>().color != obj.GetComponent<SpriteRenderer>().color ||
-                        target.layer != obj.layer)
                         check = false;
-
-                    if (check)
-                    {
-                        Vector3 posB = obj.transform.position;
-
-                        if (BridgeWay == 1)//longX
-                            posB.x = posA.x = 0;
-                        else if (BridgeWay == -1)//longY
-                            posB.y = posA.y = 0;
-
-                        float dis = Mathf.Abs(Vector3.Distance(posA, posB));
-
-                        //橋ベース同士の距離が規定橋距離以下のとき(橋をかけれるとき)
-                        if (dis < distance)
-                        {
-                            //playerがその橋ベースの幅内にあるとき。
-                            Vector3 obj_extents = obj.transform.GetComponent<SpriteRenderer>().bounds.extents;
-
-                            if (
-                            (obj.transform.position.x - obj_extents.x < transform.parent.position.x && transform.parent.position.x < obj.transform.position.x + obj_extents.x) ||
-                            (obj.transform.position.y - obj_extents.y < transform.parent.position.y && transform.parent.position.y < obj.transform.position.y + obj_extents.y))
-                            {
-                                distance = dis;
-                                nextBase = obj;
-                            }
-                        }
+                        break;
                     }
                 }
+                if (!check) continue;
+                //色とレイヤーが異なるかどうか
+                if (colord != obj.GetComponent<SpriteRenderer>().color || target.layer != obj.layer)
+                    continue;
 
-                //橋基地同士の距離が橋以下のとき
-                Vector3 bounds = Bridge.GetComponent<MeshRenderer>().bounds.extents * 2;
 
-                if (bounds.x > bounds.y) bounds.y = bounds.x;//念のため
-
-                //生成方向準備
-                if (distance - 0.001f <= bounds.y)
-                {
-                    MakeOk = true;
-                }
-                //橋基地同士の距離が橋以上のとき
+                Vector3 posB = obj.transform.position;
+                //橋ベースがy軸方向の方が長いかどうか
+                if (target.transform.localScale.x < target.transform.localScale.y)
+                    posB.y = posA.y = 0;//longY
                 else
-                    GrapLinger();
+                    posB.x = posA.x = 0;//longX
+
+                float dis = Mathf.Abs(Vector3.Distance(posA, posB));
+
+                //橋ベース同士の距離比較
+                if (dis < distance)
+                {
+                    //playerがその橋ベースの幅内にあるとき。
+                    Vector3 obj_extents = obj.transform.GetComponent<SpriteRenderer>().bounds.extents;
+
+                    if (
+                    (obj.transform.position.x - obj_extents.x < NowPlayerMovePoint.x && NowPlayerMovePoint.x < obj.transform.position.x + obj_extents.x) ||
+                    (obj.transform.position.y - obj_extents.y < NowPlayerMovePoint.y && NowPlayerMovePoint.y < obj.transform.position.y + obj_extents.y))
+                    {
+                        distance = dis;
+                        nextBase = obj;
+                    }
+                }
             }
 
-            if (MakeOk)
+            //橋基地同士の距離が橋以下のとき
+            Vector3 bounds = Bridge.GetComponent<MeshRenderer>().bounds.extents * 2;
+
+            if (bounds.x > bounds.y) bounds.y = bounds.x;//橋の長さは長いほうをとる
+
+            //生成方向準備
+            if (distance - 0.001f <= bounds.y)
             {
                 if (gameManager.nDCountCheck())
                     MakeBridge(target, nextBase);
             }
+            else
+                if (target)//橋基地同士の距離が橋以上のとき
+                GrapLinger();
         }
-
+            
         //ターゲット橋ベースが無い場合。グラップリング用
         if (target == null)
             GrapLinger();
@@ -787,12 +783,7 @@ public class Box_PlayerController : MonoBehaviour
                 Mathf.Abs(mesh.bounds.extents.y),
                 Mathf.Abs(mesh.bounds.extents.z));
             Vector3 FLT = bridgePos + _vec;
-
-            _vec = new Vector3(
-                Mathf.Abs(mesh.bounds.extents.x),
-                -Mathf.Abs(mesh.bounds.extents.y),
-                -Mathf.Abs(mesh.bounds.extents.z));
-            Vector3 BRB = bridgePos + _vec;
+            Vector3 BRB = bridgePos - _vec;
 
             if (FLT.x > BRB.x)
             {
@@ -820,8 +811,6 @@ public class Box_PlayerController : MonoBehaviour
     //this.MakeBridgeCheck()->
     void GrapLinger()
     {
-        bool GrapOK = false;
-
         if (!GrapLing)
         {
             GameObject land = null;
@@ -837,10 +826,10 @@ public class Box_PlayerController : MonoBehaviour
                     if (exvec.x > exvec.y)
                     {
                         //足場幅のなかにプレイヤーが存在するなら
-                        if (ground.transform.position.x - exvec.x < transform.parent.position.x && transform.parent.position.x < ground.transform.position.x + exvec.x)
+                        if (ground.transform.position.x - exvec.x < NowPlayerMovePoint.x && NowPlayerMovePoint.x < ground.transform.position.x + exvec.x)
                         {
 
-                            if (transform.parent.position.y < ground.transform.position.y)
+                            if (NowPlayerMovePoint.y < ground.transform.position.y)
                             {
                                 if (land == null)
                                     land = ground;
@@ -848,36 +837,11 @@ public class Box_PlayerController : MonoBehaviour
                                 if (land.transform.position.y > ground.transform.position.y)
                                     land = ground;
                             }
-                            //その足場の上にプレイヤーがいるなら
-                            if (transform.parent.position.y - Player_verticalhorizontal.y - 0.1f < ground.transform.position.y + exvec.y
-                                && ground.transform.position.y < transform.parent.position.y)
-                                GrapOK = true;
                         }
                     }
                 }
             }
 
-            if (sidebox.NPWall != null)
-                foreach (GameObject ground in sidebox.NPWall)
-                {
-                    //画像の縦横をとり、地面(不透過壁)が横広のとき、グラップリング対象とする
-                    Vector3 exvec = ground.GetComponent<SpriteRenderer>().bounds.extents;
-                    //正面に来ている地面のみ
-                    if (ground.transform.position.z <= sidebox.transform.position.z - exvec.z)
-                    {
-                        if (exvec.x > exvec.y)
-                        {
-                            //地面幅のなかにプレイヤーが存在するなら
-                            if (ground.transform.position.x - exvec.x < transform.parent.position.x && transform.parent.position.x < ground.transform.position.x + exvec.x)
-                            {
-                                //その地面の上にプレイヤーがいるなら
-                                if (transform.parent.position.y - Player_verticalhorizontal.y - 0.1f < ground.transform.position.y + exvec.y
-                                    && ground.transform.position.y < transform.parent.position.y)
-                                    GrapOK = true;
-                            }
-                        }
-                    }
-                }
             //間に足場がないとき
             if (land == null)
             {
@@ -900,150 +864,142 @@ public class Box_PlayerController : MonoBehaviour
 
             //グラップリング処理
             //ただし移動できない壁後付けするため注意。
-            if (rb.isKinematic == true || rb.velocity.y == 0 || GrapOK)
+            if (rb.isKinematic == true || rb.velocity.y == 0 || OnGroundGraplingJudge())
             {
-                if (!GrapLing)
+                //足跡上向き用
+                var romain = FootStamp.main;
+                romain.startRotation = new ParticleSystem.MinMaxCurve(-0.1746f, 0.1746f);
+
+
+                Vector3 pos, pos1, pos2, pos3, pos4, pos5;
+                pos = pos1 = pos2 = pos3 = pos4 = pos5 = Front_LeftTop;
+                //不透過壁があるか否か
+                //存在しないとき箱左上で返す
+                pos = sidebox.sideWall();
+                float a = pos.y;
+
+                //回転スイッチの位置(仮)
+                //存在しないとき箱左上で返す
+                pos1 = sidebox.FindBoxRollerSwitch();
+                if (a > pos1.y && pos1.y != Front_LeftTop.y) a = pos1.y;
+
+                //橋の下限の位置
+                if (BridgeObj)
                 {
-                    //足跡上向き用
-                    var romain = FootStamp.main;
-                    romain.startRotation = new ParticleSystem.MinMaxCurve(-0.1746f, 0.1746f);
+                    pos2 = BridgeObj.transform.position;
+                    var ran = BridgeObj.GetComponent<MeshRenderer>().bounds.extents;
+                    pos2.y -= ran.y;
+
+                    if (a > pos2.y && transform.parent.position.y < pos2.y)
+                        if (BridgeObj.transform.position.x - ran.x < transform.parent.position.x && transform.parent.position.x < BridgeObj.transform.position.x + ran.x)
+                            a = pos2.y;
+                }
+                //足場の位置
+                if (land)
+                {
+                    pos3 = land.transform.position;
+                    var ran = land.GetComponent<SpriteRenderer>().bounds.extents;
+                    pos3.y -= ran.y;
+                    if (land.transform.position.y > transform.parent.position.y)
+                        if (a > pos3.y && pos3.y != Front_LeftTop.y) a = pos3.y;
+                }
+                //橋ベースの位置
+                if (onebridgebase)
+                {
+                    pos4 = onebridgebase.transform.position;
+                    var ran = onebridgebase.GetComponent<SpriteRenderer>().bounds.extents;
+                    pos4.y -= ran.y;
+                    if (a > pos4.y && pos4.y != Front_LeftTop.y)
+                        if (transform.parent.position.y < onebridgebase.transform.position.y)
+                            if (onebridgebase.transform.position.x - ran.x < transform.parent.position.x && transform.parent.position.x < onebridgebase.transform.position.x + ran.x)
+                                a = pos4.y;
+                }
+                //不透過壁の位置
+                //存在しないとき箱左上で返す
+                pos5 = sidebox.UnPassWallPos();
+                if (a > pos5.y && pos5.y != Front_LeftTop.y) a = pos5.y;
 
 
-                    Vector3 pos, pos1, pos2, pos3, pos4, pos5;
-                    pos = pos1 = pos2 = pos3 = pos4 = pos5 = Front_LeftTop;
-                    //不透過壁があるか否か
-                    //存在しないとき箱左上で返す
-                    pos = sidebox.sideWall();
-                    float a = pos.y;
-
-                    //回転スイッチの位置(仮)
-                    //存在しないとき箱左上で返す
-                    pos1 = sidebox.FindBoxRollerSwitch();
-                    if (a > pos1.y && pos1.y != Front_LeftTop.y) a = pos1.y;
-
-                    //橋の下限の位置
-                    if (BridgeObj)
+                if (a != Front_LeftTop.y)
+                {
+                    if (a == pos1.y)
                     {
-                        pos2 = BridgeObj.transform.position;
-                        var ran = BridgeObj.GetComponent<MeshRenderer>().bounds.extents;
-                        pos2.y -= ran.y;
-
-                        if (a > pos2.y && transform.parent.position.y < pos2.y)
-                            if (BridgeObj.transform.position.x - ran.x < transform.parent.position.x && transform.parent.position.x < BridgeObj.transform.position.x + ran.x)
-                                a = pos2.y;
-                    }
-                    //足場の位置
-                    if (land)
-                    {
-                        pos3 = land.transform.position;
-                        var ran = land.GetComponent<SpriteRenderer>().bounds.extents;
-                        pos3.y -= ran.y;
-                        if (land.transform.position.y > transform.parent.position.y)
-                            if (a > pos3.y && pos3.y != Front_LeftTop.y) a = pos3.y;
-                    }
-                    //橋ベースの位置
-                    if (onebridgebase)
-                    {
-                        pos4 = onebridgebase.transform.position;
-                        var ran = onebridgebase.GetComponent<SpriteRenderer>().bounds.extents;
-                        pos4.y -= ran.y;
-                        if (a > pos4.y && pos4.y != Front_LeftTop.y)
-                            if (transform.parent.position.y < onebridgebase.transform.position.y)
-                                if (onebridgebase.transform.position.x - ran.x < transform.parent.position.x && transform.parent.position.x < onebridgebase.transform.position.x + ran.x)
-                                    a = pos4.y;
-                    }
-                    //不透過壁の位置
-                    //存在しないとき箱左上で返す
-                    pos5 = sidebox.UnPassWallPos();
-                    if (a > pos5.y && pos5.y != Front_LeftTop.y) a = pos5.y;
-
-
-
-                    if (a != Front_LeftTop.y)
-                    {
-                        if (a == pos1.y)
+                        if (sidebox.FindBoxRollerSwitch() != Front_RightBottom)
                         {
-                            if (sidebox.FindBoxRollerSwitch() != Front_RightBottom)
-                            {
-                                GameObject wind = Instantiate(G_Data.WindPrefab, sidebox.transform.position, Quaternion.identity);
-                                if (sidebox.GetRollSwitchWay())
-                                    wind.transform.rotation = Quaternion.Euler(-90, 0, 0);
-                                else
-                                    wind.transform.rotation = Quaternion.Euler(90, 0, 0);
-                                //箱へアクセス、スイッチの動作指令を送らせる
-                                sidebox.RollSwitchAction();
+                            GameObject wind = Instantiate(G_Data.WindPrefab, sidebox.transform.position, Quaternion.identity);
+                            if (sidebox.GetRollSwitchWay())
+                                wind.transform.rotation = Quaternion.Euler(-90, 0, 0);
+                            else
+                                wind.transform.rotation = Quaternion.Euler(90, 0, 0);
+                            //箱へアクセス、スイッチの動作指令を送らせる
+                            sidebox.RollSwitchAction();
 
-                                if (BridgeObj)
-                                {
-                                    Destroy(BridgeObj);
-                                    gameManager.CheckBridgeNum();
-                                }
-
-                                this.Moving = false;
-                                GrapLing = true;
-                                nowIE = GrapAttack();
-                                StartCoroutine(nowIE);
-                            }
-                        }
-                        if (a == pos2.y)
-                        {
-                            //橋があるとき
                             if (BridgeObj)
                             {
-                                Vector3 bridgeextent = BridgeObj.GetComponent<MeshRenderer>().bounds.extents;
-                                Vector3 Brpos = BridgeObj.transform.position;
+                                Destroy(BridgeObj);
+                                gameManager.CheckBridgeNum();
+                            }
 
-                                if (Brpos.x - bridgeextent.x < transform.parent.position.x + Player_verticalhorizontal.x && transform.parent.position.x - Player_verticalhorizontal.y < Brpos.x + bridgeextent.x)
-                                {
-                                    //橋の下限まで伸ばす。
-                                    Vector3 point = new Vector3(transform.parent.position.x, BridgeObj.transform.position.y - bridgeextent.y - Player_verticalhorizontal.y, transform.parent.position.z);
-                                    nowIE = Graplinger(point);
-                                    StartCoroutine(nowIE);
-                                    GrapLing = true;
-                                }
-                            }
+                            this.Moving = false;
+                            GrapLing = true;
+                            nowIE = GrapAttack();
+                            StartCoroutine(nowIE);
                         }
-                        if (a == pos3.y)
+                    }
+                    if (a == pos2.y)
+                    {
+                        //橋があるとき
+                        if (BridgeObj)
                         {
-                            //地面があるとき
-                            if (land)
+                            Vector3 bridgeextent = BridgeObj.GetComponent<MeshRenderer>().bounds.extents;
+                            Vector3 Brpos = BridgeObj.transform.position;
+
+                            if (Brpos.x - bridgeextent.x < transform.parent.position.x + Player_verticalhorizontal.x && transform.parent.position.x - Player_verticalhorizontal.y < Brpos.x + bridgeextent.x)
                             {
-                                if (transform.parent.position.y < land.transform.position.y)
-                                {
-                                    Vector3 exvec = land.GetComponent<SpriteRenderer>().bounds.extents;
-                                    //他処理を停止してグラップリング移動させる
-                                    Vector3 point = new Vector3(transform.parent.position.x, land.transform.position.y + exvec.y + Player_verticalhorizontal.y, transform.parent.position.z);
-                                    nowIE = Graplinger(point);
-                                    StartCoroutine(nowIE);
-                                    GrapLing = true;
-                                }
-                            }
-                        }
-                        if (a == pos4.y)
-                        {
-                            //橋ベースがあるとき
-                            if (onebridgebase)
-                            {
-                                Vector3 exvec = onebridgebase.GetComponent<SpriteRenderer>().bounds.extents;
-                                Vector3 point = new Vector3(transform.parent.position.x, onebridgebase.transform.position.y - exvec.y + Player_verticalhorizontal.y, transform.parent.position.z);
-                                nowIE = Graplinger(point);
+                                //橋の下限まで伸ばす。
+                                nowIE = Graplinger(new Vector3(transform.parent.position.x, BridgeObj.transform.position.y - bridgeextent.y - Player_verticalhorizontal.y, transform.parent.position.z));
                                 StartCoroutine(nowIE);
                                 GrapLing = true;
                             }
                         }
                     }
-                    if (!GrapLing)
+                    if (a == pos3.y)
                     {
-                        //間に何もないとき
-                        if (Front_LeftTop.y <= pos.y && Front_LeftTop.y <= pos5.y)
+                        //地面があるとき
+                        if (land)
                         {
-                            GrapLing = true;
-                            //上限まで伸ばす
-                            Vector3 point = new Vector3(transform.parent.position.x, Front_LeftTop.y - Player_verticalhorizontal.y + 0.1f, transform.parent.position.z);
-                            nowIE = Graplinger(point);
-                            StartCoroutine(nowIE);
-
+                            if (transform.parent.position.y < land.transform.position.y)
+                            {
+                                Vector3 exvec = land.GetComponent<SpriteRenderer>().bounds.extents;
+                                //他処理を停止してグラップリング移動させる
+                                nowIE = Graplinger(new Vector3(transform.parent.position.x, land.transform.position.y + exvec.y + Player_verticalhorizontal.y, transform.parent.position.z));
+                                StartCoroutine(nowIE);
+                                GrapLing = true;
+                            }
                         }
+                    }
+                    if (a == pos4.y)
+                    {
+                        //橋ベースがあるとき
+                        if (onebridgebase)
+                        {
+                            Vector3 exvec = onebridgebase.GetComponent<SpriteRenderer>().bounds.extents;
+                            nowIE = Graplinger(new Vector3(transform.parent.position.x, onebridgebase.transform.position.y - exvec.y + Player_verticalhorizontal.y, transform.parent.position.z));
+                            StartCoroutine(nowIE);
+                            GrapLing = true;
+                        }
+                    }
+                }
+                if (!GrapLing)
+                {
+                    //間に何もないとき
+                    if (Front_LeftTop.y <= pos.y && Front_LeftTop.y <= pos5.y)
+                    {
+                        GrapLing = true;
+                        //上限まで伸ばす
+                        nowIE = Graplinger(new Vector3(transform.parent.position.x, Front_LeftTop.y - Player_verticalhorizontal.y + 0.1f, transform.parent.position.z));
+                        StartCoroutine(nowIE);
+
                     }
                 }
             }
@@ -1147,7 +1103,6 @@ public class Box_PlayerController : MonoBehaviour
         get { return MoveAriaRightBottom; }
         set { MoveAriaRightBottom = value; }
     }
-
     //========================================================
     // 橋の上に乗ったときのプレイヤー処理
     //========================================================
@@ -1347,4 +1302,281 @@ public class Box_PlayerController : MonoBehaviour
             Destroy(BridgeObj);
         }
     }
+
+
+    //========================================================
+    // グラップリングできるかどうか判定のための処理
+    //========================================================
+    //足場の上か否か
+    public bool OnGroundGraplingJudge()
+    {
+        if (!GrapLing && Moving)
+        {
+            if (rb.isKinematic || rb.velocity.y == 0) return true;
+            
+            if (GetPlayerOnGround()) return true;
+            if (sidebox.NPWall != null)
+                foreach (GameObject ground in sidebox.NPWall)
+                {
+                    //画像の縦横をとり、地面(不透過壁)が横広のとき、グラップリング対象とする
+                    Vector3 exvec = ground.GetComponent<SpriteRenderer>().bounds.extents;
+                    //正面に来ている地面のみ
+                    if (ground.transform.position.z <= sidebox.transform.position.z - exvec.z)
+                    {
+                        if (exvec.x > exvec.y)
+                        {
+                            //地面幅のなかにプレイヤーが存在するなら
+                            if (ground.transform.position.x - exvec.x < transform.parent.position.x && transform.parent.position.x < ground.transform.position.x + exvec.x)
+                            {
+                                //その地面の上にプレイヤーがいるなら
+                                if (transform.parent.position.y - Player_verticalhorizontal.y - 0.1f < ground.transform.position.y + exvec.y
+                                    && ground.transform.position.y < transform.parent.position.y)
+                                    return true;
+                            }
+                        }
+                    }
+                }
+        }
+        return false;
+    }
+    /// <summary>
+    /// グラップリングタイプ判定
+    /// true = GrapAttack
+    /// false = GrapLing
+    /// </summary>
+    /// <returns></returns>
+    public bool GrapGimmickType()
+    {
+        if (!GrapLing)
+        {
+            GameObject land = null;
+            GameObject onebridgebase = null;
+
+            foreach (GameObject ground in sidebox.BoxInGround)
+            {
+                if (ground.transform.position.y > NowPlayerMovePoint.y)
+                {
+                    //画像の縦横をとり、地面が横広のとき、グラップリング対象とする
+                    Vector3 exvec = ground.GetComponent<SpriteRenderer>().bounds.extents;
+                    if (exvec.x > exvec.y)
+                    {
+                        //正面に来ている足場のみ
+                        if (ground.transform.position.z <= sidebox.transform.position.z - exvec.z)
+                        {
+                            //足場幅のなかにプレイヤーが存在するなら
+                            if (ground.transform.position.x - exvec.x < transform.parent.position.x && transform.parent.position.x < ground.transform.position.x + exvec.x)
+                            {
+                                if (land == null)
+                                    land = ground;
+                                else
+                                if (land.transform.position.y > ground.transform.position.y)
+                                    land = ground;
+                            }
+                        }
+                    }
+                }
+            }
+
+            //間に足場がないとき
+            if (land == null)
+            {
+                foreach (GameObject obj in sidebox.GetBridgeLine)
+                {
+                    if (NowPlayerMovePoint.y < obj.transform.position.y)
+                    {
+                        Vector3 exvec = obj.GetComponent<SpriteRenderer>().bounds.extents;
+                        if (exvec.x > exvec.y)//横広
+                            if (obj.transform.position.z <= sidebox.transform.position.z - exvec.z)//前面
+                            {
+                                //幅内
+                                if (obj.transform.position.x - exvec.x < NowPlayerMovePoint.x && NowPlayerMovePoint.x < obj.transform.position.x + exvec.x)
+                                    onebridgebase = obj;//足場の中で最も近い足場を得ている
+                            }
+                    }
+                }
+            }
+
+            //グラップリング処理
+            //ただし移動できない壁後付けするため注意。
+            if (rb.isKinematic == true || rb.velocity.y == 0)
+            {
+                Vector3 instantpos;
+                Vector3 target;
+                //不透過壁があるか否か
+                //存在しないとき箱左上で返す
+                target = sidebox.sideWall();
+
+
+                //橋の下限の位置
+                if (BridgeObj)
+                {
+                    instantpos = BridgeObj.transform.position;
+                    var ran = BridgeObj.GetComponent<MeshRenderer>().bounds.extents;
+                    instantpos.y -= ran.y;
+                    if (NowPlayerMovePoint.y < instantpos.y)
+                        if (instantpos.y < target.y)
+                            if (BridgeObj.transform.position.x - ran.x < transform.parent.position.x && transform.parent.position.x < BridgeObj.transform.position.x + ran.x)
+                                target = instantpos;
+
+                }
+                //足場の位置
+                if (land)
+                {
+                    instantpos = land.transform.position;
+                    var ran = land.GetComponent<SpriteRenderer>().bounds.extents;
+                    instantpos.y -= ran.y;
+                    if (land.transform.position.y > NowPlayerMovePoint.y)
+                        if (instantpos.y < target.y)
+                            target = instantpos;
+                }
+                //橋ベースの位置
+                if (onebridgebase)
+                {
+                    instantpos = onebridgebase.transform.position;
+                    var ran = onebridgebase.GetComponent<SpriteRenderer>().bounds.extents;
+                    instantpos.y -= ran.y;
+                    if (NowPlayerMovePoint.y < onebridgebase.transform.position.y)
+                        if (instantpos.y < target.y)
+                            if (onebridgebase.transform.position.x - ran.x < NowPlayerMovePoint.x && NowPlayerMovePoint.x < onebridgebase.transform.position.x + ran.x)
+                                target = instantpos;
+                }
+                //不透過壁の位置
+                //存在しないとき箱左上で返す
+                instantpos = sidebox.UnPassWallPos();
+                if (instantpos.y != Front_LeftTop.y)
+                    if (instantpos.y < target.y)
+                        target = instantpos;
+
+                //---Gimmick---
+
+                //回転スイッチの位置(仮)
+                //存在しないとき箱左上で返す
+                instantpos = sidebox.FindBoxRollerSwitch();
+                if (instantpos.y < target.y)
+                    return true;
+            }
+        }
+        return false;
+    }
+
+
+    //---------------------------------------------------------
+    //**      ** 下を押したときの判定
+    //---------------------------------------------------------
+    public bool CheckSlipDown()
+    {
+        //すり抜けられる床かどうか
+        GameObject ground = GetPlayerOnGround();
+        if (ground)
+        {
+            return true;
+        }
+        else
+        {
+            if (CheckRedAria())
+            {
+                GameObject obj = GetPlayerInBridgeBase();
+                if (obj)
+                    return true;
+                else
+                    if (BridgeObj)
+                {
+                    //記述
+                    //橋の上にいるときの判定が要る
+                    Vector3 ex = BridgeObj.GetComponent<MeshRenderer>().bounds.extents;
+                    Vector3 pos = BridgeObj.transform.position;
+                    if (pos.x - ex.x < NowPlayerMovePoint.x && NowPlayerMovePoint.x < pos.x + ex.x)
+                        if (pos.y + ex.y < NowPlayerMovePoint.y && NowPlayerMovePoint.y < pos.y + ex.y + Player_verticalhorizontal.y * 2)
+                            return true;
+                }
+            }
+            //ここに下回転する前の下移動の処理を書く
+            if (sideState != SideState.left_right_bottom_wall &&
+                sideState != SideState.left_bottom_wall &&
+                sideState != SideState.right_bottom_wall &&
+                sideState != SideState.bottom_wall)
+                return true;
+        }
+        return false;
+    }
+    //---------------------------------------------------------
+    //  橋を作れるエリア(橋ベース)か否か
+    //---------------------------------------------------------
+    //  橋を作れるエリア内
+    public bool CheckBridgeBaseAria()
+    {
+        GameObject obj = GetPlayerInBridgeBase();
+        if (obj) return true;
+        return false;
+    }
+    //  橋を作れるエリア(橋ベース)か否か
+    public bool CheckBridgeMakeAria()
+    {
+        GameObject obj = GetPlayerInBridgeBase();
+        if (obj)
+        {
+            //取得全ベースから現在の箱と同じ箱についている橋のベース以外で一番近い橋Baseを得る
+            nextBase = null;
+            float distance = float.MaxValue;
+            Vector3 posA = obj.transform.position;
+
+            bool check;
+            Color colord = obj.GetComponent<SpriteRenderer>().color;
+            foreach (GameObject target in G_Data.Bases)//全べース探索
+            {
+                check = true;
+                for (int i = 0; i < sidebox.GetBridgeLine.Length; i++)
+                {
+                    if (sidebox.GetBridgeLine[i].gameObject == target)
+                    {
+                        check = false;
+                        break;
+                    }
+                }
+                if (!check) continue;
+                //色とレイヤーが異なるかどうか
+                if (colord != target.GetComponent<SpriteRenderer>().color || target.layer != target.layer)
+                    continue;
+
+
+                Vector3 posB = target.transform.position;
+                //橋ベースがy軸方向の方が長いかどうか
+                if (target.transform.localScale.x < target.transform.localScale.y)
+                    posB.y = posA.y = 0;//longY
+                else
+                    posB.x = posA.x = 0;//longX
+
+                float dis = Mathf.Abs(Vector3.Distance(posA, posB));
+
+                //橋ベース同士の距離比較
+                if (dis < distance)
+                {
+                    //playerがその橋ベースの幅内にあるとき。
+                    Vector3 target_extents = target.transform.GetComponent<SpriteRenderer>().bounds.extents;
+
+                    if (
+                    (target.transform.position.x - target_extents.x < NowPlayerMovePoint.x && NowPlayerMovePoint.x < target.transform.position.x + target_extents.x) ||
+                    (target.transform.position.y - target_extents.y < NowPlayerMovePoint.y && NowPlayerMovePoint.y < target.transform.position.y + target_extents.y))
+                    {
+                        distance = dis;
+                        nextBase = target;
+                    }
+                }
+            }
+
+            //橋基地同士の距離が橋以下のとき
+            Vector3 bounds = Bridge.GetComponent<MeshRenderer>().bounds.extents * 2;
+
+            if (bounds.x > bounds.y) bounds.y = bounds.x;//橋の長さは長いほうをとる
+
+            //生成方向準備
+            if (distance - 0.001f <= bounds.y)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }
+
+

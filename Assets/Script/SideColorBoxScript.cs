@@ -282,11 +282,11 @@ public class SideColorBoxScript : MonoBehaviour
         RaycastHit rayhitvecB = ray.Ray(position, -Vector3.up, 10, BoxAroundWallLayer);
         RaycastHit rayhitvecR = ray.Ray(position, Vector3.right, 10, BoxAroundWallLayer);
         RaycastHit rayhitvecL = ray.Ray(position, -Vector3.right, 10, BoxAroundWallLayer);
-        
+        PSc.TopCollidersideState = false;
         if (rayhitvecR.collider != null) {if(rayhitvecR.transform.parent == transform){ BRB.x = rayhitvecR.transform.position.x - rayhitvecR.transform.GetComponent<CapsuleCollider>().radius; PSc.sidewallstate(1); }}
         if (rayhitvecL.collider != null) {if(rayhitvecL.transform.parent == transform){ FLT.x = rayhitvecL.transform.position.x + rayhitvecL.transform.GetComponent<CapsuleCollider>().radius; PSc.sidewallstate(-1); }}
         if (rayhitvecB.collider != null) {if(rayhitvecB.transform.parent == transform){ BRB.y = rayhitvecB.transform.position.y + rayhitvecB.transform.GetComponent<CapsuleCollider>().radius; PSc.sidewallstate(2); }}
-        if (rayhitvecT.collider != null) {if(rayhitvecT.transform.parent == transform){ FLT.y = rayhitvecT.transform.position.y - rayhitvecT.transform.GetComponent<CapsuleCollider>().radius; }}
+        if (rayhitvecT.collider != null) {if(rayhitvecT.transform.parent == transform){ FLT.y = rayhitvecT.transform.position.y - rayhitvecT.transform.GetComponent<CapsuleCollider>().radius; PSc.TopCollidersideState = true; } }
         
 
         PSc.Move_Aria_FLT = FLT;
