@@ -109,7 +109,7 @@ public class GameOverScript : MonoBehaviour
             yield return new WaitForEndOfFrame();
             timer += Time.deltaTime * 0.25f;
             UICountImageRectTrans.position = Vector3.Lerp(CountPos, CountPosHalf, timer);
-            UICountImageRectTrans.localScale = Vector3.Lerp(UIScale, new Vector3(10, 10, 10), timer);
+            UICountImageRectTrans.localScale = Vector3.Lerp(UIScale, new Vector3(5, 5, 5), timer);
         }
         UICountImageRectTrans.position = CountPosHalf;
         
