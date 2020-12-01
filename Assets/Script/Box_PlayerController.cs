@@ -1572,6 +1572,7 @@ public class Box_PlayerController : MonoBehaviour
             //生成方向準備
             if (distance - 0.001f <= bounds.y)
             {
+                //ここで枠つくるか？
                 return true;
             }
         }
