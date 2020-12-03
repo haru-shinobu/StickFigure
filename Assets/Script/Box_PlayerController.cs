@@ -53,6 +53,14 @@ public class Box_PlayerController : MonoBehaviour
 
     private int nDCount = 5;
 
+    public GameObject[] gDeepObj = new GameObject[5];
+
+    enum GrapType
+    {
+        NormalGrap,
+        Button
+    }
+
     ParticleSystem FootStamp;
 
     [SerializeField] Animator[] aChildAnim = new Animator[4];
@@ -497,7 +505,7 @@ public class Box_PlayerController : MonoBehaviour
                                     BridgeObj.GetComponent<bridgeScript>().second_NoCollider();
                         }
                     }
-                                
+
                     if (!bflag)
                         if (BridgeObj)
                             BridgeObj.GetComponent<bridgeScript>().second_NoCollider();
@@ -681,10 +689,12 @@ public class Box_PlayerController : MonoBehaviour
                 if (target)//橋基地同士の距離が橋以上のとき
                 GrapLinger();
         }
-            
+
         //ターゲット橋ベースが無い場合。グラップリング用
         if (target == null)
+        {
             GrapLinger();
+        }
     }
 
 
@@ -942,8 +952,10 @@ public class Box_PlayerController : MonoBehaviour
 
                             this.Moving = false;
                             GrapLing = true;
+                            DeepGrap(sidebox.FindBoxRollerSwitch().y - transform.parent.position.y, GrapType.Button, true);
                             nowIE = GrapAttack();
                             StartCoroutine(nowIE);
+                            DeepGrap(0.0f, GrapType.Button, false);
                         }
                     }
                     if (a == pos2.y)
@@ -957,8 +969,10 @@ public class Box_PlayerController : MonoBehaviour
                             if (Brpos.x - bridgeextent.x < transform.parent.position.x + Player_verticalhorizontal.x && transform.parent.position.x - Player_verticalhorizontal.y < Brpos.x + bridgeextent.x)
                             {
                                 //橋の下限まで伸ばす。
+                                DeepGrap(BridgeObj.transform.position.y - transform.parent.position.y, GrapType.NormalGrap, true);
                                 nowIE = Graplinger(new Vector3(transform.parent.position.x, BridgeObj.transform.position.y - bridgeextent.y - Player_verticalhorizontal.y, transform.parent.position.z));
                                 StartCoroutine(nowIE);
+                                DeepGrap(0.0f, GrapType.NormalGrap, false);
                                 GrapLing = true;
                             }
                         }
@@ -972,8 +986,10 @@ public class Box_PlayerController : MonoBehaviour
                             {
                                 Vector3 exvec = land.GetComponent<SpriteRenderer>().bounds.extents;
                                 //他処理を停止してグラップリング移動させる
+                                DeepGrap(land.transform.position.y - transform.parent.position.y, GrapType.NormalGrap, true);
                                 nowIE = Graplinger(new Vector3(transform.parent.position.x, land.transform.position.y + exvec.y + Player_verticalhorizontal.y, transform.parent.position.z));
                                 StartCoroutine(nowIE);
+                                DeepGrap(0.0f, GrapType.NormalGrap, false);
                                 GrapLing = true;
                             }
                         }
@@ -984,8 +1000,10 @@ public class Box_PlayerController : MonoBehaviour
                         if (onebridgebase)
                         {
                             Vector3 exvec = onebridgebase.GetComponent<SpriteRenderer>().bounds.extents;
+                            DeepGrap(land.transform.position.y - transform.parent.position.y, GrapType.NormalGrap, true);
                             nowIE = Graplinger(new Vector3(transform.parent.position.x, onebridgebase.transform.position.y - exvec.y + Player_verticalhorizontal.y, transform.parent.position.z));
                             StartCoroutine(nowIE);
+                            DeepGrap(0.0f, GrapType.NormalGrap, false);
                             GrapLing = true;
                         }
                     }
@@ -997,9 +1015,11 @@ public class Box_PlayerController : MonoBehaviour
                     {
                         GrapLing = true;
                         //上限まで伸ばす
+                        DeepGrap(Front_LeftTop.y - transform.parent.position.y, GrapType.NormalGrap, true);
                         nowIE = Graplinger(new Vector3(transform.parent.position.x, Front_LeftTop.y - Player_verticalhorizontal.y + 0.1f, transform.parent.position.z));
                         StartCoroutine(nowIE);
-
+                        // グラップリングを消すIterator
+                        DeepGrap(0.0f, GrapType.NormalGrap, false);
                     }
                 }
             }
@@ -1253,6 +1273,8 @@ public class Box_PlayerController : MonoBehaviour
     //========================================================
     IEnumerator Graplinger(Vector3 point)
     {
+        yield return new WaitForSeconds(1.0f);
+
         SphereCollider sCollider = transform.parent.GetComponent<SphereCollider>();
         sCollider.enabled = false;
         Vector3 Ppos = transform.parent.position;
@@ -1313,7 +1335,7 @@ public class Box_PlayerController : MonoBehaviour
         if (!GrapLing && Moving)
         {
             if (rb.isKinematic || rb.velocity.y == 0) return true;
-            
+
             if (GetPlayerOnGround()) return true;
             if (sidebox.NPWall != null)
                 foreach (GameObject ground in sidebox.NPWall)
@@ -1577,6 +1599,68 @@ public class Box_PlayerController : MonoBehaviour
         }
         return false;
     }
+
+    /*
+    * グラップリング時の舌の表示用関数
+    * trueで表示,falseで非表示
+    */
+    private void DeepGrap(float fYNorm, GrapType gType, bool DrawFrag)
+    {
+        if (DrawFrag)
+        {
+            int DeepNum = (int)fYNorm * 2;
+            for (int i = 0; i < DeepNum; i++)
+            {
+                if (i < gDeepObj.Length)
+                {
+                    // 遅延しながら表示
+                    StartCoroutine(DrawDeep(i));
+                }
+            }
+        }
+        else
+        {
+            StartCoroutine(AnDrawDeep(gType));
+        }
+    }
+
+    /*
+    * 舌の表示用Iterator
+    */
+    IEnumerator DrawDeep(int nDeep)
+    {
+        yield return new WaitForSeconds(.2f);
+        // 遅延しながら非表示になるように
+        gDeepObj[nDeep].SetActive(true);
+    }
+
+    /*
+    * 舌の非表示用Iterator
+    */
+    IEnumerator AnDrawDeep(GrapType gType)
+    {
+        yield return new WaitForSeconds(.5f);
+
+        if (gType == GrapType.NormalGrap)
+        {
+            for (int i = gDeepObj.Length - 1; i >= 0; i--)
+            {
+                yield return new WaitForSeconds(.1f);
+                gDeepObj[i].SetActive(false);
+            }
+        }
+        else if (gType == GrapType.Button)
+        {
+            for (int i = gDeepObj.Length - 1; i >= 0; i--)
+            {
+                yield return new WaitForSeconds(.1f);
+                gDeepObj[i].SetActive(false);
+            }
+        }
+
+        yield return null;
+    }
+
 }
 
 
