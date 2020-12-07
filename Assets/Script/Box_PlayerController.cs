@@ -338,12 +338,7 @@ public class Box_PlayerController : MonoBehaviour
         var B = pos.y - Player_verticalhorizontal.y;
         var R = pos.x + Player_verticalhorizontal.x;
         var L = pos.x - Player_verticalhorizontal.x;
-        /*
-                Debug.DrawLine(new Vector3(L, T, pos.z), new Vector3(L, B, pos.z), Color.red, 1);
-                Debug.DrawLine(new Vector3(R, T, pos.z), new Vector3(R, B, pos.z), Color.red, 1);
-                Debug.DrawLine(new Vector3(L, T, pos.z), new Vector3(R, T, pos.z), Color.red, 1);
-                Debug.DrawLine(new Vector3(L, B, pos.z), new Vector3(R, B, pos.z), Color.red, 1);
-        */
+        
         //範囲内に触れたとき（プレイヤーが橋の上にいる）
         if (BridgeAriaLT.x < R && L < BridgeAriaBR.x)
             if (BridgeAriaBR.y < T && B < BridgeAriaLT.y)
@@ -384,7 +379,7 @@ public class Box_PlayerController : MonoBehaviour
         {
             if (x.GetBool("work") != flag)
             {
-                Debug.Log("Anim" + flag);
+                //Debug.Log("Anim" + flag);
                 x.SetBool("work", flag);
             }
         }
@@ -1000,7 +995,7 @@ public class Box_PlayerController : MonoBehaviour
                         if (onebridgebase)
                         {
                             Vector3 exvec = onebridgebase.GetComponent<SpriteRenderer>().bounds.extents;
-                            DeepGrap(land.transform.position.y - transform.parent.position.y, GrapType.NormalGrap, true);
+                            DeepGrap(onebridgebase.transform.position.y - transform.parent.position.y, GrapType.NormalGrap, true);
                             nowIE = Graplinger(new Vector3(transform.parent.position.x, onebridgebase.transform.position.y - exvec.y + Player_verticalhorizontal.y, transform.parent.position.z));
                             StartCoroutine(nowIE);
                             DeepGrap(0.0f, GrapType.NormalGrap, false);
@@ -1367,7 +1362,7 @@ public class Box_PlayerController : MonoBehaviour
     /// false = GrapLing
     /// </summary>
     /// <returns></returns>
-    public bool GrapGimmickType()
+    public int GrapGimmickType()
     {
         if (!GrapLing)
         {
@@ -1419,7 +1414,6 @@ public class Box_PlayerController : MonoBehaviour
             }
 
             //グラップリング処理
-            //ただし移動できない壁後付けするため注意。
             if (rb.isKinematic == true || rb.velocity.y == 0)
             {
                 Vector3 instantpos;
@@ -1475,12 +1469,21 @@ public class Box_PlayerController : MonoBehaviour
                 //存在しないとき箱左上で返す
                 instantpos = sidebox.FindBoxRollerSwitch();
                 if (instantpos.y < target.y)
-                    return true;
+                    return 0;
+
+                //不透過壁の位置再計算
+                instantpos = sidebox.UnPassWallPos();
+                if (instantpos.y != Front_LeftTop.y)
+                    if (instantpos.y <= target.y)
+                        return 1;
+                instantpos = sidebox.sideWall();
+                if (instantpos.y <= target.y)
+                    if(instantpos.y!=Front_LeftTop.y)
+                    return 1;
             }
         }
-        return false;
+        return 2;
     }
-
 
     //---------------------------------------------------------
     //**      ** 下を押したときの判定
@@ -1661,7 +1664,6 @@ public class Box_PlayerController : MonoBehaviour
 
         yield return null;
     }
-
 }
 
 

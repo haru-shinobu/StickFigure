@@ -10,7 +10,12 @@ public class BoxRollerSwitchScript : MonoBehaviour
     {
         get { return bRollWay; }
     }
-    
+    [SerializeField]
+    GameObject needle;
+    [SerializeField]
+    GameObject pin;
+    [SerializeField]
+    bool bTypeneedle;
     void Start()
     {
         if (!GetRollWay)
@@ -43,8 +48,10 @@ public class BoxRollerSwitchScript : MonoBehaviour
     SideColorBoxScript Onetime_target;
     public void OnRoll(SideColorBoxScript target)
     {
-        GameObject obj = (GameObject)Resources.Load("Needle");
-        Instantiate(obj, transform.parent.position, Quaternion.Euler(-90, 0, 0));
+        if(bTypeneedle)
+            Instantiate(needle, transform.parent.position, Quaternion.Euler(-90, 0, 0));
+        else
+            Instantiate(pin, transform.parent.position, Quaternion.Euler(0, 0, 0));
         Onetime_target = target;
         Invoke("RollStart", 0.3f);
     }
