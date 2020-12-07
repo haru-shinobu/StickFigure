@@ -1000,7 +1000,7 @@ public class Box_PlayerController : MonoBehaviour
                         if (onebridgebase)
                         {
                             Vector3 exvec = onebridgebase.GetComponent<SpriteRenderer>().bounds.extents;
-                            DeepGrap(land.transform.position.y - transform.parent.position.y, GrapType.NormalGrap, true);
+                            DeepGrap(onebridgebase.transform.position.y, GrapType.NormalGrap, true);
                             nowIE = Graplinger(new Vector3(transform.parent.position.x, onebridgebase.transform.position.y - exvec.y + Player_verticalhorizontal.y, transform.parent.position.z));
                             StartCoroutine(nowIE);
                             DeepGrap(0.0f, GrapType.NormalGrap, false);
@@ -1645,8 +1645,11 @@ public class Box_PlayerController : MonoBehaviour
             yield return new WaitForSeconds(.5f);
             for (int i = gDeepObj.Length - 1; i >= 0; i--)
             {
-                yield return new WaitForSeconds(.07f);
-                gDeepObj[i].SetActive(false);
+                if(gDeepObj[i])
+                {
+                    yield return new WaitForSeconds(.06f);
+                    gDeepObj[i].SetActive(false);
+                }
             }
         }
         else if (gType == GrapType.Button)
@@ -1654,8 +1657,11 @@ public class Box_PlayerController : MonoBehaviour
             yield return new WaitForSeconds(.1f);
             for (int i = gDeepObj.Length - 1; i >= 0; i--)
             {
-                yield return new WaitForSeconds(.05f);
-                gDeepObj[i].SetActive(false);
+                if(gDeepObj[i])
+                {
+                    yield return new WaitForSeconds(.05f);
+                    gDeepObj[i].SetActive(false);
+                }
             }
         }
 
