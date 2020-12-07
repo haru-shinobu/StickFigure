@@ -1609,7 +1609,7 @@ public class Box_PlayerController : MonoBehaviour
     {
         if (DrawFrag)
         {
-            int DeepNum = (int)fYNorm * 2;
+            int DeepNum = ((int)fYNorm * 2) + 2;
             for (int i = 0; i < DeepNum; i++)
             {
                 if (i < gDeepObj.Length)
@@ -1640,21 +1640,21 @@ public class Box_PlayerController : MonoBehaviour
     */
     IEnumerator AnDrawDeep(GrapType gType)
     {
-        yield return new WaitForSeconds(.5f);
-
         if (gType == GrapType.NormalGrap)
         {
+            yield return new WaitForSeconds(.5f);
             for (int i = gDeepObj.Length - 1; i >= 0; i--)
             {
-                yield return new WaitForSeconds(.1f);
+                yield return new WaitForSeconds(.07f);
                 gDeepObj[i].SetActive(false);
             }
         }
         else if (gType == GrapType.Button)
         {
+            yield return new WaitForSeconds(.1f);
             for (int i = gDeepObj.Length - 1; i >= 0; i--)
             {
-                yield return new WaitForSeconds(.1f);
+                yield return new WaitForSeconds(.05f);
                 gDeepObj[i].SetActive(false);
             }
         }
