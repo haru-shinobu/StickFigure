@@ -12,8 +12,12 @@ public class UIScript : MonoBehaviour
 
     [SerializeField]
     Sprite[] spritePrefab;
-
     int _inum;
+
+    [SerializeField]
+    RectTransform[] rect = new RectTransform[4];
+    Vector3 Rect_AcivePosition, Rect_ReposePosition;
+    
 
     Box_PlayerController PSc;
 
@@ -24,6 +28,7 @@ public class UIScript : MonoBehaviour
     Color textOutline_Color_zero;
     [SerializeField]
     Text tex;
+    //コルーチン動作状態
     enum outline_active_state
     {
         
@@ -33,7 +38,9 @@ public class UIScript : MonoBehaviour
         free = 3,
     }
     outline_active_state[] state = new outline_active_state[4];
-    IEnumerator[] routine = new IEnumerator[4];
+    IEnumerator[] routine = new IEnumerator[7];
+    //橋コルーチン予備チェック
+    bool BridgeCorutineFlag = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -52,15 +59,25 @@ public class UIScript : MonoBehaviour
         controlls_img_outlines[2].effectColor =
         controlls_img_outlines[3].effectColor = textOutline_Color_zero;
         for (int i = 0; i < state.Length; i++)
-            state[i] = outline_active_state.free;
+            state[i] = outline_active_state.change_blink;
+        for (int i = 0; i < controlls_img_outlines.Length; i++)
+        {
+            rect[i] = controlls_img_outlines[i].transform.parent.GetComponent<RectTransform>();
+        }
+        Rect_AcivePosition = rect[0].localPosition;
+        Rect_ReposePosition = Rect_AcivePosition - new Vector3(0, rect[0].sizeDelta.y*2, 0);
     }
 
     void Update()
     {
-        CheckSlideDownFall_UI();
-        CheckGrapLingUI();
-        CheckBridgeMake_UI();
-        judgeUI();
+        if (!PSc.GetGrapLing)
+        {
+            CheckSlideDownFall_UI();
+            CheckGrapLingUI();
+            CheckBridgeMake_UI();
+
+            judgeUI();
+        }
     }
 
     private void SetObj()
@@ -139,11 +156,14 @@ public class UIScript : MonoBehaviour
 
     void CheckBridgeMake_UI()
     {
+        Debug.Log("now" + state[1]);
         if (PSc.CheckBridgeMakeAria())
         {
             tex.text = "はしをかける";
-            if (state[1] != outline_active_state.blinking_move)
+            if (state[1] != outline_active_state.blinking_move || !BridgeCorutineFlag)
                 state[1] = outline_active_state.blinking_active;
+
+            Debug.Log("tive" + state[1]);
         }
         else
         {
@@ -177,6 +197,15 @@ public class UIScript : MonoBehaviour
                     routine[i] = Blinking_Line(controlls_img_outlines[i]);
                     StartCoroutine(routine[i]);
                     state[i] = outline_active_state.blinking_move;
+                    controlls_img_outlines[i].transform.parent.SetAsLastSibling();
+                    controlls_img_outlines[1].transform.parent.SetAsLastSibling();
+                    if (i != 3)
+                    {
+                        if (routine[state.Length + i] == NonActivePoint(rect[i]))
+                            StopCoroutine(routine[state.Length + i]);
+                        routine[state.Length + i] = ActivePoint(rect[i]);
+                        StartCoroutine(routine[state.Length + i]);
+                    }
                     break;
 
                 case outline_active_state.blinking_move:
@@ -184,19 +213,24 @@ public class UIScript : MonoBehaviour
 
                 case outline_active_state.change_blink:
                     //点滅コルーチンが動作しているので点滅停止
-                    StopCoroutine(routine[i]);
+                    if (routine[i] == Blinking_Line(controlls_img_outlines[i]))
+                        StopCoroutine(routine[i]);
                     routine[i] = EndBlinking_Line(controlls_img_outlines[i]);
                     StartCoroutine(routine[i]);
                     state[i] = outline_active_state.free;
+                    if (i != 3)
+                    {
+                        if (routine[state.Length + i] == ActivePoint(rect[i]))
+                            StopCoroutine(routine[state.Length + i]);
+                        routine[state.Length + i] = NonActivePoint(rect[i]);
+                        StartCoroutine(routine[state.Length + i]);
+                    }
                     break;
 
                 case outline_active_state.free:
                     break;
             }
         }
-
-
-
     }
     IEnumerator Blinking_Line(Outline line)
     {
@@ -223,5 +257,33 @@ public class UIScript : MonoBehaviour
             timer += Time.deltaTime;
             line.effectColor = Color.Lerp(nowColor, clearcolor, timer);
         }
+    }
+    IEnumerator ActivePoint(RectTransform target)
+    {
+        var img = target.transform.GetComponent<Image>();
+        Color colo = img.color;
+        colo.a = 255;
+        img.color = colo;
+        float timer = 0;
+        while (timer < 1)
+        {
+            yield return new WaitForEndOfFrame();
+            timer += Time.deltaTime * 5;
+            target.localPosition = Vector3.Lerp(Rect_ReposePosition, Rect_AcivePosition, timer);
+        }
+        if(target == rect[1]) BridgeCorutineFlag = true;
+    }
+    IEnumerator NonActivePoint(RectTransform target)
+    {
+        var img = target.transform.GetComponent<Image>();
+        float timer = 0;
+        while (timer < 1)
+        {
+            yield return new WaitForEndOfFrame();
+            timer += Time.deltaTime;
+            img.color = new Color32(255, 255,255, (byte)((1-timer)*255));
+            target.localPosition = Vector3.Lerp(Rect_AcivePosition, Rect_ReposePosition, timer);
+        }
+        if (target == rect[1]) BridgeCorutineFlag = false;
     }
 }
