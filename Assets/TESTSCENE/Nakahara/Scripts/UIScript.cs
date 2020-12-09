@@ -17,7 +17,7 @@ public class UIScript : MonoBehaviour
     [SerializeField]
     RectTransform[] rect = new RectTransform[4];
     Vector3 Rect_AcivePosition, Rect_ReposePosition;
-    
+    Vector3 Rect_AcivePosition_down, Rect_ReposePosition_down;
 
     Box_PlayerController PSc;
 
@@ -38,7 +38,7 @@ public class UIScript : MonoBehaviour
         free = 3,
     }
     outline_active_state[] state = new outline_active_state[4];
-    IEnumerator[] routine = new IEnumerator[7];
+    IEnumerator[] routine = new IEnumerator[8];
     //橋コルーチン予備チェック
     bool BridgeCorutineFlag = false;
     // Start is called before the first frame update
@@ -66,6 +66,8 @@ public class UIScript : MonoBehaviour
         }
         Rect_AcivePosition = rect[0].localPosition;
         Rect_ReposePosition = Rect_AcivePosition - new Vector3(0, rect[0].sizeDelta.y*2, 0);
+        Rect_AcivePosition_down = rect[3].localPosition;
+        Rect_ReposePosition_down = Rect_AcivePosition_down - new Vector3(0, rect[3].sizeDelta.y * 2, 0);
     }
 
     void Update()
@@ -142,10 +144,12 @@ public class UIScript : MonoBehaviour
     }
     void CheckSlideDownFall_UI()
     {
+        Debug.Log(state[3]);
         if (PSc.CheckSlipDown())
         {
             if (state[3] != outline_active_state.blinking_move)
                 state[3] = outline_active_state.blinking_active;
+            Debug.Log("SlipDown");
         }
         else
         {
@@ -156,14 +160,11 @@ public class UIScript : MonoBehaviour
 
     void CheckBridgeMake_UI()
     {
-        Debug.Log("now" + state[1]);
         if (PSc.CheckBridgeMakeAria())
         {
             tex.text = "はしをかける";
             if (state[1] != outline_active_state.blinking_move || !BridgeCorutineFlag)
                 state[1] = outline_active_state.blinking_active;
-
-            Debug.Log("tive" + state[1]);
         }
         else
         {
@@ -199,16 +200,29 @@ public class UIScript : MonoBehaviour
                     state[i] = outline_active_state.blinking_move;
                     controlls_img_outlines[i].transform.parent.SetAsLastSibling();
                     controlls_img_outlines[1].transform.parent.SetAsLastSibling();
-                    if (i != 3)
+                    if (i == 3)
                     {
-                        if (routine[state.Length + i] == NonActivePoint(rect[i]))
+                        if (routine[state.Length + i] == NonActivePoint(rect[i], true))
                             StopCoroutine(routine[state.Length + i]);
-                        routine[state.Length + i] = ActivePoint(rect[i]);
+                        routine[state.Length + i] = ActivePoint(rect[i], true);
+                        StartCoroutine(routine[state.Length + i]);
+                    }
+                    else
+                    {
+                        if (routine[state.Length + i] == NonActivePoint(rect[i], false))
+                            StopCoroutine(routine[state.Length + i]);
+                        routine[state.Length + i] = ActivePoint(rect[i], false);
                         StartCoroutine(routine[state.Length + i]);
                     }
                     break;
 
                 case outline_active_state.blinking_move:
+
+                    /*
+                     * 隠れているか判断し、隠れているなら稼働させる
+                     */
+                    if (rect[i].localPosition.y <= Rect_ReposePosition.y || rect[i].localPosition.y <= Rect_ReposePosition_down.y)
+                        state[i] = outline_active_state.blinking_active;
                     break;
 
                 case outline_active_state.change_blink:
@@ -218,11 +232,18 @@ public class UIScript : MonoBehaviour
                     routine[i] = EndBlinking_Line(controlls_img_outlines[i]);
                     StartCoroutine(routine[i]);
                     state[i] = outline_active_state.free;
-                    if (i != 3)
+                    if (i == 3)
                     {
-                        if (routine[state.Length + i] == ActivePoint(rect[i]))
+                        if (routine[state.Length + i] == ActivePoint(rect[i], true))
                             StopCoroutine(routine[state.Length + i]);
-                        routine[state.Length + i] = NonActivePoint(rect[i]);
+                        routine[state.Length + i] = NonActivePoint(rect[i], true);
+                        StartCoroutine(routine[state.Length + i]);
+                    }
+                    else
+                    {
+                        if (routine[state.Length + i] == ActivePoint(rect[i], false))
+                            StopCoroutine(routine[state.Length + i]);
+                        routine[state.Length + i] = NonActivePoint(rect[i], false);
                         StartCoroutine(routine[state.Length + i]);
                     }
                     break;
@@ -258,7 +279,8 @@ public class UIScript : MonoBehaviour
             line.effectColor = Color.Lerp(nowColor, clearcolor, timer);
         }
     }
-    IEnumerator ActivePoint(RectTransform target)
+    //アイコン上下移動
+    IEnumerator ActivePoint(RectTransform target, bool type)
     {
         var img = target.transform.GetComponent<Image>();
         Color colo = img.color;
@@ -269,11 +291,14 @@ public class UIScript : MonoBehaviour
         {
             yield return new WaitForEndOfFrame();
             timer += Time.deltaTime * 5;
-            target.localPosition = Vector3.Lerp(Rect_ReposePosition, Rect_AcivePosition, timer);
+            if (type)
+                target.localPosition = Vector3.Lerp(Rect_ReposePosition_down, Rect_AcivePosition_down, timer);
+            else
+                target.localPosition = Vector3.Lerp(Rect_ReposePosition, Rect_AcivePosition, timer);
         }
         if(target == rect[1]) BridgeCorutineFlag = true;
     }
-    IEnumerator NonActivePoint(RectTransform target)
+    IEnumerator NonActivePoint(RectTransform target,bool type)
     {
         var img = target.transform.GetComponent<Image>();
         float timer = 0;
@@ -282,7 +307,10 @@ public class UIScript : MonoBehaviour
             yield return new WaitForEndOfFrame();
             timer += Time.deltaTime;
             img.color = new Color32(255, 255,255, (byte)((1-timer)*255));
-            target.localPosition = Vector3.Lerp(Rect_AcivePosition, Rect_ReposePosition, timer);
+            if (type)
+                target.localPosition = Vector3.Lerp(Rect_AcivePosition_down, Rect_ReposePosition_down, timer);
+            else
+                target.localPosition = Vector3.Lerp(Rect_AcivePosition, Rect_ReposePosition, timer);
         }
         if (target == rect[1]) BridgeCorutineFlag = false;
     }
