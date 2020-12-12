@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1974638805858554322}
   - component: {fileID: 9096160802969669272}
   - component: {fileID: 6477714026157279901}
+  - component: {fileID: 1211064847636428826}
   m_Layer: 8
   m_Name: Ground_Wall
   m_TagString: NoPassWall
@@ -126,3 +127,16 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!65 &1211064847636428826
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1974638805858554335}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 10, y: 0.2, z: 0.2}
+  m_Center: {x: 0, y: 0, z: 0}
