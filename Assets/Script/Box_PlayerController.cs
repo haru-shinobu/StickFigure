@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Box_PlayerController : MonoBehaviour
 {
-    [SerializeField, Range(0.1f, 1)] float MoveRange = 0.4f;
+    [SerializeField, Range(0.2f, 0.5f)] float MoveRange = 0.4f;
     [SerializeField, Range(0.1f, 10)] float DropSpeed = 1;
 
     Inputmanager inputer;
