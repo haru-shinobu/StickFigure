@@ -217,10 +217,7 @@ public class UIScript : MonoBehaviour
                     break;
 
                 case outline_active_state.blinking_move:
-
-                    /*
-                     * 隠れているか判断し、隠れているなら稼働させる
-                     */
+                    //隠れているか判断し、隠れているなら稼働させる
                     if (rect[i].localPosition.y <= Rect_ReposePosition.y || rect[i].localPosition.y <= Rect_ReposePosition_down.y)
                         state[i] = outline_active_state.blinking_active;
                     break;
