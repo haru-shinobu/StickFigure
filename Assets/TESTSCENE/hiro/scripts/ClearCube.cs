@@ -31,6 +31,7 @@ public class ClearCube : MonoBehaviour
     {
         if(other.gameObject.tag=="PlayerBase")
         {
+            other.transform.GetChild(0).SendMessage("SceneEndBridgeBreak");
             StartCoroutine(clear());
         }
     }

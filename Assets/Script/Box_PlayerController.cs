@@ -189,7 +189,7 @@ public class Box_PlayerController : MonoBehaviour
                             if (R >= Front_RightBottom.x) { rollways = 4; wind.transform.rotation = Quaternion.Euler(0, 0, 0); }
                             if (BridgeObj)
                             {
-                                BridgeObj.SendMessage("RollDestroy");
+                                BridgeObj.SendMessage("RollDestroy",2);
                                 BridgeObj.transform.SetParent(null);
                                 BridgeObj = null;
                                 //Destroy(BridgeObj);
@@ -758,7 +758,7 @@ public class Box_PlayerController : MonoBehaviour
             else
             {
                 //破棄する場合
-                BridgeObj.SendMessage("RollDestroy");
+                BridgeObj.SendMessage("RollDestroy",2);
                 BridgeObj.transform.SetParent(null);
                 BridgeObj = null;
                 //Destroy(BridgeObj);
@@ -954,7 +954,7 @@ public class Box_PlayerController : MonoBehaviour
 
                             if (BridgeObj)
                             {
-                                BridgeObj.SendMessage("RollDestroy");
+                                BridgeObj.SendMessage("RollDestroy",2);
                                 BridgeObj.transform.SetParent(null);
                                 BridgeObj = null;
                                 //Destroy(BridgeObj);
@@ -1343,6 +1343,10 @@ public class Box_PlayerController : MonoBehaviour
         {
             Destroy(BridgeObj);
         }
+    }
+    public void SceneEndBridgeFall()
+    {
+        if (BridgeObj) BridgeObj.SendMessage("RollDestroy",1);
     }
 
 
