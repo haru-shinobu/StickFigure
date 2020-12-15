@@ -47,6 +47,10 @@ public class GameManager : MonoBehaviour
     [SerializeField,Header("カメラマネージャ")]
     CameraManager camM;
     // ↑現在使用していない(後で整理)=============================================
+    [SerializeField,Header("アイロン")]
+    GameObject Iron;
+    [SerializeField,Range(1,3)]
+    float i_IronAnimSpeed = 1;
 
     //ゲームオーバーアニメーション用
     [SerializeField]
@@ -62,8 +66,12 @@ public class GameManager : MonoBehaviour
         Player = 0,
     }
     bool[] ControllerActivater;
+    GameObject Startbox;
+    [SerializeField]
+    GameObject arrow;
     void Awake()
     {
+        arrow.SetActive(false);
         ControllerActivater = new bool[System.Enum.GetNames(typeof(Controll_Target)).Length];
         for (int i = 0; i < ControllerActivater.Length; i++)
             ControllerActivater[i] = false;
@@ -71,10 +79,12 @@ public class GameManager : MonoBehaviour
         GameObject[] boxes  = GameObject.FindGameObjectsWithTag("Box");
         Boxs = new GameObject[boxes.Length];
         Boxs = boxes;
+        Startbox = transform.GetComponent<StarterScript>().GetStartBox();
     }
 
     void Start()
     {
+        player = GameObject.FindWithTag("Player").GetComponent<Box_PlayerController>();
         _UIScript.ChangeNum(nDCount);
     }
 
@@ -135,5 +145,17 @@ public class GameManager : MonoBehaviour
         _bGOflag = false;
         if (IE_GO == GameOver_before())
             StopCoroutine(IE_GO);
+    }
+    public void MakeIron()
+    {
+        Vector3 campos = Camera.main.transform.position;
+        Vector3 startpos = campos + new Vector3(15, 0, 0);
+        GameObject ironobj = Instantiate(Iron, startpos, Quaternion.identity);
+        IronScript IronSc = ironobj.transform.GetComponent<IronScript>();
+        IronSc.arrow = arrow;
+        IronSc.Speed = i_IronAnimSpeed;
+        IronSc.GSStartPos = startpos;
+        IronSc.GSEndPos = Startbox.transform.position - new Vector3(0, 0, Startbox.GetComponent<MeshRenderer>().bounds.extents.z);
+        IronSc.MoveOK = true;
     }
 }
