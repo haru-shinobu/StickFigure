@@ -48,7 +48,7 @@ MonoBehaviour:
   titleBGM: {fileID: 8300000, guid: 491385451562cc64ab02b38a3c79dd38, type: 3}
   mainBGM: {fileID: 8300000, guid: b226451e8ce407f4a8fdb5a19ce33842, type: 3}
   overBGM: {fileID: 8300000, guid: b226451e8ce407f4a8fdb5a19ce33842, type: 3}
-  clearBGM: {fileID: 8300000, guid: b226451e8ce407f4a8fdb5a19ce33842, type: 3}
+  clearBGM: {fileID: 8300000, guid: df27e80889a143947ae223338bc3f512, type: 3}
   jump: {fileID: 8300000, guid: 004d3409394cfd446843c7475d42d5d0, type: 3}
   move: {fileID: 8300000, guid: 892ca877415122a468136f25411e7753, type: 3}
   action: {fileID: 8300000, guid: 14b1eccb859981940a66d8d877015909, type: 3}

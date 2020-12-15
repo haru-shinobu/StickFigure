@@ -55,6 +55,8 @@ public class Box_PlayerController : MonoBehaviour
 
     public GameObject[] gDeepObj = new GameObject[5];
 
+    private SoundManager SoundObj;
+
     enum GrapType
     {
         NormalGrap,
@@ -123,6 +125,9 @@ public class Box_PlayerController : MonoBehaviour
     //落下できるかどうか
     bool FolldownJudge = false;
 
+    [SerializeField]
+    private int AnimCountSet = 25;
+    private int AnimCount = 25;
 
     void Start()
     {
@@ -138,6 +143,8 @@ public class Box_PlayerController : MonoBehaviour
         FootStamp = transform.parent.GetChild(1).GetComponent<ParticleSystem>();
         horizontalPlayerMovePoint = Vector3.zero;
         inputer = GameObject.FindWithTag("BoxManager").GetComponent<Inputmanager>();
+        SoundObj = GameObject.Find("SoundObj").GetComponent<SoundManager>();
+
     }
 
     void Update()
@@ -404,6 +411,12 @@ public class Box_PlayerController : MonoBehaviour
             //足跡反転用
             var romain = FootStamp.main;
             romain.startRotation = new ParticleSystem.MinMaxCurve(1.396f, 1.745f);
+            // サウンド再生
+            if(AnimCount++ > AnimCountSet)
+            {
+                SoundObj.MoveSE();
+                AnimCount = 0;
+            }
             //アニメーション
             Move_Anim(true);
 
@@ -417,6 +430,12 @@ public class Box_PlayerController : MonoBehaviour
             //足跡反転用
             var romain = FootStamp.main;
             romain.startRotation = new ParticleSystem.MinMaxCurve(-1.396f, -1.745f);
+            // サウンド再生
+            if (AnimCount++ > AnimCountSet)
+            {
+                SoundObj.MoveSE();
+                AnimCount = 0;
+            }
             //アニメーション
             Move_Anim(true);
         }
@@ -1052,6 +1071,7 @@ public class Box_PlayerController : MonoBehaviour
 
     void InstanceMakeBridge(Vector3 _vec,float _Angle)
     {
+        SoundObj.ActionSE();
         _bBridgeMaking = false;
         BridgeObj = Instantiate(Bridge, _vec, Quaternion.Euler(180, 0, _Angle));
     }
@@ -1377,7 +1397,7 @@ public class Box_PlayerController : MonoBehaviour
             if (sidebox.NPWall != null)
                 foreach (GameObject ground in sidebox.NPWall)
                 {
-                    //画像の縦横をとり、地面(不透過壁)が横広のとき、グラップリング対象とする
+                    //画像の縦横をとり、地面(不透過壁)が横広のとき、グラップリング対象とするtio
                     Vector3 exvec = ground.GetComponent<SpriteRenderer>().bounds.extents;
                     //正面に来ている地面のみ
                     if (ground.transform.position.z <= sidebox.transform.position.z - exvec.z)
@@ -1657,6 +1677,7 @@ public class Box_PlayerController : MonoBehaviour
     {
         if (DrawFrag)
         {
+            SoundObj.GrapSE();
             int DeepNum = ((int)fYNorm * 2) + 2;
             for (int i = 0; i < DeepNum; i++)
             {
