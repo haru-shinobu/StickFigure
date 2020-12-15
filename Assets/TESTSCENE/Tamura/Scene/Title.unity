@@ -786,11 +786,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: SoundObj
       objectReference: {fileID: 0}
-    - target: {fileID: 2755165372653438764, guid: e8be530c08487d447b1c5dd725e254cc,
-        type: 3}
-      propertyPath: clearBGM
-      value: 
-      objectReference: {fileID: 8300000, guid: df27e80889a143947ae223338bc3f512, type: 3}
     - target: {fileID: 2755165372653438765, guid: e8be530c08487d447b1c5dd725e254cc,
         type: 3}
       propertyPath: m_LocalPosition.x

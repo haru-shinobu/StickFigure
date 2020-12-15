@@ -30,7 +30,9 @@ public class SoundManager : MonoBehaviour
 
     public bool isBGM;
 
-    private AudioSource[] audioSource;
+    private AudioSource BGMSource;
+
+    private AudioSource OneShotSource;
 
     string sceneName;
 
@@ -53,7 +55,8 @@ public class SoundManager : MonoBehaviour
         int soundPlay = FindObjectsOfType<SoundManager>().Length;
         DontDestroyOnLoad(soundManager);
         if (soundPlay > 1) { Destroy(gameObject); }
-        audioSource = GetComponents<AudioSource>();
+        BGMSource = GetComponent<AudioSource>();
+        OneShotSource = GetComponent<AudioSource>();
         isBGM = false;
     }
 
@@ -65,8 +68,8 @@ public class SoundManager : MonoBehaviour
 
         sceneName = SceneManager.GetActiveScene().name;//SceneManager.sceneCount;
 
-        audioSource = GetComponents<AudioSource>();
-        audioSource[0].Stop();
+        BGMSource = GetComponent<AudioSource>();
+        BGMSource.Stop();
         isBGM = false;
     }
 
@@ -84,13 +87,13 @@ public class SoundManager : MonoBehaviour
         {
             switch (sceneName)
             {
-                case "Title": audioSource[0].clip = titleBGM; break;
-                case "GameMainScene": audioSource[0].clip = mainBGM; break;
-                case "GameOver": audioSource[0].clip = overBGM; break;
-                case "Clear": audioSource[0].clip = clearBGM; break;
+                case "Title": BGMSource.clip = titleBGM; break;
+                case "GameMainScene": BGMSource.clip = mainBGM; break;
+                case "GameOver": BGMSource.clip = overBGM; break;
+                case "Clear": BGMSource.clip = clearBGM; break;
             }
             Debug.Log("BGM" + sceneName);
-            audioSource[0].Play();
+            BGMSource.Play();
             isBGM = true;
         }
     }
@@ -99,24 +102,24 @@ public class SoundManager : MonoBehaviour
     //SE
 
     // jump
-    public void jumpSE()
+    public void GrapSE()
     {
         Debug.Log("jumpSE");
-        audioSource[1].PlayOneShot(jump);
+        OneShotSource.PlayOneShot(jump);
     }
 
     // move
     public void MoveSE()
     {
         Debug.Log("MoveSE");
-        audioSource[1].PlayOneShot(move);
+        OneShotSource.PlayOneShot(move);
     }
 
-    // action
+    // actionta
     public void ActionSE()
     {
         Debug.Log("ActionSE");
-        audioSource[1].PlayOneShot(action);
+        OneShotSource.PlayOneShot(action);
     }
     
 }
