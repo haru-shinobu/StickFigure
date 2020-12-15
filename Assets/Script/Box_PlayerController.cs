@@ -1673,12 +1673,12 @@ public class Box_PlayerController : MonoBehaviour
     {
         if (gType == GrapType.NormalGrap)
         {
-            yield return new WaitForSeconds(.5f);
+            yield return new WaitForSeconds(.7f);
             for (int i = gDeepObj.Length - 1; i >= 0; i--)
             {
                 if(gDeepObj[i])
                 {
-                    yield return new WaitForSeconds(.06f);
+                    yield return new WaitForSeconds(.07f);
                     gDeepObj[i].SetActive(false);
                 }
             }
@@ -1690,7 +1690,7 @@ public class Box_PlayerController : MonoBehaviour
             {
                 if(gDeepObj[i])
                 {
-                    yield return new WaitForSeconds(.05f);
+                    yield return new WaitForSeconds(.07f);
                     gDeepObj[i].SetActive(false);
                 }
             }
