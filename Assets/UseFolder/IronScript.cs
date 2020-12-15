@@ -35,7 +35,6 @@ public class IronScript : MonoBehaviour
     {
         if (MoveOK)
         {
-            Debug.Log(state);
             switch (state)
             {
                 case State.stay:
