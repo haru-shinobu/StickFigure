@@ -7,6 +7,7 @@ public class IronScript : MonoBehaviour
     Vector3 startPos = Vector3.zero, endPos = Vector3.zero;
     IEnumerator corutine = null;
     
+    //受け渡し部分
     public Vector3 GSStartPos
     {
         set { startPos = value; }
@@ -61,6 +62,9 @@ public class IronScript : MonoBehaviour
             }
         }
     }
+    //=======================================
+    //アニメーション部分
+    //=======================================
     IEnumerator PushMove()
     {
         float timer = 0;
@@ -95,9 +99,15 @@ public class IronScript : MonoBehaviour
             yield return new WaitForEndOfFrame();
             timer += Time.deltaTime * Speed;
             transform.position = Vector3.Lerp(endPos, startPos, timer);
+            if (timer > 0.25f)
+            {
+                Camera.main.transform.GetChild(0).gameObject.SetActive(true);
+            }
         }
         transform.position = startPos;
         state = State.stay;
         Destroy(gameObject, 1);
     }
+
+
 }

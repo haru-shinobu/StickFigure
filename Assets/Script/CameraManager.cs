@@ -42,6 +42,7 @@ public class CameraManager : MonoBehaviour
             routine = Starter(Cam_StartPos, Cam_EndPos);
             StartCoroutine(routine);
         }
+        transform.GetChild(0).gameObject.SetActive(false);
     }
     //===========================================================
     // プレイヤー移動によるカメラ処理

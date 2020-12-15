@@ -22,5 +22,4 @@ public class AroundWallScript : MonoBehaviour
         transform.GetChild(0).transform.position += vec;
         transform.GetChild(1).transform.position += vec;
     }
-    
 }

@@ -1712,10 +1712,8 @@ public class Box_PlayerController : MonoBehaviour
                 }
             }
         }
-
         yield return null;
     }
-
 }
 
 
