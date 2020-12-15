@@ -104,15 +104,21 @@ public class bridgeScript : MonoBehaviour
             transform.GetChild(1).gameObject.SetActive(true);
     }
 
-    public void RollDestroy()
+    public void RollDestroy(int value)
     {
-        Rigidbody rb = transform.gameObject.AddComponent<Rigidbody>();
-        rb.isKinematic = false;
-        rb.useGravity = true;
-        rb.AddForce(-Vector3.forward * 2, ForceMode.Impulse);
-        rb.AddTorque(Vector3.right * 20, ForceMode.Impulse);
-        rb.AddTorque(Vector3.forward * 10, ForceMode.Impulse);
-        Destroy(this.gameObject, 2);
+        if (this.gameObject)
+        {
+            Rigidbody rb = transform.gameObject.AddComponent<Rigidbody>();
+            if (rb)
+            {
+                rb.isKinematic = false;
+                rb.useGravity = true;
+                rb.AddForce(-Vector3.forward * 2, ForceMode.Impulse);
+                rb.AddTorque(Vector3.right * 20, ForceMode.Impulse);
+                rb.AddTorque(Vector3.forward * 10, ForceMode.Impulse);
+            }
+            Destroy(this.gameObject, value);
+        }
     }
     //消去時呼び出し
     void OnDestroy()

@@ -28,7 +28,8 @@ public class CameraManager : MonoBehaviour
     [SerializeField]
     Vector3 Camera_Distance = new Vector3(0, 0, 20);
     GameObject NowBox;
-    
+    [SerializeField]
+    GameManager manager;
     void Start()
     {
         NowBox = StartObj;
@@ -174,6 +175,7 @@ public class CameraManager : MonoBehaviour
             yield return new WaitForEndOfFrame();
         }
         timer = 0;
+        manager.MakeIron();
         var spherePos = target.position;
         while (true)
         {

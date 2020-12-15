@@ -47,7 +47,10 @@ public class StarterScript : MonoBehaviour
         var ex = SideWall_child.GetComponent<SpriteRenderer>().bounds.extents;
         G_data.SideWall_Offset = (ex.x < ex.y) ? ex.x : ex.y;
     }
-
+    public GameObject GetStartBox()
+    {
+        return StartBox;
+    }
     void Start()
     {
         Destroy(this);

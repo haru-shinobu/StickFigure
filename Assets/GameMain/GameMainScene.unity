@@ -3662,6 +3662,7 @@ MonoBehaviour:
   redline_cam_move_time: 0.5
   StartCamera_Distance: {x: 0, y: 0, z: 40}
   Camera_Distance: {x: 0, y: 0, z: 15}
+  manager: {fileID: 2082146979}
 --- !u!81 &1187529080
 AudioListener:
   m_ObjectHideFlags: 0
@@ -3822,6 +3823,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   overCanvas: {fileID: 43402987}
   countCanvas: {fileID: 1265297922}
+  UIButton:
+  - {fileID: 1456760602}
+  - {fileID: 1866728769}
+  - {fileID: 528757215}
+  - {fileID: 1172916828}
 --- !u!1001 &1242124791
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6653,7 +6659,10 @@ MonoBehaviour:
   _Canvas: {fileID: 851101666}
   _UIScript: {fileID: 1265297921}
   camM: {fileID: 1187529079}
+  Iron: {fileID: 4434454070652141193, guid: 88b0082e9e511a04ba435fb1a2bdda0a, type: 3}
+  i_IronAnimSpeed: 1
   GOsc: {fileID: 1214106379}
+  arrow: {fileID: 483539081}
 --- !u!1 &2094151803
 GameObject:
   m_ObjectHideFlags: 0

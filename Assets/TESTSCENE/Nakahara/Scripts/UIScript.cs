@@ -144,12 +144,10 @@ public class UIScript : MonoBehaviour
     }
     void CheckSlideDownFall_UI()
     {
-        Debug.Log(state[3]);
         if (PSc.CheckSlipDown())
         {
             if (state[3] != outline_active_state.blinking_move)
                 state[3] = outline_active_state.blinking_active;
-            Debug.Log("SlipDown");
         }
         else
         {
