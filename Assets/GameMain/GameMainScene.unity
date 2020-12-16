@@ -676,6 +676,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1dbf880a4f93db64fb88278e7bf46397, type: 3}
+--- !u!114 &191226803 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3005835864195621184, guid: 3a981508c298feb4e92ad6288173f8b1,
+    type: 3}
+  m_PrefabInstance: {fileID: 1101486733}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &191921473
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1111,6 +1123,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Ground_Wall_SideBase (5)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4800415860917890273, guid: ef22d5a34ab407742b9098d2c72fbd6d,
+        type: 3}
+      propertyPath: m_Center.z
+      value: 0.01
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ef22d5a34ab407742b9098d2c72fbd6d, type: 3}
@@ -3206,6 +3223,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3005835862921584451, guid: 3a981508c298feb4e92ad6288173f8b1,
+        type: 3}
+      propertyPath: m_Camera
+      value: 
+      objectReference: {fileID: 2006833785}
     - target: {fileID: 4944986210498304594, guid: 3a981508c298feb4e92ad6288173f8b1,
         type: 3}
       propertyPath: MoveRange
@@ -4109,6 +4131,11 @@ PrefabInstance:
       propertyPath: controlls_img_outlines.Array.data[3]
       value: 
       objectReference: {fileID: 241656937}
+    - target: {fileID: -4453545850139233889, guid: 9ef2d10351237384f89730a4952aea42,
+        type: 3}
+      propertyPath: playertext
+      value: 
+      objectReference: {fileID: 191226803}
     - target: {fileID: 176726763329638281, guid: 9ef2d10351237384f89730a4952aea42,
         type: 3}
       propertyPath: m_AnchoredPosition.x

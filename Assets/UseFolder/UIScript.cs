@@ -28,6 +28,8 @@ public class UIScript : MonoBehaviour
     Color textOutline_Color_zero;
     [SerializeField]
     Text tex;
+    [SerializeField, Header("Playertext")]
+    Text playertext;
     //コルーチン動作状態
     enum outline_active_state
     {
@@ -160,12 +162,14 @@ public class UIScript : MonoBehaviour
     {
         if (PSc.CheckBridgeMakeAria())
         {
+            playertext.text = "!";
             tex.text = "はしをかける";
             if (state[1] != outline_active_state.blinking_move || !BridgeCorutineFlag)
                 state[1] = outline_active_state.blinking_active;
         }
         else
         {
+            playertext.text = "";
             if (state[1] == outline_active_state.blinking_move)
                 state[1] = outline_active_state.change_blink;
             if (PSc.CheckBridgeBaseAria())

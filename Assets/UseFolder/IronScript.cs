@@ -105,8 +105,6 @@ public class IronScript : MonoBehaviour
         }
         transform.position = startPos;
         state = State.stay;
-        Destroy(gameObject, 1);
+        Destroy(gameObject);
     }
-
-
 }
