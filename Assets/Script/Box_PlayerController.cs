@@ -55,6 +55,8 @@ public class Box_PlayerController : MonoBehaviour
 
     public GameObject[] gDeepObj = new GameObject[5];
 
+    private SoundManager SoundObj;
+
     enum GrapType
     {
         NormalGrap,
@@ -123,6 +125,9 @@ public class Box_PlayerController : MonoBehaviour
     //落下できるかどうか
     bool FolldownJudge = false;
 
+    [SerializeField]
+    private int AnimCountSet = 25;
+    private int AnimCount = 25;
 
     void Start()
     {
@@ -138,6 +143,10 @@ public class Box_PlayerController : MonoBehaviour
         FootStamp = transform.parent.GetChild(1).GetComponent<ParticleSystem>();
         horizontalPlayerMovePoint = Vector3.zero;
         inputer = GameObject.FindWithTag("BoxManager").GetComponent<Inputmanager>();
+        GameObject soundtarget = GameObject.Find("SoundObj");
+        if (soundtarget)
+            SoundObj = soundtarget.GetComponent<SoundManager>();
+        else Debug.Log("SoundObj nothing");
     }
 
     void Update()
@@ -189,7 +198,7 @@ public class Box_PlayerController : MonoBehaviour
                             if (R >= Front_RightBottom.x) { rollways = 4; wind.transform.rotation = Quaternion.Euler(0, 0, 0); }
                             if (BridgeObj)
                             {
-                                BridgeObj.SendMessage("RollDestroy");
+                                BridgeObj.SendMessage("RollDestroy",2);
                                 BridgeObj.transform.SetParent(null);
                                 BridgeObj = null;
                                 //Destroy(BridgeObj);
@@ -343,12 +352,6 @@ public class Box_PlayerController : MonoBehaviour
         var B = pos.y - Player_verticalhorizontal.y;
         var R = pos.x + Player_verticalhorizontal.x;
         var L = pos.x - Player_verticalhorizontal.x;
-        /*
-                Debug.DrawLine(new Vector3(L, T, pos.z), new Vector3(L, B, pos.z), Color.red, 1);
-                Debug.DrawLine(new Vector3(R, T, pos.z), new Vector3(R, B, pos.z), Color.red, 1);
-                Debug.DrawLine(new Vector3(L, T, pos.z), new Vector3(R, T, pos.z), Color.red, 1);
-                Debug.DrawLine(new Vector3(L, B, pos.z), new Vector3(R, B, pos.z), Color.red, 1);
-        */
         //範囲内に触れたとき（プレイヤーが橋の上にいる）
         if (BridgeAriaLT.x < R && L < BridgeAriaBR.x)
             if (BridgeAriaBR.y < T && B < BridgeAriaLT.y)
@@ -410,6 +413,13 @@ public class Box_PlayerController : MonoBehaviour
             //足跡反転用
             var romain = FootStamp.main;
             romain.startRotation = new ParticleSystem.MinMaxCurve(1.396f, 1.745f);
+            // サウンド再生
+            if(AnimCount++ > AnimCountSet)
+            {
+                if(SoundObj)
+                SoundObj.MoveSE();
+                AnimCount = 0;
+            }
             //アニメーション
             Move_Anim(true);
 
@@ -423,6 +433,13 @@ public class Box_PlayerController : MonoBehaviour
             //足跡反転用
             var romain = FootStamp.main;
             romain.startRotation = new ParticleSystem.MinMaxCurve(-1.396f, -1.745f);
+            // サウンド再生
+            if (AnimCount++ > AnimCountSet)
+            {
+                if (SoundObj)
+                    SoundObj.MoveSE();
+                AnimCount = 0;
+            }
             //アニメーション
             Move_Anim(true);
         }
@@ -634,21 +651,14 @@ public class Box_PlayerController : MonoBehaviour
             nextBase = null;
             float distance = float.MaxValue;
             Vector3 posA = target.transform.position;
-
-            bool check;
+            
             Color colord = target.GetComponent<SpriteRenderer>().color;
             foreach (GameObject obj in G_Data.Bases)
             {
-                check = true;
-                for (int i = 0; i < sidebox.GetBridgeLine.Length; i++)
-                {
-                    if (sidebox.GetBridgeLine[i].gameObject == obj)
-                    {
-                        check = false;
-                        break;
-                    }
-                }
-                if (!check) continue;
+                //親箱が同じかどうか
+                if (sidebox.transform.root == obj.transform.root)
+                    continue;
+
                 //色とレイヤーが異なるかどうか
                 if (colord != obj.GetComponent<SpriteRenderer>().color || target.layer != obj.layer)
                     continue;
@@ -663,35 +673,43 @@ public class Box_PlayerController : MonoBehaviour
 
                 float dis = Mathf.Abs(Vector3.Distance(posA, posB));
 
-                //橋ベース同士の距離比較
+                //橋ベースのうち、最も近い橋ベースを探索
                 if (dis < distance)
                 {
                     //playerがその橋ベースの幅内にあるとき。
                     Vector3 obj_extents = obj.transform.GetComponent<SpriteRenderer>().bounds.extents;
-
+                    var pos = obj.transform.position;
                     if (
-                    (obj.transform.position.x - obj_extents.x < NowPlayerMovePoint.x && NowPlayerMovePoint.x < obj.transform.position.x + obj_extents.x) ||
-                    (obj.transform.position.y - obj_extents.y < NowPlayerMovePoint.y && NowPlayerMovePoint.y < obj.transform.position.y + obj_extents.y))
+                    (pos.x - obj_extents.x < NowPlayerMovePoint.x && NowPlayerMovePoint.x < pos.x + obj_extents.x) ||
+                    (pos.y - obj_extents.y < NowPlayerMovePoint.y && NowPlayerMovePoint.y < pos.y + obj_extents.y))
                     {
                         distance = dis;
                         nextBase = obj;
                     }
                 }
             }
-
-            //橋基地同士の距離が橋以下のとき
-            Vector3 bounds = Bridge.GetComponent<MeshRenderer>().bounds.extents * 2;
-
-            if (bounds.x > bounds.y) bounds.y = bounds.x;//橋の長さは長いほうをとる
-
-            //生成方向準備
-            if (distance - 0.001f <= bounds.y)
+            if (nextBase != null)
             {
-                if (gameManager.nDCountCheck())
-                    MakeBridge(target, nextBase);
+                //橋基地同士の距離が橋以下のとき
+                Vector3 bounds = Bridge.GetComponent<MeshRenderer>().bounds.extents * 2;
+                float bridgedistance = (bounds.x > bounds.y) ? bounds.x : bounds.y;//橋の長さは長いほうをとる
+                bridgedistance += 0.001f;
+                Vector3 vecter = target.transform.position-nextBase.transform.position;
+                Vector3 bounds_target = target.GetComponent<SpriteRenderer>().bounds.extents;
+                //橋ベースがy軸方向の方が長いかどうか
+                if (bridgedistance > ((bounds_target.x < bounds_target.y) ? Mathf.Abs(vecter.x) : Mathf.Abs(vecter.y)))
+                    //生成距離比較
+                    if (bridgedistance >= distance)
+                    {   
+                        if (gameManager.nDCountCheck())
+                            MakeBridge(target, nextBase);
+                    }
+                    else
+                        if (target)//橋基地同士の距離が橋以上のとき
+                        GrapLinger();
             }
             else
-                if (target)//橋基地同士の距離が橋以上のとき
+                    if (target)//橋基地相方が見つからないとき
                 GrapLinger();
         }
 
@@ -758,7 +776,7 @@ public class Box_PlayerController : MonoBehaviour
             else
             {
                 //破棄する場合
-                BridgeObj.SendMessage("RollDestroy");
+                BridgeObj.SendMessage("RollDestroy",2);
                 BridgeObj.transform.SetParent(null);
                 BridgeObj = null;
                 //Destroy(BridgeObj);
@@ -954,7 +972,7 @@ public class Box_PlayerController : MonoBehaviour
 
                             if (BridgeObj)
                             {
-                                BridgeObj.SendMessage("RollDestroy");
+                                BridgeObj.SendMessage("RollDestroy",2);
                                 BridgeObj.transform.SetParent(null);
                                 BridgeObj = null;
                                 //Destroy(BridgeObj);
@@ -1024,13 +1042,31 @@ public class Box_PlayerController : MonoBehaviour
                     //間に何もないとき
                     if (Front_LeftTop.y <= pos.y && Front_LeftTop.y <= pos5.y)
                     {
-                        GrapLing = true;
-                        //上限まで伸ばす
-                        DeepGrap(Front_LeftTop.y - transform.parent.position.y, GrapType.NormalGrap, true);
-                        nowIE = Graplinger(new Vector3(transform.parent.position.x, Front_LeftTop.y - Player_verticalhorizontal.y + 0.1f, transform.parent.position.z));
-                        StartCoroutine(nowIE);
-                        // グラップリングを消すIterator
-                        DeepGrap(0.0f, GrapType.NormalGrap, false);
+                        //なおかつ、Playerが橋ベース枠内でないとき
+                        GameObject Inbridgebase = (RedSide != SideRedLine.Non) ? GetPlayerInBridgeBase() : null;
+                        if (Inbridgebase == null)
+                        {
+                            GrapLing = true;
+                            //上限まで伸ばす
+                            DeepGrap(Front_LeftTop.y - transform.parent.position.y, GrapType.NormalGrap, true);
+                            nowIE = Graplinger(new Vector3(transform.parent.position.x, Front_LeftTop.y - Player_verticalhorizontal.y + 0.1f, transform.parent.position.z));
+                            StartCoroutine(nowIE);
+                            // グラップリングを消すIterator
+                            DeepGrap(0.0f, GrapType.NormalGrap, false);
+                        }
+                        else
+                        {
+                            if (Inbridgebase.transform.position.y + Inbridgebase.GetComponent<SpriteRenderer>().bounds.extents.y < Front_LeftTop.y - G_Data.RedLine * 0.5f)
+                            {
+                                GrapLing = true;
+                                //上限まで伸ばす
+                                DeepGrap(Front_LeftTop.y - transform.parent.position.y, GrapType.NormalGrap, true);
+                                nowIE = Graplinger(new Vector3(transform.parent.position.x, Front_LeftTop.y - Player_verticalhorizontal.y + 0.1f, transform.parent.position.z));
+                                StartCoroutine(nowIE);
+                                // グラップリングを消すIterator
+                                DeepGrap(0.0f, GrapType.NormalGrap, false);
+                            }
+                        }
                     }
                 }
             }
@@ -1039,6 +1075,8 @@ public class Box_PlayerController : MonoBehaviour
 
     void InstanceMakeBridge(Vector3 _vec,float _Angle)
     {
+        if (SoundObj)
+            SoundObj.ActionSE();
         _bBridgeMaking = false;
         BridgeObj = Instantiate(Bridge, _vec, Quaternion.Euler(180, 0, _Angle));
     }
@@ -1344,6 +1382,10 @@ public class Box_PlayerController : MonoBehaviour
             Destroy(BridgeObj);
         }
     }
+    public void SceneEndBridgeFall()
+    {
+        if (BridgeObj) BridgeObj.SendMessage("RollDestroy",1);
+    }
 
 
     //========================================================
@@ -1360,7 +1402,7 @@ public class Box_PlayerController : MonoBehaviour
             if (sidebox.NPWall != null)
                 foreach (GameObject ground in sidebox.NPWall)
                 {
-                    //画像の縦横をとり、地面(不透過壁)が横広のとき、グラップリング対象とする
+                    //画像の縦横をとり、地面(不透過壁)が横広のとき、グラップリング対象とするtio
                     Vector3 exvec = ground.GetComponent<SpriteRenderer>().bounds.extents;
                     //正面に来ている地面のみ
                     if (ground.transform.position.z <= sidebox.transform.position.z - exvec.z)
@@ -1640,6 +1682,8 @@ public class Box_PlayerController : MonoBehaviour
     {
         if (DrawFrag)
         {
+            if (SoundObj)
+                SoundObj.GrapSE();
             int DeepNum = ((int)fYNorm * 2) + 2;
             for (int i = 0; i < DeepNum; i++)
             {
@@ -1673,12 +1717,12 @@ public class Box_PlayerController : MonoBehaviour
     {
         if (gType == GrapType.NormalGrap)
         {
-            yield return new WaitForSeconds(.5f);
+            yield return new WaitForSeconds(.7f);
             for (int i = gDeepObj.Length - 1; i >= 0; i--)
             {
                 if(gDeepObj[i])
                 {
-                    yield return new WaitForSeconds(.06f);
+                    yield return new WaitForSeconds(.07f);
                     gDeepObj[i].SetActive(false);
                 }
             }
@@ -1690,15 +1734,13 @@ public class Box_PlayerController : MonoBehaviour
             {
                 if(gDeepObj[i])
                 {
-                    yield return new WaitForSeconds(.05f);
+                    yield return new WaitForSeconds(.07f);
                     gDeepObj[i].SetActive(false);
                 }
             }
         }
-
         yield return null;
     }
-
 }
 
 

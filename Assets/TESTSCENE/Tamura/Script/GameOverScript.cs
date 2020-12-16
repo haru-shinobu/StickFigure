@@ -13,6 +13,9 @@ public class GameOverScript : MonoBehaviour
     GameManager gm;
     bool Flag = false;
     GameObject MainCam;
+    [SerializeField, Header("UI_ボタン")]
+    GameObject[] UIButton;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -69,6 +72,7 @@ public class GameOverScript : MonoBehaviour
         {
             yield return new WaitForEndOfFrame();
         }
+        
         MainCam.SetActive(false);
         var UIcountImage1 = countCanvas.transform.GetChild(0);
         var UIcountImage2 = countCanvas.transform.GetChild(1);
@@ -112,7 +116,10 @@ public class GameOverScript : MonoBehaviour
             UICountImageRectTrans.localScale = Vector3.Lerp(UIScale, new Vector3(5, 5, 5), timer);
         }
         UICountImageRectTrans.position = CountPosHalf;
-        
+
+        //UI_ボタンを消す(背景キャプチャ焼いたとき、残り続けるため)
+        for (int i = 0; i < UIButton.Length; i++)
+            UIButton[i].SetActive(false);
 
         //マテリアル動作
         var mat = ImageSprite.GetComponent<Image>().material;

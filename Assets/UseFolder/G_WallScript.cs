@@ -24,12 +24,12 @@ public class G_WallScript : MonoBehaviour
             var ex = transform.GetComponent<SpriteRenderer>().bounds.extents;
             if (ex.x < ex.y)
             {
+                ex.y = ex.z = 0;
                 var pos = transform.position - collision.transform.position;
-                pos.y = 0;
-                pos.z = 0;
+                pos.y = pos.z = 0;
                 collision.transform.GetChild(0).SendMessage("playerMovePoint",
                     (collision.transform.position.x < transform.position.x) ?
-                -pos : pos
+                -ex : ex
                 );
             }
         }
