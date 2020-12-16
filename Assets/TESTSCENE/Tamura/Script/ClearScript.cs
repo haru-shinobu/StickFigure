@@ -11,11 +11,16 @@ public class ClearScript : MonoBehaviour
     private Vector3 deltaPos;
     private float elapsedTime;
     private bool bStartToEnd = true;
+    GameObject ManageObject;
+    SceneFadeManager scenefademanager;
 
    void Start()
     {
         transform.position = StartPos;
         deltaPos = (hantennPos - StartPos) / time;
+        ManageObject = GameObject.Find("ManageObject");
+        scenefademanager = GetComponent<SceneFadeManager>();
+        //SceneFadeManager.FadeOut("GameMainScene");
     }
     void Update()
     {
@@ -35,6 +40,7 @@ public class ClearScript : MonoBehaviour
             }
             if (Input.GetMouseButtonDown(0))
             {
+                //SceneFadeManager.FadeIn();
                 SceneManager.LoadScene("Title");
             }
         }

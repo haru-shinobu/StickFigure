@@ -143,8 +143,9 @@ public class Box_PlayerController : MonoBehaviour
         FootStamp = transform.parent.GetChild(1).GetComponent<ParticleSystem>();
         horizontalPlayerMovePoint = Vector3.zero;
         inputer = GameObject.FindWithTag("BoxManager").GetComponent<Inputmanager>();
-        SoundObj = GameObject.Find("SoundObj").GetComponent<SoundManager>();
-
+        GameObject soundtarget = GameObject.Find("SoundObj");
+        if (soundtarget)
+            SoundObj = soundtarget.GetComponent<SoundManager>();
     }
 
     void Update()
@@ -414,6 +415,7 @@ public class Box_PlayerController : MonoBehaviour
             // サウンド再生
             if(AnimCount++ > AnimCountSet)
             {
+                if(SoundObj)
                 SoundObj.MoveSE();
                 AnimCount = 0;
             }
@@ -433,7 +435,8 @@ public class Box_PlayerController : MonoBehaviour
             // サウンド再生
             if (AnimCount++ > AnimCountSet)
             {
-                SoundObj.MoveSE();
+                if (SoundObj)
+                    SoundObj.MoveSE();
                 AnimCount = 0;
             }
             //アニメーション
@@ -1071,7 +1074,8 @@ public class Box_PlayerController : MonoBehaviour
 
     void InstanceMakeBridge(Vector3 _vec,float _Angle)
     {
-        SoundObj.ActionSE();
+        if (SoundObj)
+            SoundObj.ActionSE();
         _bBridgeMaking = false;
         BridgeObj = Instantiate(Bridge, _vec, Quaternion.Euler(180, 0, _Angle));
     }
@@ -1677,7 +1681,8 @@ public class Box_PlayerController : MonoBehaviour
     {
         if (DrawFrag)
         {
-            SoundObj.GrapSE();
+            if (SoundObj)
+                SoundObj.GrapSE();
             int DeepNum = ((int)fYNorm * 2) + 2;
             for (int i = 0; i < DeepNum; i++)
             {
@@ -1733,10 +1738,8 @@ public class Box_PlayerController : MonoBehaviour
                 }
             }
         }
-
         yield return null;
     }
-
 }
 
 
