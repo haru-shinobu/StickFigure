@@ -146,7 +146,6 @@ public class Box_PlayerController : MonoBehaviour
         GameObject soundtarget = GameObject.Find("SoundObj");
         if (soundtarget)
             SoundObj = soundtarget.GetComponent<SoundManager>();
-        else Debug.Log("SoundObj nothing");
     }
 
     void Update()
