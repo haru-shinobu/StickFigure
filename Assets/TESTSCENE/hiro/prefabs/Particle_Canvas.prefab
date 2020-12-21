@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6041276901877185806}
   - component: {fileID: 6041276901877185807}
   m_Layer: 12
-  m_Name: Particle System
+  m_Name: Particle_Confetti
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4926,7 +4926,7 @@ GameObject:
   - component: {fileID: 6041276902488697241}
   - component: {fileID: 6041276902488697242}
   m_Layer: 12
-  m_Name: Particle System (1)
+  m_Name: Particle_popper1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9738,7 +9738,7 @@ GameObject:
   - component: {fileID: 6041276903294020443}
   - component: {fileID: 6041276903294020452}
   m_Layer: 12
-  m_Name: Particle System (2)
+  m_Name: Particle_popper2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

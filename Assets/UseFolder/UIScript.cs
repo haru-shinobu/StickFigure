@@ -14,7 +14,7 @@ public class UIScript : MonoBehaviour
     Sprite[] spritePrefab;
     int _inum;
 
-    [SerializeField]
+    
     RectTransform[] rect = new RectTransform[4];
     Vector3 Rect_AcivePosition, Rect_ReposePosition;
     Vector3 Rect_AcivePosition_down, Rect_ReposePosition_down;

@@ -5,7 +5,6 @@ using UnityEngine.SceneManagement;
 
 public class ClearCube : MonoBehaviour
 {
-    public GameObject player;
     CameraManager camera;
     public GameObject fadeObject;
     public SpriteRenderer goalText;
