@@ -307,10 +307,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a17298ecea8eee54bb90917d599ce79e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 0}
+  fadeObject: {fileID: 0}
   goalText: {fileID: 1917113092}
   Particle_kami: {fileID: 1776141989}
   Particle_kura1: {fileID: 198343634}
   Particle_kura2: {fileID: 2030113647}
+  star: {fileID: 0}
+  fFadeSpeed: 0
 --- !u!136 &108692250
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1588,10 +1592,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a17298ecea8eee54bb90917d599ce79e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 0}
+  fadeObject: {fileID: 0}
   goalText: {fileID: 0}
   Particle_kami: {fileID: 0}
   Particle_kura1: {fileID: 0}
   Particle_kura2: {fileID: 0}
+  star: {fileID: 0}
+  fFadeSpeed: 0
 --- !u!1 &483539081
 GameObject:
   m_ObjectHideFlags: 0
@@ -3153,9 +3161,19 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4944986210498304594, guid: 3a981508c298feb4e92ad6288173f8b1,
         type: 3}
+      propertyPath: aChildAnim.Array.size
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4944986210498304594, guid: 3a981508c298feb4e92ad6288173f8b1,
+        type: 3}
       propertyPath: MoveRange
       value: 0.3
       objectReference: {fileID: 0}
+    - target: {fileID: 4944986210498304594, guid: 3a981508c298feb4e92ad6288173f8b1,
+        type: 3}
+      propertyPath: aChildAnim.Array.data[4]
+      value: 
+      objectReference: {fileID: 1101486735}
     - target: {fileID: 6661520085745141897, guid: 3a981508c298feb4e92ad6288173f8b1,
         type: 3}
       propertyPath: m_Name
@@ -3223,6 +3241,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3a981508c298feb4e92ad6288173f8b1, type: 3}
+--- !u!1 &1101486734 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7264570714590119273, guid: 3a981508c298feb4e92ad6288173f8b1,
+    type: 3}
+  m_PrefabInstance: {fileID: 1101486733}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &1101486735
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1101486734}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: ae7ecdeb8a8077a44bf1d2c818291e1e, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1001 &1107149518
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6135,9 +6178,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bRollWay: 1
-  needle: {fileID: 2589749122107947135, guid: 003b031ba75e1b0469099221c457bf34, type: 3}
   pin: {fileID: 301513585131361539, guid: 504b5247b829f9542bc908df4519c07b, type: 3}
-  bTypeneedle: 0
 --- !u!212 &1863897018
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -6409,9 +6450,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bRollWay: 1
-  needle: {fileID: 2589749122107947135, guid: 003b031ba75e1b0469099221c457bf34, type: 3}
   pin: {fileID: 301513585131361539, guid: 504b5247b829f9542bc908df4519c07b, type: 3}
-  bTypeneedle: 0
 --- !u!212 &1949398113
 SpriteRenderer:
   m_ObjectHideFlags: 0
