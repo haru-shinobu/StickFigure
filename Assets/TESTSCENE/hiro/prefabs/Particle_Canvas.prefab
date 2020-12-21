@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6041276901877185805}
   - component: {fileID: 6041276901877185806}
   - component: {fileID: 6041276901877185807}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Particle System
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4824,7 +4824,7 @@ GameObject:
   - component: {fileID: 6041276902186201335}
   - component: {fileID: 6041276902186201328}
   - component: {fileID: 6041276902186201329}
-  m_Layer: 5
+  m_Layer: 12
   m_Name: Particle_Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4925,7 +4925,7 @@ GameObject:
   - component: {fileID: 6041276902488697240}
   - component: {fileID: 6041276902488697241}
   - component: {fileID: 6041276902488697242}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Particle System (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9737,7 +9737,7 @@ GameObject:
   - component: {fileID: 6041276903294020442}
   - component: {fileID: 6041276903294020443}
   - component: {fileID: 6041276903294020452}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Particle System (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14554,6 +14554,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: clear
+      objectReference: {fileID: 0}
+    - target: {fileID: 3297904561553151544, guid: 520a2dec1f5d9294180f6fc864e22d0e,
+        type: 3}
+      propertyPath: m_Layer
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 3297904561553151545, guid: 520a2dec1f5d9294180f6fc864e22d0e,
         type: 3}
