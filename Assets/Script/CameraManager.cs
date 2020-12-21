@@ -60,7 +60,8 @@ public class CameraManager : MonoBehaviour
                     //コルーチンが動作していたら停止。動作させる。OnBoxコルーチンを動作させる
                     if (_bColutine_OnBridge)
                     {
-                        StopCoroutine(routine);
+                        if(routine!=null)
+                            StopCoroutine(routine);
                         routine = null;
                         _bColutine_OnBridge = false;
                     }
@@ -88,7 +89,8 @@ public class CameraManager : MonoBehaviour
                     //コルーチンが動作していたら停止。動作させる。OnBridgeコルーチンを動作させる
                     if (_bColutine_OnBox)
                     {
-                        StopCoroutine(routine);
+                        if (routine != null)
+                            StopCoroutine(routine);
                         routine = null;
                         _bColutine_OnBox = false;
                     }

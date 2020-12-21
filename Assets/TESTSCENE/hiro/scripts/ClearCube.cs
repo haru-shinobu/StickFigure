@@ -14,8 +14,7 @@ public class ClearCube : MonoBehaviour
     public ParticleSystem Particle_kura1;
     public ParticleSystem Particle_kura2;
     public GameObject star;
-    [SerializeField]
-    float fFadeSpeed;
+    
     SceneFadeManager fadeI;
     //public void Awake()
     //{

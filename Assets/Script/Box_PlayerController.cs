@@ -17,6 +17,7 @@ public class Box_PlayerController : MonoBehaviour
     bool _bControll = false;
     bool _bBridgeMaking = false;
     bool OnBridge = false;
+    
     enum BridgeAriaState
     {
         ignore = 0,
@@ -37,6 +38,15 @@ public class Box_PlayerController : MonoBehaviour
     [SerializeField, Header("橋Prefab")]
     GameObject Bridge;
 
+    [SerializeField, Header("着地煙")]
+    ParticleSystem[] groundSmokes = new ParticleSystem[2];
+    enum FollState
+    {
+        Foll,
+        Stand,
+        Landing,
+    }
+    FollState follState = FollState.Foll;
     private string bridgetag = "BridgeBase";
     Vector3 checkBridgeAriaLT, checkBridgeAriaRB;
     CameraManager camM;
@@ -122,8 +132,6 @@ public class Box_PlayerController : MonoBehaviour
     public bool TopCollidersideState = false;
     //グラップリングできるかどうか
     bool GraplingJudge = false;
-    //落下できるかどうか
-    bool FolldownJudge = false;
 
     [SerializeField]
     private int AnimCountSet = 25;
@@ -137,8 +145,8 @@ public class Box_PlayerController : MonoBehaviour
         Player_verticalhorizontal = sprvec.bounds.extents;
         camM = Camera.main.GetComponent<CameraManager>();
         G_Data = GameObject.FindWithTag("BoxManager").GetComponent<GameData>();
-
-        gameManager = GameObject.FindWithTag("BoxManager").GetComponent<GameManager>();
+        if (gameManager)
+            gameManager = GameObject.FindWithTag("BoxManager").GetComponent<GameManager>();
         NowPlayerMovePoint = transform.parent.position;
         FootStamp = transform.parent.GetChild(1).GetComponent<ParticleSystem>();
         horizontalPlayerMovePoint = Vector3.zero;
@@ -161,17 +169,22 @@ public class Box_PlayerController : MonoBehaviour
             //足跡下降用
             var romain = FootStamp.main;
             romain.startRotation = new ParticleSystem.MinMaxCurve(2.967f, 3.316f);
+            follState = FollState.Foll;
             //Move_Anim(true);
         }
         else
         {
+            if (follState != FollState.Stand)
+                follState = FollState.Landing;
             //Move_Anim(false);
         }
         rb.velocity = vel;
+        
         if (!_bBridgeMaking)
         {
             if (Moving)
             {
+                CheckOnGround();
                 // プレイヤー移動範囲チェック
                 //橋の上でないとき
                 if (!CheckMoveBridgeAria())
@@ -197,7 +210,7 @@ public class Box_PlayerController : MonoBehaviour
                             if (R >= Front_RightBottom.x) { rollways = 4; wind.transform.rotation = Quaternion.Euler(0, 0, 0); }
                             if (BridgeObj)
                             {
-                                BridgeObj.SendMessage("RollDestroy",2);
+                                BridgeObj.SendMessage("RollDestroy", 2);
                                 BridgeObj.transform.SetParent(null);
                                 BridgeObj = null;
                                 //Destroy(BridgeObj);
@@ -215,8 +228,6 @@ public class Box_PlayerController : MonoBehaviour
                                 RePositionMoveAria();
                                 OldPlayerMovePoint = NowPlayerMovePoint;
                                 this.Move(inputer.player_move_input[0], inputer.player_move_input[1]);
-
-
                             }
                             else
                             {
@@ -413,10 +424,10 @@ public class Box_PlayerController : MonoBehaviour
             var romain = FootStamp.main;
             romain.startRotation = new ParticleSystem.MinMaxCurve(1.396f, 1.745f);
             // サウンド再生
-            if(AnimCount++ > AnimCountSet)
+            if (AnimCount++ > AnimCountSet)
             {
-                if(SoundObj)
-                SoundObj.MoveSE();
+                if (SoundObj)
+                    SoundObj.MoveSE();
                 AnimCount = 0;
             }
             //アニメーション
@@ -650,7 +661,7 @@ public class Box_PlayerController : MonoBehaviour
             nextBase = null;
             float distance = float.MaxValue;
             Vector3 posA = target.transform.position;
-            
+
             Color colord = target.GetComponent<SpriteRenderer>().color;
             foreach (GameObject obj in G_Data.Bases)
             {
@@ -693,13 +704,13 @@ public class Box_PlayerController : MonoBehaviour
                 Vector3 bounds = Bridge.GetComponent<MeshRenderer>().bounds.extents * 2;
                 float bridgedistance = (bounds.x > bounds.y) ? bounds.x : bounds.y;//橋の長さは長いほうをとる
                 bridgedistance += 0.001f;
-                Vector3 vecter = target.transform.position-nextBase.transform.position;
+                Vector3 vecter = target.transform.position - nextBase.transform.position;
                 Vector3 bounds_target = target.GetComponent<SpriteRenderer>().bounds.extents;
                 //橋ベースがy軸方向の方が長いかどうか
                 if (bridgedistance > ((bounds_target.x < bounds_target.y) ? Mathf.Abs(vecter.x) : Mathf.Abs(vecter.y)))
                     //生成距離比較
                     if (bridgedistance >= distance)
-                    {   
+                    {
                         if (gameManager.nDCountCheck())
                             MakeBridge(target, nextBase);
                     }
@@ -775,7 +786,7 @@ public class Box_PlayerController : MonoBehaviour
             else
             {
                 //破棄する場合
-                BridgeObj.SendMessage("RollDestroy",2);
+                BridgeObj.SendMessage("RollDestroy", 2);
                 BridgeObj.transform.SetParent(null);
                 BridgeObj = null;
                 //Destroy(BridgeObj);
@@ -971,7 +982,7 @@ public class Box_PlayerController : MonoBehaviour
 
                             if (BridgeObj)
                             {
-                                BridgeObj.SendMessage("RollDestroy",2);
+                                BridgeObj.SendMessage("RollDestroy", 2);
                                 BridgeObj.transform.SetParent(null);
                                 BridgeObj = null;
                                 //Destroy(BridgeObj);
@@ -1072,7 +1083,7 @@ public class Box_PlayerController : MonoBehaviour
         }
     }
 
-    void InstanceMakeBridge(Vector3 _vec,float _Angle)
+    void InstanceMakeBridge(Vector3 _vec, float _Angle)
     {
         if (SoundObj)
             SoundObj.ActionSE();
@@ -1383,7 +1394,7 @@ public class Box_PlayerController : MonoBehaviour
     }
     public void SceneEndBridgeFall()
     {
-        if (BridgeObj) BridgeObj.SendMessage("RollDestroy",1);
+        if (BridgeObj) BridgeObj.SendMessage("RollDestroy", 1);
     }
 
 
@@ -1719,7 +1730,7 @@ public class Box_PlayerController : MonoBehaviour
             yield return new WaitForSeconds(.7f);
             for (int i = gDeepObj.Length - 1; i >= 0; i--)
             {
-                if(gDeepObj[i])
+                if (gDeepObj[i])
                 {
                     yield return new WaitForSeconds(.07f);
                     gDeepObj[i].SetActive(false);
@@ -1731,7 +1742,7 @@ public class Box_PlayerController : MonoBehaviour
             yield return new WaitForSeconds(.1f);
             for (int i = gDeepObj.Length - 1; i >= 0; i--)
             {
-                if(gDeepObj[i])
+                if (gDeepObj[i])
                 {
                     yield return new WaitForSeconds(.07f);
                     gDeepObj[i].SetActive(false);
@@ -1740,6 +1751,14 @@ public class Box_PlayerController : MonoBehaviour
         }
         yield return null;
     }
+
+    void CheckOnGround()
+    {
+        if (follState == FollState.Landing)
+        {
+            follState = FollState.Stand;
+            groundSmokes[0].Play();
+            groundSmokes[1].Play();
+        }
+    }
 }
-
-
