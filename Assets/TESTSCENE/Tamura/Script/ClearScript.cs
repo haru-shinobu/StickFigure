@@ -38,7 +38,7 @@ public class ClearScript : MonoBehaviour
                 bStartToEnd = !bStartToEnd;
                 elapsedTime = 0;
             }
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetKeyDown(KeyCode.Space))
             {
                 //SceneFadeManager.FadeIn();
                 SceneManager.LoadScene("Title");

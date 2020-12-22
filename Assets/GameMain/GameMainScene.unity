@@ -5944,6 +5944,36 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 6041276901877185805, guid: 706041a7e6cb25144aba7744b424d073,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6041276901877185805, guid: 706041a7e6cb25144aba7744b424d073,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 55
+      objectReference: {fileID: 0}
+    - target: {fileID: 6041276901877185805, guid: 706041a7e6cb25144aba7744b424d073,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 55
+      objectReference: {fileID: 0}
+    - target: {fileID: 6041276901877185805, guid: 706041a7e6cb25144aba7744b424d073,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 330
+      objectReference: {fileID: 0}
+    - target: {fileID: 6041276901877185806, guid: 706041a7e6cb25144aba7744b424d073,
+        type: 3}
+      propertyPath: InitialModule.startLifetime.scalar
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6041276901877185806, guid: 706041a7e6cb25144aba7744b424d073,
+        type: 3}
+      propertyPath: ShapeModule.m_Scale.x
+      value: 30
+      objectReference: {fileID: 0}
     - target: {fileID: 6041276902186201330, guid: 706041a7e6cb25144aba7744b424d073,
         type: 3}
       propertyPath: m_Name
@@ -6058,7 +6088,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Camera
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 2006833785}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 706041a7e6cb25144aba7744b424d073, type: 3}
 --- !u!1 &1863897015
@@ -6565,7 +6595,7 @@ Camera:
   m_Depth: 1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 32768
+    m_Bits: 36864
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
