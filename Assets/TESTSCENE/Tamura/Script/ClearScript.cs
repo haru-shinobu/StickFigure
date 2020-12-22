@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
+using UnityEngine.UI;
 public class ClearScript : MonoBehaviour
 {
     public Vector3 StartPos;
@@ -13,7 +13,8 @@ public class ClearScript : MonoBehaviour
     private bool bStartToEnd = true;
     GameObject ManageObject;
     SceneFadeManager scenefademanager;
-
+    Image img;
+    float alpha = 0;
    void Start()
     {
         transform.position = StartPos;
@@ -21,23 +22,41 @@ public class ClearScript : MonoBehaviour
         ManageObject = GameObject.Find("ManageObject");
         scenefademanager = GetComponent<SceneFadeManager>();
         //SceneFadeManager.FadeOut("GameMainScene");
+        img = transform.GetComponent<Image>();
+        alpha = img.color.a;
     }
     void Update()
     {
         {
+
             transform.position += deltaPos * Time.deltaTime;
             elapsedTime += Time.deltaTime;
-            if (elapsedTime > time)
+            
+            if (!bStartToEnd)
             {
-                if (bStartToEnd)
+                if (time * 0.9f > elapsedTime)
                 {
-                    deltaPos = (hantennPos - StartPos) / time;
-
-                    transform.position = StartPos;
+                    var imgAlpha = img.color;
+                    imgAlpha.a *= 0.9f;
+                    img.color = imgAlpha;
                 }
-                bStartToEnd = !bStartToEnd;
-                elapsedTime = 0;
             }
+            else
+            {
+                var imgAlpha = img.color;
+                imgAlpha.a = 1;
+                img.color = imgAlpha;
+            }
+            if (elapsedTime >= time)
+            {
+                elapsedTime = 0;
+                bStartToEnd = !bStartToEnd;
+                if (bStartToEnd)
+                    transform.position = StartPos;
+            }
+
+
+
             if (Input.GetMouseButtonDown(0))
             {
                 //SceneFadeManager.FadeIn();
