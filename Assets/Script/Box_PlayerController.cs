@@ -1727,10 +1727,10 @@ public class Box_PlayerController : MonoBehaviour
     {
         if (gType == GrapType.NormalGrap)
         {
-            yield return new WaitForSeconds(.7f);
+            yield return new WaitForSeconds(.8f);
             for (int i = gDeepObj.Length - 1; i >= 0; i--)
             {
-                if (gDeepObj[i])
+                if (gDeepObj[i] && gDeepObj[i].activeSelf)
                 {
                     yield return new WaitForSeconds(.07f);
                     gDeepObj[i].SetActive(false);
