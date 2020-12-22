@@ -307,14 +307,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a17298ecea8eee54bb90917d599ce79e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 1324385755}
-  fadeObject: {fileID: 5770208591310183604, guid: df8a2bb9869439a4885927a426c4c00b,
-    type: 3}
+  fadeObject: {fileID: 0}
   goalText: {fileID: 1917113095}
   Particle_kami: {fileID: 1776141989}
   Particle_kura1: {fileID: 198343634}
   Particle_kura2: {fileID: 2030113647}
-  star: {fileID: 207441120}
+  star: {fileID: 0}
 --- !u!136 &108692250
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -3232,6 +3230,11 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 2006833785}
+    - target: {fileID: 4944986210498304594, guid: 3a981508c298feb4e92ad6288173f8b1,
+        type: 3}
+      propertyPath: gameManager
+      value: 
+      objectReference: {fileID: 2082146979}
     - target: {fileID: 6661520085745141897, guid: 3a981508c298feb4e92ad6288173f8b1,
         type: 3}
       propertyPath: m_Name
@@ -4558,12 +4561,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1dbf880a4f93db64fb88278e7bf46397, type: 3}
---- !u!1 &1324385755 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6661520085745141897, guid: 3a981508c298feb4e92ad6288173f8b1,
-    type: 3}
-  m_PrefabInstance: {fileID: 1101486733}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1387517628
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5947,36 +5944,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 6041276901877185805, guid: 706041a7e6cb25144aba7744b424d073,
-        type: 3}
-      propertyPath: m_LocalScale.x
-      value: 55
-      objectReference: {fileID: 0}
-    - target: {fileID: 6041276901877185805, guid: 706041a7e6cb25144aba7744b424d073,
-        type: 3}
-      propertyPath: m_LocalScale.y
-      value: 55
-      objectReference: {fileID: 0}
-    - target: {fileID: 6041276901877185805, guid: 706041a7e6cb25144aba7744b424d073,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6041276901877185805, guid: 706041a7e6cb25144aba7744b424d073,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 330
-      objectReference: {fileID: 0}
-    - target: {fileID: 6041276901877185806, guid: 706041a7e6cb25144aba7744b424d073,
-        type: 3}
-      propertyPath: InitialModule.startLifetime.scalar
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 6041276901877185806, guid: 706041a7e6cb25144aba7744b424d073,
-        type: 3}
-      propertyPath: ShapeModule.m_Scale.x
-      value: 30
-      objectReference: {fileID: 0}
     - target: {fileID: 6041276902186201330, guid: 706041a7e6cb25144aba7744b424d073,
         type: 3}
       propertyPath: m_Name
@@ -6091,7 +6058,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Camera
       value: 
-      objectReference: {fileID: 2006833785}
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 706041a7e6cb25144aba7744b424d073, type: 3}
 --- !u!1 &1863897015
@@ -6598,7 +6565,7 @@ Camera:
   m_Depth: 1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 36864
+    m_Bits: 32768
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
