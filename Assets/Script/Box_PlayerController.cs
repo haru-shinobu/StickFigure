@@ -43,6 +43,7 @@ public class Box_PlayerController : MonoBehaviour
     enum FollState
     {
         Foll,
+        Folling,
         Stand,
         Landing,
     }
@@ -169,7 +170,8 @@ public class Box_PlayerController : MonoBehaviour
             //足跡下降用
             var romain = FootStamp.main;
             romain.startRotation = new ParticleSystem.MinMaxCurve(2.967f, 3.316f);
-            follState = FollState.Foll;
+            if (follState == FollState.Landing || follState == FollState.Stand)
+                follState = FollState.Foll;
             //Move_Anim(true);
         }
         else
@@ -179,7 +181,6 @@ public class Box_PlayerController : MonoBehaviour
             //Move_Anim(false);
         }
         rb.velocity = vel;
-        
         if (!_bBridgeMaking)
         {
             if (Moving)
@@ -999,7 +1000,8 @@ public class Box_PlayerController : MonoBehaviour
                                 wind.transform.rotation = Quaternion.Euler(90, 0, 0);
                             //箱へアクセス、スイッチの動作指令を送らせる
                             sidebox.RollSwitchAction();
-
+                            if (SoundObj)
+                                SoundObj.PushButtonSE();
                             if (BridgeObj)
                             {
                                 BridgeObj.SendMessage("RollDestroy", 2);
@@ -1361,6 +1363,7 @@ public class Box_PlayerController : MonoBehaviour
     //========================================================
     IEnumerator Graplinger(Vector3 point)
     {
+        rb.isKinematic = true;
         yield return new WaitForSeconds(1.0f);
 
         SphereCollider sCollider = transform.parent.GetComponent<SphereCollider>();
@@ -1383,6 +1386,7 @@ public class Box_PlayerController : MonoBehaviour
                 yield break;
             }
         }
+        rb.isKinematic = false;
         NowPlayerMovePoint = transform.parent.position = point;
         Move_Anim(false);
         sCollider.enabled = true;
@@ -1779,6 +1783,17 @@ public class Box_PlayerController : MonoBehaviour
             follState = FollState.Stand;
             groundSmokes[0].Play();
             groundSmokes[1].Play();
+        }
+
+        if (follState == FollState.Foll)
+        {
+            Debug.Log(rb.velocity.y);
+            if (rb.velocity.y < -0.3f)
+            {
+                follState = FollState.Folling;
+                if (SoundObj)
+                    SoundObj.FollSE();
+            }
         }
     }
 }

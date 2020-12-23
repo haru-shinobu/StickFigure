@@ -4,10 +4,16 @@ using UnityEngine;
 
 public class pinScript : MonoBehaviour
 {
+    private SoundManager SoundObj;
     void Start()
     {
+        GameObject soundtarget = GameObject.Find("SoundObj");
+        if (soundtarget)
+            SoundObj = soundtarget.GetComponent<SoundManager>();
         transform.localPosition -= transform.forward * 12;
         StartCoroutine("Sting");
+        if (SoundObj)
+            SoundObj.NeedleOutSE();
         Destroy(gameObject, 1.3f);
     }
 

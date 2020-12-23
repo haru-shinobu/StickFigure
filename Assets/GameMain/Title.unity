@@ -786,6 +786,21 @@ PrefabInstance:
       propertyPath: m_Name
       value: SoundObj
       objectReference: {fileID: 0}
+    - target: {fileID: 2755165372653438764, guid: e8be530c08487d447b1c5dd725e254cc,
+        type: 3}
+      propertyPath: needle
+      value: 
+      objectReference: {fileID: 8300000, guid: 82017c37d3232eb4c838db2019132584, type: 3}
+    - target: {fileID: 2755165372653438764, guid: e8be530c08487d447b1c5dd725e254cc,
+        type: 3}
+      propertyPath: button
+      value: 
+      objectReference: {fileID: 8300000, guid: 82ff4ded11e0c0e4b9ce7e47396ce151, type: 3}
+    - target: {fileID: 2755165372653438764, guid: e8be530c08487d447b1c5dd725e254cc,
+        type: 3}
+      propertyPath: folling
+      value: 
+      objectReference: {fileID: 8300000, guid: 3963e459a43eaa54cab407783ecd567e, type: 3}
     - target: {fileID: 2755165372653438765, guid: e8be530c08487d447b1c5dd725e254cc,
         type: 3}
       propertyPath: m_LocalPosition.x
