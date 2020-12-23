@@ -3235,15 +3235,15 @@ PrefabInstance:
       propertyPath: gameManager
       value: 
       objectReference: {fileID: 2082146979}
+    - target: {fileID: 6024632652322326395, guid: 3a981508c298feb4e92ad6288173f8b1,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6661520085745141897, guid: 3a981508c298feb4e92ad6288173f8b1,
         type: 3}
       propertyPath: m_Name
       value: PlayerBase
-      objectReference: {fileID: 0}
-    - target: {fileID: 6661520085745141898, guid: 3a981508c298feb4e92ad6288173f8b1,
-        type: 3}
-      propertyPath: m_IsKinematic
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6661520085745141899, guid: 3a981508c298feb4e92ad6288173f8b1,
         type: 3}
