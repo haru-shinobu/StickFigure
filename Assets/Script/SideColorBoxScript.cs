@@ -47,7 +47,7 @@ public class SideColorBoxScript : MonoBehaviour
     }
     int BoxAroundWallLayer = 0;
     int BoxinWallLayer;
-    RayScript ray;
+    RayScript ray = null;
     void Awake()
     {
         
@@ -272,12 +272,14 @@ public class SideColorBoxScript : MonoBehaviour
         PSc.Front_RightBottom = F_RightBottom = BRB;
         
         //プレイヤーの移動に関わる範囲
-        if (BoxAroundWallLayer == 0)
-            BoxAroundWallLayer = 1 << LayerMask.NameToLayer("sideWall");
         PSc.sidewallstate(0);
 
         var position = transform.position;
         position.z = -mesh.bounds.extents.z;
+        if (!ray || ray == null)
+            ray = PSc.transform.parent.GetComponent<RayScript>();
+        if (BoxAroundWallLayer == 0)
+            BoxAroundWallLayer = 1 << LayerMask.NameToLayer("sideWall");
         RaycastHit rayhitvecT = ray.Ray(position, Vector3.up, 10, BoxAroundWallLayer);
         RaycastHit rayhitvecB = ray.Ray(position, -Vector3.up, 10, BoxAroundWallLayer);
         RaycastHit rayhitvecR = ray.Ray(position, Vector3.right, 10, BoxAroundWallLayer);

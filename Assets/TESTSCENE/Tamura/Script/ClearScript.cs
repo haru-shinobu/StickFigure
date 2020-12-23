@@ -5,44 +5,21 @@ using UnityEngine.SceneManagement;
 
 public class ClearScript : MonoBehaviour
 {
-    public Vector3 StartPos;
-    public Vector3 hantennPos;
-    public float time;
-    private Vector3 deltaPos;
-    private float elapsedTime;
-    private bool bStartToEnd = true;
     GameObject ManageObject;
     SceneFadeManager scenefademanager;
 
-   void Start()
+    void Start()
     {
-        transform.position = StartPos;
-        deltaPos = (hantennPos - StartPos) / time;
         ManageObject = GameObject.Find("ManageObject");
         scenefademanager = GetComponent<SceneFadeManager>();
         //SceneFadeManager.FadeOut("GameMainScene");
     }
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Space) || Input.GetButtonDown("Jump"))
         {
-            transform.position += deltaPos * Time.deltaTime;
-            elapsedTime += Time.deltaTime;
-            if (elapsedTime > time)
-            {
-                if (bStartToEnd)
-                {
-                    deltaPos = (hantennPos - StartPos) / time;
-
-                    transform.position = StartPos;
-                }
-                bStartToEnd = !bStartToEnd;
-                elapsedTime = 0;
-            }
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                //SceneFadeManager.FadeIn();
-                SceneManager.LoadScene("Title");
-            }
+            //SceneFadeManager.FadeIn();
+            SceneManager.LoadScene("Title");
         }
     }
 }

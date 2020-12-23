@@ -51,7 +51,7 @@ public class SoundManager : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log("SoundState");
+        //Debug.Log("SoundState");
         int soundPlay = FindObjectsOfType<SoundManager>().Length;
         DontDestroyOnLoad(soundManager);
         if (soundPlay > 1) { Destroy(gameObject); }
@@ -63,7 +63,7 @@ public class SoundManager : MonoBehaviour
     
     public void BGMState()
     {
-        Debug.Log("SoundState");
+        //Debug.Log("SoundState");
         DontDestroyOnLoad(soundManager);
 
         sceneName = SceneManager.GetActiveScene().name;//SceneManager.sceneCount;
@@ -92,7 +92,7 @@ public class SoundManager : MonoBehaviour
                 case "GameOver": BGMSource.clip = overBGM; break;
                 case "Clear": BGMSource.clip = clearBGM; break;
             }
-            Debug.Log("BGM" + sceneName);
+//            Debug.Log("BGM" + sceneName);
             BGMSource.Play();
             isBGM = true;
         }
@@ -104,21 +104,21 @@ public class SoundManager : MonoBehaviour
     // jump
     public void GrapSE()
     {
-        Debug.Log("jumpSE");
+        //Debug.Log("jumpSE");
         OneShotSource.PlayOneShot(jump);
     }
 
     // move
     public void MoveSE()
     {
-        Debug.Log("MoveSE");
+        //Debug.Log("MoveSE");
         OneShotSource.PlayOneShot(move);
     }
 
     // actionta
     public void ActionSE()
     {
-        Debug.Log("ActionSE");
+        //Debug.Log("ActionSE");
         OneShotSource.PlayOneShot(action);
     }
     
