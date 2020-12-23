@@ -35,7 +35,7 @@ public class ClearScript : MonoBehaviour
 
                     transform.position = StartPos;
                 }
-                bStartToEnd = !bStartToEnd;
+                //bStartToEnd = !bStartToEnd;
                 elapsedTime = 0;
             }
             if (Input.GetKeyDown(KeyCode.Space))
