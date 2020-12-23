@@ -200,20 +200,40 @@ public class Box_PlayerController : MonoBehaviour
                             var B = transform.parent.position.y - Player_verticalhorizontal.y;
                             var L = transform.parent.position.x - Player_verticalhorizontal.x;
                             var R = transform.parent.position.x + Player_verticalhorizontal.x;
-
-                            GameObject wind = Instantiate(G_Data.WindPrefab, sidebox.transform.position, Quaternion.identity);
+                            GameObject wind = null;
+                            if (G_Data.WindPrefab)
+                                wind = Instantiate(G_Data.WindPrefab, sidebox.transform.position, Quaternion.identity);
                             //上下左右
                             var rollways = 0;
-                            if (T >= Front_LeftTop.y) { rollways = 1; wind.transform.rotation = Quaternion.Euler(0, 0, 90); }
-                            if (B <= Front_RightBottom.y) { rollways = 2; wind.transform.rotation = Quaternion.Euler(0, 0, -90); }
-                            if (L <= Front_LeftTop.x) { rollways = 3; wind.transform.rotation = Quaternion.Euler(0, 0, 180); }
-                            if (R >= Front_RightBottom.x) { rollways = 4; wind.transform.rotation = Quaternion.Euler(0, 0, 0); }
+                            if (T >= Front_LeftTop.y)
+                            {
+                                rollways = 1;
+                                if (wind)
+                                    wind.transform.rotation = Quaternion.Euler(0, 0, 90);
+                            }
+                            if (B <= Front_RightBottom.y)
+                            {
+                                rollways = 2;
+                                if (wind)
+                                    wind.transform.rotation = Quaternion.Euler(0, 0, -90);
+                            }
+                            if (L <= Front_LeftTop.x)
+                            {
+                                rollways = 3;
+                                if (wind)
+                                    wind.transform.rotation = Quaternion.Euler(0, 0, 180);
+                            }
+                            if (R >= Front_RightBottom.x)
+                            {
+                                rollways = 4;
+                                if (wind)
+                                    wind.transform.rotation = Quaternion.Euler(0, 0, 0);
+                            }
                             if (BridgeObj)
                             {
                                 BridgeObj.SendMessage("RollDestroy", 2);
                                 BridgeObj.transform.SetParent(null);
                                 BridgeObj = null;
-                                //Destroy(BridgeObj);
                                 gameManager.CheckBridgeNum();
                             }
                             sidebox.ChangeBoxRoll(rollways);
@@ -402,7 +422,7 @@ public class Box_PlayerController : MonoBehaviour
         {
             if (x.GetBool("work") != flag)
             {
-                Debug.Log("Anim" + flag);
+                //Debug.Log("Anim" + flag);
                 x.SetBool("work", flag);
             }
         }
