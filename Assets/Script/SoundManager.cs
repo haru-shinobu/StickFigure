@@ -29,7 +29,7 @@ public class SoundManager : MonoBehaviour
     [SerializeField] private AudioClip needle;  //ニードル
     [SerializeField] private AudioClip folling; //落下
     [SerializeField] private AudioClip button;  //ボタン
-
+    [SerializeField] private AudioClip IronSteam;//アイロンスチーム
 
     public bool isBGM;
 
@@ -135,5 +135,9 @@ public class SoundManager : MonoBehaviour
     public void PushButtonSE()
     {
         OneShotSource.PlayOneShot(button);
+    }
+    public void IronSteamSE()
+    {
+        OneShotSource.PlayOneShot(IronSteam);
     }
 }

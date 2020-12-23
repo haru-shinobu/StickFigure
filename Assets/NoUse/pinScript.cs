@@ -12,8 +12,7 @@ public class pinScript : MonoBehaviour
             SoundObj = soundtarget.GetComponent<SoundManager>();
         transform.localPosition -= transform.forward * 12;
         StartCoroutine("Sting");
-        if (SoundObj)
-            SoundObj.NeedleOutSE();
+        Invoke("pinSE", 1);
         Destroy(gameObject, 1.3f);
     }
 
@@ -29,5 +28,10 @@ public class pinScript : MonoBehaviour
             yield return new WaitForEndOfFrame();
             transform.localPosition = Vector3.Lerp(pos, stingpos, timer);
         }
+    }
+    void pinSE()
+    {
+        if (SoundObj)
+            SoundObj.NeedleOutSE();
     }
 }
