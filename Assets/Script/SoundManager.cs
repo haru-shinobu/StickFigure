@@ -23,10 +23,13 @@ public class SoundManager : MonoBehaviour
     [SerializeField] private AudioClip clearBGM;     //ゲームクリア
 
     // SE
-    [SerializeField] private AudioClip jump;          //ジャンプ
-    [SerializeField] private AudioClip move;   //移動
+    [SerializeField] private AudioClip jump;    //ジャンプ
+    [SerializeField] private AudioClip move;    //移動
     [SerializeField] private AudioClip action;  //アクション
-
+    [SerializeField] private AudioClip needle;  //ニードル
+    [SerializeField] private AudioClip folling; //落下
+    [SerializeField] private AudioClip button;  //ボタン
+    [SerializeField] private AudioClip IronSteam;//アイロンスチーム
 
     public bool isBGM;
 
@@ -121,5 +124,20 @@ public class SoundManager : MonoBehaviour
         //Debug.Log("ActionSE");
         OneShotSource.PlayOneShot(action);
     }
-    
+    public void NeedleOutSE()
+    {
+        OneShotSource.PlayOneShot(needle);
+    }
+    public void FollSE()
+    {
+        OneShotSource.PlayOneShot(folling);
+    }
+    public void PushButtonSE()
+    {
+        OneShotSource.PlayOneShot(button);
+    }
+    public void IronSteamSE()
+    {
+        OneShotSource.PlayOneShot(IronSteam);
+    }
 }
