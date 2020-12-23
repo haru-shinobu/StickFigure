@@ -232,6 +232,8 @@ public class Box_PlayerController : MonoBehaviour
                             }
                             if (BridgeObj)
                             {
+                                if (SoundObj)
+                                    SoundObj.PropSE();
                                 BridgeObj.SendMessage("RollDestroy", 2);
                                 BridgeObj.transform.SetParent(null);
                                 BridgeObj = null;
@@ -806,6 +808,8 @@ public class Box_PlayerController : MonoBehaviour
             }
             else
             {
+                if (SoundObj)
+                    SoundObj.PropSE();
                 //破棄する場合
                 BridgeObj.SendMessage("RollDestroy", 2);
                 BridgeObj.transform.SetParent(null);

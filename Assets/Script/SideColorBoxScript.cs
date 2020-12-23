@@ -49,6 +49,7 @@ public class SideColorBoxScript : MonoBehaviour
     int BoxinWallLayer;
     RayScript ray = null;
     public bool RollActiveFlag = false;
+    SoundManager SoundObj;
     void Awake()
     {
         //箱枠レイヤー
@@ -111,7 +112,9 @@ public class SideColorBoxScript : MonoBehaviour
         }
         list.Clear();
 
-
+        GameObject soundtarget = GameObject.Find("SoundObj");
+        if (soundtarget)
+            SoundObj = soundtarget.GetComponent<SoundManager>();
     }
     //=======================================================================
     /// <summary>
