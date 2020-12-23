@@ -1714,7 +1714,20 @@ public class Box_PlayerController : MonoBehaviour
         {
             if (SoundObj)
                 SoundObj.GrapSE();
-            int DeepNum = ((int)fYNorm * 2) + 2;
+            int DeepNum = (int)fYNorm;
+            if (DeepNum >= 5)
+            {
+                DeepNum += 3;
+            }
+            else if(DeepNum >= 3)
+            {
+                DeepNum += 2;
+            }
+            else
+            {
+                DeepNum += 1;
+            }
+            
             for (int i = 0; i < DeepNum; i++)
             {
                 if (i < gDeepObj.Length)
@@ -1752,7 +1765,7 @@ public class Box_PlayerController : MonoBehaviour
             {
                 if (gDeepObj[i] && gDeepObj[i].activeSelf)
                 {
-                    yield return new WaitForSeconds(.07f);
+                    yield return new WaitForSeconds(.08f);
                     gDeepObj[i].SetActive(false);
                 }
             }
