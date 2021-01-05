@@ -329,7 +329,7 @@ Transform:
   m_GameObject: {fileID: 366247406}
   m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 8}
-  m_LocalScale: {x: 5, y: 1, z: 3}
+  m_LocalScale: {x: 5, y: 1, z: 4}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
@@ -593,7 +593,7 @@ Light:
   serializedVersion: 10
   m_Type: 1
   m_Shape: 0
-  m_Color: {r: 1, g: 0.97975147, b: 0.9245283, a: 1}
+  m_Color: {r: 0.990566, g: 0.990566, b: 0.990566, a: 1}
   m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
@@ -810,7 +810,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   image: {fileID: 1060509568}
-  fSpeed: 0.02
+  fSpeed: 0.03
 --- !u!114 &1060509568
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1111,7 +1111,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   image: {fileID: 1251317541}
-  fSpeed: 0.02
+  fSpeed: 0.03
 --- !u!114 &1251317541
 MonoBehaviour:
   m_ObjectHideFlags: 0
