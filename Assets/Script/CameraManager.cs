@@ -30,6 +30,7 @@ public class CameraManager : MonoBehaviour
     GameObject NowBox;
     [SerializeField]
     GameManager manager;
+
     void Start()
     {
         NowBox = StartObj;
@@ -44,6 +45,7 @@ public class CameraManager : MonoBehaviour
         }
         transform.GetChild(0).gameObject.SetActive(false);
     }
+
     //===========================================================
     // プレイヤー移動によるカメラ処理
     //===========================================================
