@@ -1813,4 +1813,44 @@ public class Box_PlayerController : MonoBehaviour
             }
         }
     }
+
+    public void InClearBox(Vector3 CBoxPosition)
+    {
+        Moving = false;
+        if (transform.position.x <= CBoxPosition.x)
+        {
+            //画像反転用
+            transform.GetChild(0).localScale = Vector3.one;
+            //足跡反転用
+            var romain = FootStamp.main;
+            romain.startRotation = new ParticleSystem.MinMaxCurve(1.396f, 1.745f);
+            // サウンド再生
+            if (AnimCount++ > AnimCountSet)
+            {
+                if (SoundObj)
+                    SoundObj.MoveSE();
+                AnimCount = 0;
+            }
+            //アニメーション
+            Move_Anim(true);
+
+        }
+        else
+        {
+            //画像反転用
+            transform.GetChild(0).localScale = new Vector3(-1, 1, 1);
+            //足跡反転用
+            var romain = FootStamp.main;
+            romain.startRotation = new ParticleSystem.MinMaxCurve(-1.396f, -1.745f);
+            // サウンド再生
+            if (AnimCount++ > AnimCountSet)
+            {
+                if (SoundObj)
+                    SoundObj.MoveSE();
+                AnimCount = 0;
+            }
+            //アニメーション
+            Move_Anim(true);
+        }
+    }
 }

@@ -8,7 +8,6 @@ public class ClearCube : MonoBehaviour
     CameraManager camera;
     public GameObject fadeObject;
     public SpriteRenderer goalText;
-    Vector3 Ppos;
     public ParticleSystem Particle_kami;
     public ParticleSystem Particle_kura1;
     public ParticleSystem Particle_kura2;
@@ -17,6 +16,7 @@ public class ClearCube : MonoBehaviour
     //[SerializeField]
     //float fFadeSpeed;
     SceneFadeManager fadeI;
+    Transform PlayerObj; 
     //public void Awake()
     //{
     //    GameObject.Find("goalText").SetActive(true);
@@ -34,6 +34,7 @@ public class ClearCube : MonoBehaviour
         GameObject soundtarget = GameObject.Find("SoundObj");
         if (soundtarget)
             SoundObj = soundtarget.GetComponent<SoundManager>();
+        PlayerObj = GameObject.FindWithTag("Player").transform;
     }
 
     void OnTriggerEnter(Collider other)
@@ -60,10 +61,29 @@ public class ClearCube : MonoBehaviour
         Particle_kami.Play();
         Particle_kura1.Play();
         Particle_kura2.Play();
-        SoundObj.PoperSE();
-        SoundObj.PoperSE();
+        if (SoundObj)
+        {
+            SoundObj.PoperSE();
+            SoundObj.PoperSE();
+        }
+        StartCoroutine("ClearBoxPlayerMove");
         yield return new WaitForSeconds(2f);
+        StopCoroutine("ClearBoxPlayerMove");
         SceneManager.LoadScene("Clear");
         yield return new WaitForSeconds(4f);
     }
-   }
+    IEnumerator ClearBoxPlayerMove()
+    {
+        Debug.Log("PMOVE");
+        PlayerObj.GetComponent<Box_PlayerController>().InClearBox(transform.position);
+        var ppos = PlayerObj.parent.position;
+        var targetpos = transform.GetChild(0).GetChild(1).transform.position;//GoalFlagger
+        float timer = 0;
+        while (true)
+        {
+            yield return new WaitForEndOfFrame();
+            timer += Time.deltaTime / 2;
+            PlayerObj.parent.position = PlayerObj.position = Vector3.Lerp(ppos, targetpos, timer);
+        }
+    }
+}
