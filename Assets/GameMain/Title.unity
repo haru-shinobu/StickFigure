@@ -541,7 +541,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.5882353}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -882,9 +882,19 @@ PrefabInstance:
       objectReference: {fileID: 8300000, guid: 4b5558e53a2726444bb3305a01208061, type: 3}
     - target: {fileID: 2755165372653438764, guid: e8be530c08487d447b1c5dd725e254cc,
         type: 3}
-      propertyPath: overBGM
+      propertyPath: fire
       value: 
-      objectReference: {fileID: 8300000, guid: 45e52b222acb9a04082ddba7301d6025, type: 3}
+      objectReference: {fileID: 8300000, guid: 753932df6fdb84b4f99cdda3015ef7bc, type: 3}
+    - target: {fileID: 2755165372653438764, guid: e8be530c08487d447b1c5dd725e254cc,
+        type: 3}
+      propertyPath: popper
+      value: 
+      objectReference: {fileID: 8300000, guid: 7fd44b95a5a76c74e9520130e8bdb333, type: 3}
+    - target: {fileID: 2755165372653438764, guid: e8be530c08487d447b1c5dd725e254cc,
+        type: 3}
+      propertyPath: prop
+      value: 
+      objectReference: {fileID: 8300000, guid: 5157bd139c1d01e46bee0ebc5755609b, type: 3}
     - target: {fileID: 2755165372653438765, guid: e8be530c08487d447b1c5dd725e254cc,
         type: 3}
       propertyPath: m_LocalPosition.x

@@ -30,7 +30,9 @@ public class SoundManager : MonoBehaviour
     [SerializeField] private AudioClip folling; //落下
     [SerializeField] private AudioClip button;  //ボタン
     [SerializeField] private AudioClip IronSteam;//アイロンスチーム
-
+    [SerializeField] private AudioClip fire;    //炎
+    [SerializeField] private AudioClip popper;  //クラッカー
+    [SerializeField] private AudioClip prop;    //橋がはがれるとき
     public bool isBGM;
 
     private AudioSource BGMSource;
@@ -139,5 +141,13 @@ public class SoundManager : MonoBehaviour
     public void IronSteamSE()
     {
         OneShotSource.PlayOneShot(IronSteam);
+    }
+    public void PoperSE()
+    {
+        OneShotSource.PlayOneShot(popper);
+    }
+    public void PropSE()
+    {
+        OneShotSource.PlayOneShot(prop);
     }
 }
