@@ -70,7 +70,7 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     GameObject arrow;
     SoundManager soundM;
-
+    
     void Awake()
     {
         arrow.SetActive(false);
@@ -112,8 +112,11 @@ public class GameManager : MonoBehaviour
             _UIScript.ChangeNum(nDCount);
         if (nDCount == 0)
         {
-            IE_GO = GameOver_before();
-            StartCoroutine(IE_GO);
+            if (!GameObject.FindWithTag("Clear").transform.parent.GetComponent<ClearCube>().nDCount_CountEnd)
+            {
+                IE_GO = GameOver_before();
+                StartCoroutine(IE_GO);
+            }
         }
     }
     public void CheckBridgeNum()

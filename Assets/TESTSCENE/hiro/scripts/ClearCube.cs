@@ -16,12 +16,12 @@ public class ClearCube : MonoBehaviour
     //[SerializeField]
     //float fFadeSpeed;
     SceneFadeManager fadeI;
-    Transform PlayerObj; 
+    Transform PlayerObj;
     //public void Awake()
     //{
     //    GameObject.Find("goalText").SetActive(true);
     //}
-
+    public bool nDCount_CountEnd = false;
     public void Start()
     {
         if (fadeObject)
@@ -39,9 +39,9 @@ public class ClearCube : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-    
         if (other.gameObject.tag == "PlayerBase")
         {
+            nDCount_CountEnd = true;
             other.transform.GetChild(0).SendMessage("SceneEndBridgeFall");
             StartCoroutine(clear());
         }
