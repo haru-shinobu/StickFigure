@@ -12,6 +12,13 @@ public class Box_PlayerController : MonoBehaviour
     int MoveCount = 0;
     [SerializeField] int FlameCount = 10;
 
+    // プレイヤーのグラップリング時に使うタイム数値
+    [SerializeField] private float fInitDeepTime = 0.2f;
+    [SerializeField] private float fDestDeepTime_Normal_Wait = 0.8f;
+    [SerializeField] private float fDestDeepTime_Normal_Interval= 0.08f;
+    [SerializeField] private float fDestDeepTime_Button_Wait = 0.1f;
+    [SerializeField] private float fDestDeepTime_Button_Interval = 0.07f;
+
     [SerializeField] GameManager gameManager;
 
     bool _bControll = false;
@@ -1756,7 +1763,7 @@ public class Box_PlayerController : MonoBehaviour
     */
     IEnumerator DrawDeep(int nDeep)
     {
-        yield return new WaitForSeconds(.2f);
+        yield return new WaitForSeconds(fInitDeepTime);
         // 遅延しながら非表示になるように
         gDeepObj[nDeep].SetActive(true);
     }
@@ -1768,24 +1775,24 @@ public class Box_PlayerController : MonoBehaviour
     {
         if (gType == GrapType.NormalGrap)
         {
-            yield return new WaitForSeconds(.8f);
+            yield return new WaitForSeconds(fDestDeepTime_Normal_Wait);
             for (int i = gDeepObj.Length - 1; i >= 0; i--)
             {
                 if (gDeepObj[i] && gDeepObj[i].activeSelf)
                 {
-                    yield return new WaitForSeconds(.08f);
+                    yield return new WaitForSeconds(fDestDeepTime_Normal_Interval);
                     gDeepObj[i].SetActive(false);
                 }
             }
         }
         else if (gType == GrapType.Button)
         {
-            yield return new WaitForSeconds(.1f);
+            yield return new WaitForSeconds(fDestDeepTime_Button_Wait);
             for (int i = gDeepObj.Length - 1; i >= 0; i--)
             {
                 if (gDeepObj[i])
                 {
-                    yield return new WaitForSeconds(.07f);
+                    yield return new WaitForSeconds(fDestDeepTime_Button_Interval);
                     gDeepObj[i].SetActive(false);
                 }
             }
