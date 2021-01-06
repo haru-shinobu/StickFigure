@@ -49,7 +49,6 @@ public class ClearCube : MonoBehaviour
 
     IEnumerator clear()
     {
-
         Mesh star = this.gameObject.GetComponent<Mesh>();
         //camera.transform.position= new goalText.transform();
         goalText.gameObject.SetActive(true);
