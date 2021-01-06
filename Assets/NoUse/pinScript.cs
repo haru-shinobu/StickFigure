@@ -13,7 +13,7 @@ public class pinScript : MonoBehaviour
         transform.localPosition -= transform.forward * 12;
         StartCoroutine("Sting");
         Invoke("pinSE", 1);
-        Destroy(gameObject, 1.3f);
+        Destroy(gameObject, 1.35f);
     }
 
     IEnumerator Sting()
@@ -27,6 +27,20 @@ public class pinScript : MonoBehaviour
             timer += Time.deltaTime * 6;
             yield return new WaitForEndOfFrame();
             transform.localPosition = Vector3.Lerp(pos, stingpos, timer);
+        }
+        timer /= 6;
+        while (timer <= 1.2f)
+        {
+            timer += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+        timer--;
+        pos += transform.forward * 6;
+        while (timer <= 1)
+        {
+            timer += Time.deltaTime * 6;
+            yield return new WaitForEndOfFrame();
+            transform.localPosition = Vector3.Lerp(stingpos, pos, timer);
         }
     }
     void pinSE()
