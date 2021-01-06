@@ -17,9 +17,10 @@ public class AroundWallScript : MonoBehaviour
         if (pos.y == ppos.y + ren.y)  vec.y += 0.001f; 
         if (pos.y == ppos.y - ren.y)  vec.y -= 0.001f; 
         if (pos.z == ppos.z + ren.z)  vec.z += 0.001f; 
-        if (pos.z == ppos.z - ren.z)  vec.z -= 0.001f; 
+        if (pos.z == ppos.z - ren.z)  vec.z -= 0.001f;
         
         transform.GetChild(0).transform.position += vec;
         transform.GetChild(1).transform.position += vec;
+        
     }
 }

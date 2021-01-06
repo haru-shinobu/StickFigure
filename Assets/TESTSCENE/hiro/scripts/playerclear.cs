@@ -20,11 +20,6 @@ public class playerclear : MonoBehaviour
             gameManager.GameClear();
         }
     }
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
     IEnumerator Run()
     {
         //歩行アニメーション

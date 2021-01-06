@@ -46,7 +46,7 @@ public class BoxRollerSwitchScript : MonoBehaviour
     SideColorBoxScript Onetime_target;
     public void OnRoll(SideColorBoxScript target)
     {
-        Instantiate(pin, transform.parent.position, Quaternion.Euler(0, 0, 0));
+        Instantiate(pin, transform.position + Vector3.forward * 5, Quaternion.Euler(0, 0, 0));
         Onetime_target = target;
         Invoke("RollStart", 0.3f);
     }

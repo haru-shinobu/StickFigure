@@ -123,7 +123,9 @@ public class bridgeScript : MonoBehaviour
     //消去時呼び出し
     void OnDestroy()
     {
-        BasePrev.GetComponent<BridgeLineScript>().Antienable();
-        BaseNext.GetComponent<BridgeLineScript>().Antienable();
+        if (this.gameObject)
+            BasePrev.GetComponent<BridgeLineScript>().Antienable();
+        if (this.gameObject)
+            BaseNext.GetComponent<BridgeLineScript>().Antienable();
     }
 }
