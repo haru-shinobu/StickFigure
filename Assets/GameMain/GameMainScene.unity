@@ -3150,6 +3150,11 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: d6b6895310f99074cb888b45721df33e, type: 2}
+    - target: {fileID: 2946219542037136258, guid: 3a981508c298feb4e92ad6288173f8b1,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3005835862921584451, guid: 3a981508c298feb4e92ad6288173f8b1,
         type: 3}
       propertyPath: m_Camera
@@ -3169,6 +3174,17 @@ PrefabInstance:
         type: 3}
       propertyPath: fDestDeepTime_Normal_Wait
       value: 0.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 4944986210498304594, guid: 3a981508c298feb4e92ad6288173f8b1,
+        type: 3}
+      propertyPath: gIDeep
+      value: 
+      objectReference: {fileID: 7973117231006152394, guid: b955b513859045b42ab224707e014f35,
+        type: 3}
+    - target: {fileID: 4944986210498304594, guid: 3a981508c298feb4e92ad6288173f8b1,
+        type: 3}
+      propertyPath: fDestDeepTime_Button_Interval
+      value: 0.07
       objectReference: {fileID: 0}
     - target: {fileID: 6024632652322326395, guid: 3a981508c298feb4e92ad6288173f8b1,
         type: 3}

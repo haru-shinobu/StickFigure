@@ -15,7 +15,7 @@ public class Box_PlayerController : MonoBehaviour
     // プレイヤーのグラップリング時に使うタイム数値
     [SerializeField] private float fInitDeepTime = 0.2f;
     [SerializeField] private float fDestDeepTime_Normal_Wait = 0.8f;
-    [SerializeField] private float fDestDeepTime_Normal_Interval= 0.08f;
+    [SerializeField] private float fDestDeepTime_Normal_Interval = 0.08f;
     [SerializeField] private float fDestDeepTime_Button_Wait = 0.1f;
     [SerializeField] private float fDestDeepTime_Button_Interval = 0.07f;
 
@@ -24,7 +24,7 @@ public class Box_PlayerController : MonoBehaviour
     bool _bControll = false;
     bool _bBridgeMaking = false;
     bool OnBridge = false;
-    
+
     enum BridgeAriaState
     {
         ignore = 0,
@@ -72,6 +72,10 @@ public class Box_PlayerController : MonoBehaviour
     private int nDCount = 5;
 
     public GameObject[] gDeepObj = new GameObject[5];
+    [SerializeField] GameObject gIDeep;
+    GameObject[] Deeplist;
+    [SerializeField] int listnum = 15;
+    Quaternion quaternion_0 = new Quaternion(0, 0, 0, 0);
 
     private SoundManager SoundObj;
 
@@ -162,6 +166,13 @@ public class Box_PlayerController : MonoBehaviour
         GameObject soundtarget = GameObject.Find("SoundObj");
         if (soundtarget)
             SoundObj = soundtarget.GetComponent<SoundManager>();
+        Deeplist = new GameObject[listnum];
+        Vector3 DeepPos;
+        for (int i = 0; i < listnum; i++)
+        {
+            DeepPos = new Vector3(this.transform.position.x, this.transform.position.y + (0.75f * i), this.transform.position.z);
+            Deeplist[i] = Instantiate(gIDeep, DeepPos, quaternion_0);
+        }
     }
 
     void Update()
@@ -1010,7 +1021,7 @@ public class Box_PlayerController : MonoBehaviour
                             else
                                 wind.transform.rotation = Quaternion.Euler(90, 0, 0);
                             //箱へアクセス、スイッチの動作指令を送らせる
-                            sidebox.RollSwitchAction();
+                            //sidebox.RollSwitchAction();
                             if (SoundObj)
                                 SoundObj.PushButtonSE();
                             if (BridgeObj)
@@ -1719,6 +1730,8 @@ public class Box_PlayerController : MonoBehaviour
         return false;
     }
 
+    //--------------------------------------------------------------------------------
+
     /*
     * グラップリング時の舌の表示用関数
     * trueで表示,falseで非表示
@@ -1734,7 +1747,7 @@ public class Box_PlayerController : MonoBehaviour
             {
                 DeepNum += 3;
             }
-            else if(DeepNum >= 3)
+            else if (DeepNum >= 3)
             {
                 DeepNum += 2;
             }
@@ -1742,10 +1755,10 @@ public class Box_PlayerController : MonoBehaviour
             {
                 DeepNum += 1;
             }
-            
+
             for (int i = 0; i < DeepNum; i++)
             {
-                if (i < gDeepObj.Length)
+                if (i < Deeplist.Length/*i < gDeepObj.Length*/)
                 {
                     // 遅延しながら表示
                     StartCoroutine(DrawDeep(i));
@@ -1763,9 +1776,13 @@ public class Box_PlayerController : MonoBehaviour
     */
     IEnumerator DrawDeep(int nDeep)
     {
+        Vector3 DeepPos = new Vector3(this.transform.position.x + 0.3f, this.transform.position.y + (0.75f * nDeep), this.transform.position.z);
         yield return new WaitForSeconds(fInitDeepTime);
         // 遅延しながら非表示になるように
-        gDeepObj[nDeep].SetActive(true);
+        //gDeepObj[nDeep].SetActive(true);
+        Deeplist[nDeep].transform.position = DeepPos;
+        Deeplist[nDeep].transform.rotation = gIDeep.transform.rotation;
+        Deeplist[nDeep].SetActive(true);
     }
 
     /*
@@ -1776,29 +1793,53 @@ public class Box_PlayerController : MonoBehaviour
         if (gType == GrapType.NormalGrap)
         {
             yield return new WaitForSeconds(fDestDeepTime_Normal_Wait);
-            for (int i = gDeepObj.Length - 1; i >= 0; i--)
+            for (int i = 0; i < Deeplist.Length; i++)
             {
-                if (gDeepObj[i] && gDeepObj[i].activeSelf)
+                if (Deeplist[i] && Deeplist[i].activeSelf)
                 {
                     yield return new WaitForSeconds(fDestDeepTime_Normal_Interval);
-                    gDeepObj[i].SetActive(false);
+                    Deeplist[i].SetActive(false);
                 }
             }
         }
         else if (gType == GrapType.Button)
         {
             yield return new WaitForSeconds(fDestDeepTime_Button_Wait);
-            for (int i = gDeepObj.Length - 1; i >= 0; i--)
+            for (int i = Deeplist.Length - 1; i >= 0; i--)
             {
-                if (gDeepObj[i])
-                {
-                    yield return new WaitForSeconds(fDestDeepTime_Button_Interval);
-                    gDeepObj[i].SetActive(false);
-                }
+                yield return new WaitForSeconds(fDestDeepTime_Button_Interval);
+                Deeplist[i].SetActive(false);
             }
+            sidebox.RollSwitchAction();
         }
+        //if (gType == GrapType.NormalGrap)
+        //{
+        //    yield return new WaitForSeconds(fDestDeepTime_Normal_Wait);
+        //    for (int i = gDeepObj.Length - 1; i >= 0; i--)
+        //    {
+        //        if (gDeepObj[i] && gDeepObj[i].activeSelf)
+        //        {
+        //            yield return new WaitForSeconds(fDestDeepTime_Normal_Interval);
+        //            gDeepObj[i].SetActive(false);
+        //        }
+        //    }
+        //}
+        //else if (gType == GrapType.Button)
+        //{
+        //    yield return new WaitForSeconds(fDestDeepTime_Button_Wait);
+        //    for (int i = gDeepObj.Length - 1; i >= 0; i--)
+        //    {
+        //        if (gDeepObj[i])
+        //        {
+        //            yield return new WaitForSeconds(fDestDeepTime_Button_Interval);
+        //            gDeepObj[i].SetActive(false);
+        //        }
+        //    }
+        //}
         yield return null;
     }
+
+    //--------------------------------------------------------------------------------
 
     void CheckOnGround()
     {
