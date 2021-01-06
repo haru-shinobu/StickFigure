@@ -3960,6 +3960,12 @@ PrefabInstance:
       propertyPath: DropSpeed
       value: 0.6
       objectReference: {fileID: 0}
+    - target: {fileID: 4944986210498304594, guid: 3a981508c298feb4e92ad6288173f8b1,
+        type: 3}
+      propertyPath: gIDeep
+      value: 
+      objectReference: {fileID: 7973117231006152394, guid: b955b513859045b42ab224707e014f35,
+        type: 3}
     - target: {fileID: 6024632652322326395, guid: 3a981508c298feb4e92ad6288173f8b1,
         type: 3}
       propertyPath: m_IsActive
