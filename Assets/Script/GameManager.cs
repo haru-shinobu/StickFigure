@@ -69,6 +69,8 @@ public class GameManager : MonoBehaviour
     GameObject Startbox;
     [SerializeField]
     GameObject arrow;
+    SoundManager soundM;
+    
     void Awake()
     {
         arrow.SetActive(false);
@@ -80,6 +82,9 @@ public class GameManager : MonoBehaviour
         Boxs = new GameObject[boxes.Length];
         Boxs = boxes;
         Startbox = transform.GetComponent<StarterScript>().GetStartBox();
+        GameObject soundtarget = GameObject.Find("SoundObj");
+        if (soundtarget)
+            soundM = soundtarget.GetComponent<SoundManager>();
     }
 
     void Start()
@@ -107,8 +112,11 @@ public class GameManager : MonoBehaviour
             _UIScript.ChangeNum(nDCount);
         if (nDCount == 0)
         {
-            IE_GO = GameOver_before();
-            StartCoroutine(IE_GO);
+            if (!GameObject.FindWithTag("Clear").transform.parent.GetComponent<ClearCube>().nDCount_CountEnd)
+            {
+                IE_GO = GameOver_before();
+                StartCoroutine(IE_GO);
+            }
         }
     }
     public void CheckBridgeNum()
@@ -157,5 +165,7 @@ public class GameManager : MonoBehaviour
         IronSc.GSStartPos = startpos;
         IronSc.GSEndPos = Startbox.transform.position - new Vector3(0, 0, Startbox.GetComponent<MeshRenderer>().bounds.extents.z);
         IronSc.MoveOK = true;
+        if (soundM)
+            soundM.IronSteamSE();
     }
 }

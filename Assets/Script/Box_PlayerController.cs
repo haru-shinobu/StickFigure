@@ -12,6 +12,13 @@ public class Box_PlayerController : MonoBehaviour
     int MoveCount = 0;
     [SerializeField] int FlameCount = 10;
 
+    // プレイヤーのグラップリング時に使うタイム数値
+    [SerializeField] private float fInitDeepTime = 0.2f;
+    [SerializeField] private float fDestDeepTime_Normal_Wait = 0.8f;
+    [SerializeField] private float fDestDeepTime_Normal_Interval= 0.08f;
+    [SerializeField] private float fDestDeepTime_Button_Wait = 0.1f;
+    [SerializeField] private float fDestDeepTime_Button_Interval = 0.07f;
+
     [SerializeField] GameManager gameManager;
 
     bool _bControll = false;
@@ -43,6 +50,7 @@ public class Box_PlayerController : MonoBehaviour
     enum FollState
     {
         Foll,
+        Folling,
         Stand,
         Landing,
     }
@@ -169,7 +177,8 @@ public class Box_PlayerController : MonoBehaviour
             //足跡下降用
             var romain = FootStamp.main;
             romain.startRotation = new ParticleSystem.MinMaxCurve(2.967f, 3.316f);
-            follState = FollState.Foll;
+            if (follState == FollState.Landing || follState == FollState.Stand)
+                follState = FollState.Foll;
             //Move_Anim(true);
         }
         else
@@ -179,7 +188,6 @@ public class Box_PlayerController : MonoBehaviour
             //Move_Anim(false);
         }
         rb.velocity = vel;
-        
         if (!_bBridgeMaking)
         {
             if (Moving)
@@ -231,6 +239,8 @@ public class Box_PlayerController : MonoBehaviour
                             }
                             if (BridgeObj)
                             {
+                                if (SoundObj)
+                                    SoundObj.PropSE();
                                 BridgeObj.SendMessage("RollDestroy", 2);
                                 BridgeObj.transform.SetParent(null);
                                 BridgeObj = null;
@@ -805,6 +815,8 @@ public class Box_PlayerController : MonoBehaviour
             }
             else
             {
+                if (SoundObj)
+                    SoundObj.PropSE();
                 //破棄する場合
                 BridgeObj.SendMessage("RollDestroy", 2);
                 BridgeObj.transform.SetParent(null);
@@ -999,7 +1011,8 @@ public class Box_PlayerController : MonoBehaviour
                                 wind.transform.rotation = Quaternion.Euler(90, 0, 0);
                             //箱へアクセス、スイッチの動作指令を送らせる
                             sidebox.RollSwitchAction();
-
+                            if (SoundObj)
+                                SoundObj.PushButtonSE();
                             if (BridgeObj)
                             {
                                 BridgeObj.SendMessage("RollDestroy", 2);
@@ -1361,6 +1374,7 @@ public class Box_PlayerController : MonoBehaviour
     //========================================================
     IEnumerator Graplinger(Vector3 point)
     {
+        rb.isKinematic = true;
         yield return new WaitForSeconds(1.0f);
 
         SphereCollider sCollider = transform.parent.GetComponent<SphereCollider>();
@@ -1383,6 +1397,7 @@ public class Box_PlayerController : MonoBehaviour
                 yield break;
             }
         }
+        rb.isKinematic = false;
         NowPlayerMovePoint = transform.parent.position = point;
         Move_Anim(false);
         sCollider.enabled = true;
@@ -1714,7 +1729,20 @@ public class Box_PlayerController : MonoBehaviour
         {
             if (SoundObj)
                 SoundObj.GrapSE();
-            int DeepNum = ((int)fYNorm * 2) + 2;
+            int DeepNum = (int)fYNorm;
+            if (DeepNum >= 5)
+            {
+                DeepNum += 3;
+            }
+            else if(DeepNum >= 3)
+            {
+                DeepNum += 2;
+            }
+            else
+            {
+                DeepNum += 1;
+            }
+            
             for (int i = 0; i < DeepNum; i++)
             {
                 if (i < gDeepObj.Length)
@@ -1735,7 +1763,7 @@ public class Box_PlayerController : MonoBehaviour
     */
     IEnumerator DrawDeep(int nDeep)
     {
-        yield return new WaitForSeconds(.2f);
+        yield return new WaitForSeconds(fInitDeepTime);
         // 遅延しながら非表示になるように
         gDeepObj[nDeep].SetActive(true);
     }
@@ -1747,24 +1775,24 @@ public class Box_PlayerController : MonoBehaviour
     {
         if (gType == GrapType.NormalGrap)
         {
-            yield return new WaitForSeconds(.8f);
+            yield return new WaitForSeconds(fDestDeepTime_Normal_Wait);
             for (int i = gDeepObj.Length - 1; i >= 0; i--)
             {
                 if (gDeepObj[i] && gDeepObj[i].activeSelf)
                 {
-                    yield return new WaitForSeconds(.07f);
+                    yield return new WaitForSeconds(fDestDeepTime_Normal_Interval);
                     gDeepObj[i].SetActive(false);
                 }
             }
         }
         else if (gType == GrapType.Button)
         {
-            yield return new WaitForSeconds(.1f);
+            yield return new WaitForSeconds(fDestDeepTime_Button_Wait);
             for (int i = gDeepObj.Length - 1; i >= 0; i--)
             {
                 if (gDeepObj[i])
                 {
-                    yield return new WaitForSeconds(.07f);
+                    yield return new WaitForSeconds(fDestDeepTime_Button_Interval);
                     gDeepObj[i].SetActive(false);
                 }
             }
@@ -1779,6 +1807,57 @@ public class Box_PlayerController : MonoBehaviour
             follState = FollState.Stand;
             groundSmokes[0].Play();
             groundSmokes[1].Play();
+        }
+
+        if (follState == FollState.Foll)
+        {
+            Debug.Log(rb.velocity.y);
+            if (rb.velocity.y < -0.3f)
+            {
+                follState = FollState.Folling;
+                if (SoundObj)
+                    SoundObj.FollSE();
+            }
+        }
+    }
+
+    public void InClearBox(Vector3 CBoxPosition)
+    {
+        Moving = false;
+        if (transform.position.x <= CBoxPosition.x)
+        {
+            //画像反転用
+            transform.GetChild(0).localScale = Vector3.one;
+            //足跡反転用
+            var romain = FootStamp.main;
+            romain.startRotation = new ParticleSystem.MinMaxCurve(1.396f, 1.745f);
+            // サウンド再生
+            if (AnimCount++ > AnimCountSet)
+            {
+                if (SoundObj)
+                    SoundObj.MoveSE();
+                AnimCount = 0;
+            }
+            //アニメーション
+            Move_Anim(true);
+
+        }
+        else
+        {
+            //画像反転用
+            transform.GetChild(0).localScale = new Vector3(-1, 1, 1);
+            //足跡反転用
+            var romain = FootStamp.main;
+            romain.startRotation = new ParticleSystem.MinMaxCurve(-1.396f, -1.745f);
+            // サウンド再生
+            if (AnimCount++ > AnimCountSet)
+            {
+                if (SoundObj)
+                    SoundObj.MoveSE();
+                AnimCount = 0;
+            }
+            //アニメーション
+            Move_Anim(true);
         }
     }
 }

@@ -35,23 +35,26 @@ public class BridgeLineScript : MonoBehaviour
     }
     void Update()
     {
-        if (transform.position.z <= side.GetFLT.z)
+        if (!side.RollActiveFlag)
         {
-            //橋基礎が横長
-            if (transform.up == Vector3.up || transform.up == -Vector3.up)
+            if (transform.position.z <= side.GetFLT.z)
             {
-                if (!b_enabled)
+                //橋基礎が横長
+                if (transform.up == Vector3.up || transform.up == -Vector3.up)
                 {
-                    transform.up = Vector3.up;
-                    GetComponent<CapsuleCollider>().enabled = true;
-                    b_enabled = true;
+                    if (!b_enabled)
+                    {
+                        transform.up = Vector3.up;
+                        GetComponent<CapsuleCollider>().enabled = true;
+                        b_enabled = true;
+                    }
                 }
-            }
-            else
-                if (b_enabled)
-            {
-                GetComponent<CapsuleCollider>().enabled = false;
-                b_enabled = false;
+                else
+                    if (b_enabled)
+                {
+                    GetComponent<CapsuleCollider>().enabled = false;
+                    b_enabled = false;
+                }
             }
         }
     }

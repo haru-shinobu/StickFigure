@@ -12,7 +12,7 @@ public class faceWay_matScript : MonoBehaviour
     
     void Start()
     {
-        face = transform.GetChild(1).GetComponent<MeshRenderer>();
+        face = transform.GetChild(0).GetComponent<MeshRenderer>();
     }
 
     // Update is called once per frame

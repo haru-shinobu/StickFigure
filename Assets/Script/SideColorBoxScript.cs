@@ -48,9 +48,9 @@ public class SideColorBoxScript : MonoBehaviour
     int BoxAroundWallLayer = 0;
     int BoxinWallLayer;
     RayScript ray = null;
+    public bool RollActiveFlag = false;
     void Awake()
     {
-        
         //箱枠レイヤー
         BoxAroundWallLayer = 1 << LayerMask.NameToLayer("sideWall");
         BoxinWallLayer = 1 << LayerMask.NameToLayer("UnPassWall");
@@ -143,6 +143,7 @@ public class SideColorBoxScript : MonoBehaviour
             case 3: _vec = -Vector3.up; break;
             case 4: _vec = Vector3.up; break;
         }
+        RollActiveFlag = true;
         StartCoroutine("BlockRoller", _vec);
     }
     IEnumerator BlockRoller(Vector3 way_vec)
@@ -215,8 +216,8 @@ public class SideColorBoxScript : MonoBehaviour
 
         //プレイヤーのｚ座標を箱前面と統一、箱範囲内に収めさせる
         SetAria(PSc);
-
-        //BridgeBaseLines.
+        
+        RollActiveFlag = false;
         //念のため1拍おいた
         yield return new WaitForEndOfFrame();
         //行動許可
@@ -301,6 +302,7 @@ public class SideColorBoxScript : MonoBehaviour
     // Box_PlayerController.MakeBridge()->
     public void On_RollerSwitch(bool flag)
     {
+        RollActiveFlag = true;
         StartCoroutine("BlockRoller", flag);
     }
     //this.OnRollerSwitch()->
@@ -371,7 +373,7 @@ public class SideColorBoxScript : MonoBehaviour
         PSc.transform.parent.forward = Vector3.forward;
         //プレイヤーのｚ座標を箱前面と統一、箱範囲内に収めさせる
         SetAria(PSc);
-
+        RollActiveFlag = false;
         //念のため1拍おいた
         yield return new WaitForEndOfFrame();
         //行動許可
@@ -463,7 +465,6 @@ public class SideColorBoxScript : MonoBehaviour
     //=======================================================================
     public Vector3 UnPassWallPos()
     {
-        //var ray = PSc.transform.parent.GetComponent<RayScript>();
         var hit = ray.Ray(PSc.transform.position, Vector3.up, (int)(F_LeftTop.y - PSc.transform.position.y)+1, BoxinWallLayer);
         if (hit.collider != null)
         {
@@ -473,9 +474,7 @@ public class SideColorBoxScript : MonoBehaviour
     }
     public Vector3 sideWall()
     {
-        //var ray = PSc.transform.parent.GetComponent<RayScript>();
         var rayhitvecT = ray.Ray(PSc.transform.position, Vector3.up, (int)(F_LeftTop.y - F_RightBottom.y), BoxAroundWallLayer);
-        //Debug.DrawRay(PSc.transform.position,Vector3.up* (int)(F_LeftTop.y - F_RightBottom.y), Color.red, 100);
         if (rayhitvecT.collider != null)
         {
             return rayhitvecT.point;
