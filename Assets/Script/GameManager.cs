@@ -119,6 +119,10 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+    public void ndCountUp()
+    {
+        nDCount++;
+    }
     public void CheckBridgeNum()
     {
         if (nDCount <= 0)
