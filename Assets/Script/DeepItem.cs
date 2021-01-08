@@ -13,7 +13,7 @@ public class DeepItem : MonoBehaviour
         _Manager = gameManager.GetComponent<GameManager>();
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnCollisionEnter(Collision collision)
     {
         _Manager.ndCountUp();
         Destroy(this.gameObject);
