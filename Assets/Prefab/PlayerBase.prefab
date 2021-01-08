@@ -881,6 +881,7 @@ MonoBehaviour:
   - {fileID: 3683917243785333793}
   - {fileID: 3724701220424822029}
   gIDeep: {fileID: 0}
+  listnum: 15
   aChildAnim:
   - {fileID: 3005835862148503312}
   - {fileID: 3005835862572276824}
@@ -6149,6 +6150,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: sita1 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8393106141534075715, guid: 3d74f9de2b52ecd4b849c5e3adefbc01,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9065558854938892426, guid: 3d74f9de2b52ecd4b849c5e3adefbc01,
         type: 3}

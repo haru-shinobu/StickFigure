@@ -13,9 +13,14 @@ public class DeepItem : MonoBehaviour
         _Manager = gameManager.GetComponent<GameManager>();
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider other)
     {
-        _Manager.ndCountUp();
-        Destroy(this.gameObject);
+        Debug.Log("InTrigger");
+        if (other.tag == "PlayerBase")
+        {
+            Debug.Log("GetItem");
+            _Manager.ndCountUp();
+            Destroy(this.gameObject);
+        }
     }
 }

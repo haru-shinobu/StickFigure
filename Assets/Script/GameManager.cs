@@ -119,10 +119,13 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+
     public void ndCountUp()
     {
         nDCount++;
+        _UIScript.ChangeNum(nDCount);
     }
+
     public void CheckBridgeNum()
     {
         if (nDCount <= 0)
