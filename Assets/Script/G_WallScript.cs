@@ -17,10 +17,31 @@ public class G_WallScript : MonoBehaviour
         if (pos.z == ppos.z - ren.z) pos.z -= 0.001f;
         transform.position = pos;
     }
-    void OnCollisionEnter(Collision collision)
+
+    //private void OnTriggerEnter(Collider other)
+    //{
+    //    if (other.tag == "PlayerBase")
+    //    {
+    //        var ex = transform.GetComponent<SpriteRenderer>().bounds.extents;
+    //        if (ex.x < ex.y)
+    //        {
+    //            ex.y = ex.z = 0;
+    //            var pos = transform.position - other.transform.position;
+    //            pos.y = pos.z = 0;
+    //            other.transform.GetChild(0).SendMessage("playerMovePoint",
+    //                (other.transform.position.x < transform.position.x) ?
+    //            -ex : ex
+    //            );
+    //        }
+    //    }
+    //}
+
+    private void OnCollisionEnter(Collision collision)
     {
+        Debug.Log("IN coll");
         if (collision.transform.tag == "PlayerBase")
         {
+            Debug.Log("IN if");
             var ex = transform.GetComponent<SpriteRenderer>().bounds.extents;
             if (ex.x < ex.y)
             {
