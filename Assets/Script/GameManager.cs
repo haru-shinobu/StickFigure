@@ -41,8 +41,8 @@ public class GameManager : MonoBehaviour
     
 
     //橋カウント用
-    private int nDCount = 5;
-
+    [SerializeField] private int nDCount = 5;
+    
     //カメラ
     [SerializeField,Header("カメラマネージャ")]
     CameraManager camM;
