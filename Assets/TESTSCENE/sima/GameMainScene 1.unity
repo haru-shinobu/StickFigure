@@ -1046,6 +1046,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Ground_Wall_SideBase (5)
       objectReference: {fileID: 0}
+    - target: {fileID: 4800415860917890079, guid: ef22d5a34ab407742b9098d2c72fbd6d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4800415860917890273, guid: ef22d5a34ab407742b9098d2c72fbd6d,
         type: 3}
       propertyPath: m_Center.z
@@ -3060,7 +3065,7 @@ PrefabInstance:
     - target: {fileID: 6314333709349618167, guid: 25ec30a60f1b53c4cb15a93ae55950cc,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 8
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 25ec30a60f1b53c4cb15a93ae55950cc, type: 3}
@@ -3283,7 +3288,7 @@ PrefabInstance:
     - target: {fileID: 6661520085745141898, guid: 3a981508c298feb4e92ad6288173f8b1,
         type: 3}
       propertyPath: m_CollisionDetection
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6661520085745141899, guid: 3a981508c298feb4e92ad6288173f8b1,
         type: 3}
