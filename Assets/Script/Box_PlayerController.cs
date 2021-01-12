@@ -174,9 +174,10 @@ public class Box_PlayerController : MonoBehaviour
             Deeplist[i] = Instantiate(gIDeep, DeepPos, quaternion_0);
         }
     }
-
+    
     void Update()
     {
+        
         //落下速度制限
         Vector3 vel = rb.velocity;
         if (vel.y < -DropSpeed * 10)
@@ -1852,7 +1853,6 @@ public class Box_PlayerController : MonoBehaviour
 
         if (follState == FollState.Foll)
         {
-            Debug.Log(rb.velocity.y);
             if (rb.velocity.y < -0.3f)
             {
                 follState = FollState.Folling;
