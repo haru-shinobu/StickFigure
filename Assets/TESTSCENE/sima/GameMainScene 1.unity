@@ -3280,6 +3280,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayerBase
       objectReference: {fileID: 0}
+    - target: {fileID: 6661520085745141898, guid: 3a981508c298feb4e92ad6288173f8b1,
+        type: 3}
+      propertyPath: m_CollisionDetection
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6661520085745141899, guid: 3a981508c298feb4e92ad6288173f8b1,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -6840,6 +6845,7 @@ MonoBehaviour:
   Bridge: {fileID: 1487617690276569714, guid: 5f3032556189df34389b26e109575ec8, type: 3}
   _Canvas: {fileID: 851101666}
   _UIScript: {fileID: 1265297921}
+  nDCount: 5
   camM: {fileID: 1187529079}
   Iron: {fileID: 4434454070652141193, guid: 88b0082e9e511a04ba435fb1a2bdda0a, type: 3}
   i_IronAnimSpeed: 1
