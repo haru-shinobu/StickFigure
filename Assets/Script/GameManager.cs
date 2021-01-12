@@ -42,11 +42,12 @@ public class GameManager : MonoBehaviour
 
     //橋カウント用
     [SerializeField] private int nDCount = 5;
-    
+
+    [SerializeField]
+    ParticleSystem ParSys_Steppi;
     //カメラ
     [SerializeField,Header("カメラマネージャ")]
     CameraManager camM;
-    // ↑現在使用していない(後で整理)=============================================
     [SerializeField,Header("アイロン")]
     GameObject Iron;
     [SerializeField,Range(1,3)]
@@ -59,6 +60,8 @@ public class GameManager : MonoBehaviour
     //GameOver
     bool _bGOflag = false;
     IEnumerator IE_GO;
+    
+    Inputmanager inputter;
 
     //Updateを起動するかON・OFF切り替えするターゲットを登録
     enum Controll_Target
@@ -70,7 +73,10 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     GameObject arrow;
     SoundManager soundM;
-    
+
+    float default_timeScale = 0;
+    public bool b_menu = false;
+    float cooltime = 0;
     void Awake()
     {
         arrow.SetActive(false);
@@ -85,6 +91,8 @@ public class GameManager : MonoBehaviour
         GameObject soundtarget = GameObject.Find("SoundObj");
         if (soundtarget)
             soundM = soundtarget.GetComponent<SoundManager>();
+        inputter = transform.GetComponent<Inputmanager>();
+        default_timeScale = Time.timeScale;
     }
 
     void Start()
@@ -98,6 +106,18 @@ public class GameManager : MonoBehaviour
     {
         //if (ControllerActivater[(int)Controll_Target.Player])
         //    player.Moving = true;
+        if(inputter.menu_open)
+        {
+            if (cooltime++ > 20)
+            {
+                cooltime = 0;
+                b_menu = !b_menu;
+            }
+            if (!b_menu)
+                Time.timeScale = default_timeScale;
+            else
+                Time.timeScale = 0;
+        }
     }
     //橋カウントチェック
     public bool nDCountCheck()
@@ -174,5 +194,11 @@ public class GameManager : MonoBehaviour
         IronSc.MoveOK = true;
         if (soundM)
             soundM.IronSteamSE();
+    }
+    public void ChangeSceneTitle()
+    {
+        Time.timeScale = default_timeScale;
+
+        SceneManager.LoadScene("Title"); 
     }
 }

@@ -30,6 +30,15 @@ public class UIScript : MonoBehaviour
     Text tex;
     [SerializeField, Header("Playertext")]
     Text playertext;
+    [SerializeField]
+    GameManager GM;
+    [SerializeField]
+    GameObject MenuObj;
+    [SerializeField]
+    RectTransform Menu_Steppirect;
+    [SerializeField]
+    Inputmanager inputter;
+    Vector3 No_anchoredPosition;
     //コルーチン動作状態
     enum outline_active_state
     {
@@ -43,6 +52,8 @@ public class UIScript : MonoBehaviour
     IEnumerator[] routine = new IEnumerator[8];
     //橋コルーチン予備チェック
     bool BridgeCorutineFlag = false;
+    bool flag_menu_carsol = false;
+    float cooltime = 0;
     // Start is called before the first frame update
     void Start()
     {
@@ -70,18 +81,57 @@ public class UIScript : MonoBehaviour
         Rect_ReposePosition = Rect_AcivePosition - new Vector3(0, rect[0].sizeDelta.y*2, 0);
         Rect_AcivePosition_down = rect[3].localPosition;
         Rect_ReposePosition_down = Rect_AcivePosition_down - new Vector3(0, rect[3].sizeDelta.y * 2, 0);
+
+        No_anchoredPosition = Menu_Steppirect.anchoredPosition;
     }
 
     void Update()
     {
-        if (!PSc.GetGrapLing)
+        if (!GM.b_menu)
         {
-            CheckSlideDownFall_UI();
-            CheckGrapLingUI();
-            CheckBridgeMake_UI();
+            if (MenuObj.activeInHierarchy)
+                MenuObj.SetActive(false);
+            if (!PSc.GetGrapLing)
+            {
+                CheckSlideDownFall_UI();
+                CheckGrapLingUI();
+                CheckBridgeMake_UI();
 
-            judgeUI();
+                judgeUI();
+            }
         }
+        else
+        {
+            if (!MenuObj.activeInHierarchy)
+                MenuObj.SetActive(true);
+            
+            if (inputter.player_move_input[0] > 0)
+            {
+                if (cooltime++ > 20)
+                {
+                    flag_menu_carsol = !flag_menu_carsol;
+                    cooltime = 0;
+                }
+                if (flag_menu_carsol)
+                {
+                    Menu_Steppirect.anchoredPosition = No_anchoredPosition;
+                }
+                else
+                {
+                    Menu_Steppirect.anchoredPosition = No_anchoredPosition + new Vector3(-650, 0, 0);
+                }
+            }
+            if (inputter.Enter_Button)
+            {
+                if (Menu_Steppirect.anchoredPosition != (Vector2)No_anchoredPosition)
+                {
+                    MenuObj.SetActive(false);
+                    GM.ChangeSceneTitle();
+                }
+                
+            }
+        }
+
     }
 
     private void SetObj()
