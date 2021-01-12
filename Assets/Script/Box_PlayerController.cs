@@ -72,7 +72,7 @@ public class Box_PlayerController : MonoBehaviour
 
     private int nDCount = 5;
 
-    public GameObject[] gDeepObj = new GameObject[5];
+    //public GameObject[] gDeepObj = new GameObject[5];
     [SerializeField] GameObject gIDeep;
     GameObject[] Deeplist;
     [SerializeField] int listnum = 15;
