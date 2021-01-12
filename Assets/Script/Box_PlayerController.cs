@@ -24,6 +24,7 @@ public class Box_PlayerController : MonoBehaviour
     bool _bControll = false;
     bool _bBridgeMaking = false;
     bool OnBridge = false;
+    bool bStandGround = false;
 
     enum BridgeAriaState
     {
@@ -71,7 +72,7 @@ public class Box_PlayerController : MonoBehaviour
 
     private int nDCount = 5;
 
-    public GameObject[] gDeepObj = new GameObject[5];
+    //public GameObject[] gDeepObj = new GameObject[5];
     [SerializeField] GameObject gIDeep;
     GameObject[] Deeplist;
     [SerializeField] int listnum = 15;
@@ -174,9 +175,10 @@ public class Box_PlayerController : MonoBehaviour
             Deeplist[i] = Instantiate(gIDeep, DeepPos, quaternion_0);
         }
     }
-
+    
     void Update()
     {
+        
         //落下速度制限
         Vector3 vel = rb.velocity;
         if (vel.y < -DropSpeed * 10)
@@ -327,13 +329,14 @@ public class Box_PlayerController : MonoBehaviour
             }
         }
         else
-            if (Move_Aria_FRB.y >= B)
         {
-            NowPlayerMovePoint = transform.parent.position += new Vector3(0, Mathf.Abs(Move_Aria_FRB.y - B));
-            rb.velocity = Vector3.zero;
-            rb.isKinematic = true;
+            if (Move_Aria_FRB.y >= B)
+            {
+                NowPlayerMovePoint = transform.parent.position += new Vector3(0, Mathf.Abs(Move_Aria_FRB.y - B));
+                rb.velocity = Vector3.zero;
+                rb.isKinematic = true;
+            }
         }
-
     }
 
     //回転始動範囲(箱)
@@ -346,10 +349,19 @@ public class Box_PlayerController : MonoBehaviour
         var L = pos.x - Player_verticalhorizontal.x;
 
 
-        if (B <= Move_Aria_FRB.y + MoveRange)
-            rb.isKinematic = true;
+        if (B < Move_Aria_FRB.y + MoveRange)
+        {
+            //   rb.isKinematic = true;
+            bStandGround = true;
+            var vely = rb.velocity;
+            vely.y *= 0.1f;
+            rb.velocity = vely;
+        }
         else
+        {
             rb.isKinematic = false;
+            bStandGround = false;
+        }
 
         if (Front_LeftTop.x < L && R < Front_RightBottom.x)
             if (Front_RightBottom.y < B && T < Front_LeftTop.y)
@@ -953,7 +965,7 @@ public class Box_PlayerController : MonoBehaviour
 
             //グラップリング処理
             //ただし移動できない壁後付けするため注意。
-            if (rb.isKinematic == true || rb.velocity.y == 0 || OnGroundGraplingJudge())
+            if (rb.isKinematic == true || rb.velocity.y == 0 || OnGroundGraplingJudge() || bStandGround)
             {
                 //足跡上向き用
                 var romain = FootStamp.main;
@@ -1852,7 +1864,6 @@ public class Box_PlayerController : MonoBehaviour
 
         if (follState == FollState.Foll)
         {
-            Debug.Log(rb.velocity.y);
             if (rb.velocity.y < -0.3f)
             {
                 follState = FollState.Folling;
