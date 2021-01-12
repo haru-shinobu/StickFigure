@@ -351,10 +351,9 @@ public class Box_PlayerController : MonoBehaviour
 
         if (B < Move_Aria_FRB.y + MoveRange)
         {
-            //   rb.isKinematic = true;
             bStandGround = true;
             var vely = rb.velocity;
-            vely.y *= 0.1f;
+            vely.y = 0.1f;
             rb.velocity = vely;
         }
         else
@@ -598,12 +597,6 @@ public class Box_PlayerController : MonoBehaviour
                 else
                     if (BridgeObj)
                     BridgeObj.GetComponent<bridgeScript>().second_NoCollider();
-                //ここに下回転する前の下移動の処理を書く
-                if (sideState != SideState.left_right_bottom_wall &&
-                    sideState != SideState.left_bottom_wall &&
-                    sideState != SideState.right_bottom_wall &&
-                    sideState != SideState.bottom_wall)
-                    horizontalPlayerMovePoint -= Vector3.up * MoveRange;
             }
             rb.isKinematic = false;
         }
