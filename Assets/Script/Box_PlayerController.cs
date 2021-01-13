@@ -356,9 +356,14 @@ public class Box_PlayerController : MonoBehaviour
         {
             bStandGround = true;
             var vely = rb.velocity;
-            if (vely.y > 0.1) vely.y = 0.1f; else vely.y = 0;
+            if (vely.y > 0.1f)
+                vely.y = 0.1f;
+            else
+            {
+                vely.y = 0;
+                rb.isKinematic = true;
+            }
             rb.velocity = vely;
-            Debug.Log(rb.velocity);
         }
         else
         {

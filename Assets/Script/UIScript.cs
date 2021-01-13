@@ -128,6 +128,11 @@ public class UIScript : MonoBehaviour
                     MenuObj.SetActive(false);
                     GM.ChangeSceneTitle();
                 }
+                else
+                {
+                    MenuObj.SetActive(false);
+                    GM.b_menu = false;
+                }
                 
             }
         }

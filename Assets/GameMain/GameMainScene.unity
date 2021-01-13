@@ -565,7 +565,7 @@ GameObject:
   - component: {fileID: 124262264}
   - component: {fileID: 124262263}
   m_Layer: 5
-  m_Name: Image
+  m_Name: Menu_Back
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6699,7 +6699,7 @@ GameObject:
   - component: {fileID: 1837013953}
   - component: {fileID: 1837013952}
   m_Layer: 5
-  m_Name: Image (2)
+  m_Name: Steppi_Icon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
