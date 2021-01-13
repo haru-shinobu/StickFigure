@@ -178,132 +178,135 @@ public class Box_PlayerController : MonoBehaviour
     
     void Update()
     {
-        
-        //落下速度制限
-        Vector3 vel = rb.velocity;
-        if (vel.y < -DropSpeed * 10)
+        //メニュー開いてないとき
+        if (!gameManager.b_menu)
         {
-            vel.y = -DropSpeed * 10;
-        }
-        if (vel.y < 0)
-        {
-            //足跡下降用
-            var romain = FootStamp.main;
-            romain.startRotation = new ParticleSystem.MinMaxCurve(2.967f, 3.316f);
-            if (follState == FollState.Landing || follState == FollState.Stand)
-                follState = FollState.Foll;
-            //Move_Anim(true);
-        }
-        else
-        {
-            if (follState != FollState.Stand)
-                follState = FollState.Landing;
-            //Move_Anim(false);
-        }
-        rb.velocity = vel;
-        if (!_bBridgeMaking)
-        {
-            if (Moving)
+            //落下速度制限
+            Vector3 vel = rb.velocity;
+            if (vel.y < -DropSpeed * 10)
             {
-                CheckOnGround();
-                // プレイヤー移動範囲チェック
-                //橋の上でないとき
-                if (!CheckMoveBridgeAria())
+                vel.y = -DropSpeed * 10;
+            }
+            if (vel.y < 0)
+            {
+                //足跡下降用
+                var romain = FootStamp.main;
+                romain.startRotation = new ParticleSystem.MinMaxCurve(2.967f, 3.316f);
+                if (follState == FollState.Landing || follState == FollState.Stand)
+                    follState = FollState.Foll;
+                //Move_Anim(true);
+            }
+            else
+            {
+                if (follState != FollState.Stand)
+                    follState = FollState.Landing;
+                //Move_Anim(false);
+            }
+            rb.velocity = vel;
+            if (!_bBridgeMaking)
+            {
+                if (Moving)
                 {
-                    //グラップリングしていないとき
-                    if (!GrapLing)
+                    CheckOnGround();
+                    // プレイヤー移動範囲チェック
+                    //橋の上でないとき
+                    if (!CheckMoveBridgeAria())
                     {
-                        //箱回転範囲を出たとき
-                        if (CheckRollAria())
+                        //グラップリングしていないとき
+                        if (!GrapLing)
                         {
-                            this.Moving = false;
-                            var T = transform.parent.position.y + Player_verticalhorizontal.y;
-                            var B = transform.parent.position.y - Player_verticalhorizontal.y;
-                            var L = transform.parent.position.x - Player_verticalhorizontal.x;
-                            var R = transform.parent.position.x + Player_verticalhorizontal.x;
-                            GameObject wind = null;
-                            if (G_Data.WindPrefab)
-                                wind = Instantiate(G_Data.WindPrefab, sidebox.transform.position, Quaternion.identity);
-                            //上下左右
-                            var rollways = 0;
-                            if (T >= Front_LeftTop.y)
+                            //箱回転範囲を出たとき
+                            if (CheckRollAria())
                             {
-                                rollways = 1;
-                                if (wind)
-                                    wind.transform.rotation = Quaternion.Euler(0, 0, 90);
-                            }
-                            if (B <= Front_RightBottom.y)
-                            {
-                                rollways = 2;
-                                if (wind)
-                                    wind.transform.rotation = Quaternion.Euler(0, 0, -90);
-                            }
-                            if (L <= Front_LeftTop.x)
-                            {
-                                rollways = 3;
-                                if (wind)
-                                    wind.transform.rotation = Quaternion.Euler(0, 0, 180);
-                            }
-                            if (R >= Front_RightBottom.x)
-                            {
-                                rollways = 4;
-                                if (wind)
-                                    wind.transform.rotation = Quaternion.Euler(0, 0, 0);
-                            }
-                            if (BridgeObj)
-                            {
-                                if (SoundObj)
-                                    SoundObj.PropSE();
-                                BridgeObj.SendMessage("RollDestroy", 2);
-                                BridgeObj.transform.SetParent(null);
-                                BridgeObj = null;
-                                gameManager.CheckBridgeNum();
-                            }
-                            sidebox.ChangeBoxRoll(rollways);
-                        }
-                        else
-                        {
-                            // 一定フレームで処理
-                            if (FlameCount <= ++MoveCount)
-                            {
-                                MoveCount = 0;
-                                // プレイヤー移動範囲チェック
-                                RePositionMoveAria();
-                                OldPlayerMovePoint = NowPlayerMovePoint;
-                                this.Move(inputer.player_move_input[0], inputer.player_move_input[1]);
+                                this.Moving = false;
+                                var T = transform.parent.position.y + Player_verticalhorizontal.y;
+                                var B = transform.parent.position.y - Player_verticalhorizontal.y;
+                                var L = transform.parent.position.x - Player_verticalhorizontal.x;
+                                var R = transform.parent.position.x + Player_verticalhorizontal.x;
+                                GameObject wind = null;
+                                if (G_Data.WindPrefab)
+                                    wind = Instantiate(G_Data.WindPrefab, sidebox.transform.position, Quaternion.identity);
+                                //上下左右
+                                var rollways = 0;
+                                if (T >= Front_LeftTop.y)
+                                {
+                                    rollways = 1;
+                                    if (wind)
+                                        wind.transform.rotation = Quaternion.Euler(0, 0, 90);
+                                }
+                                if (B <= Front_RightBottom.y)
+                                {
+                                    rollways = 2;
+                                    if (wind)
+                                        wind.transform.rotation = Quaternion.Euler(0, 0, -90);
+                                }
+                                if (L <= Front_LeftTop.x)
+                                {
+                                    rollways = 3;
+                                    if (wind)
+                                        wind.transform.rotation = Quaternion.Euler(0, 0, 180);
+                                }
+                                if (R >= Front_RightBottom.x)
+                                {
+                                    rollways = 4;
+                                    if (wind)
+                                        wind.transform.rotation = Quaternion.Euler(0, 0, 0);
+                                }
+                                if (BridgeObj)
+                                {
+                                    if (SoundObj)
+                                        SoundObj.PropSE();
+                                    BridgeObj.SendMessage("RollDestroy", 2);
+                                    BridgeObj.transform.SetParent(null);
+                                    BridgeObj = null;
+                                    gameManager.CheckBridgeNum();
+                                }
+                                sidebox.ChangeBoxRoll(rollways);
                             }
                             else
                             {
-                                RePositionMoveAria();
-                                NowPlayerMovePoint.y = transform.parent.position.y;
-                                NowPlayerMovePoint += (horizontalPlayerMovePoint / FlameCount);
-                                transform.parent.position = NowPlayerMovePoint;
+                                // 一定フレームで処理
+                                if (FlameCount <= ++MoveCount)
+                                {
+                                    MoveCount = 0;
+                                    // プレイヤー移動範囲チェック
+                                    RePositionMoveAria();
+                                    OldPlayerMovePoint = NowPlayerMovePoint;
+                                    this.Move(inputer.player_move_input[0], inputer.player_move_input[1]);
+                                }
+                                else
+                                {
+                                    RePositionMoveAria();
+                                    NowPlayerMovePoint.y = transform.parent.position.y;
+                                    NowPlayerMovePoint += (horizontalPlayerMovePoint / FlameCount);
+                                    transform.parent.position = NowPlayerMovePoint;
+                                }
+                            }
+
+                            if (inputer.player_jump_input)
+                            {
+                                bridgestate = BridgeAriaState.action;
+                                //橋の判定など
+                                MakeBridgeCheck();
                             }
                         }
-
-                        if (inputer.player_jump_input)
+                    }
+                    else
+                    //橋の上のとき
+                    {
+                        if (Moving)
                         {
-                            bridgestate = BridgeAriaState.action;
-                            //橋の判定など
-                            MakeBridgeCheck();
+                            this.Moving = false;
+                            nowIE = InBridge();
+                            StartCoroutine(nowIE);
                         }
                     }
                 }
                 else
-                //橋の上のとき
                 {
-                    if (Moving)
-                    {
-                        this.Moving = false;
-                        nowIE = InBridge();
-                        StartCoroutine(nowIE);
-                    }
+                    //プレイヤーが操作できないときは落ちない
+                    rb.velocity = Vector3.zero;
                 }
-            }
-            else
-            {
-                //プレイヤーが操作できないときは落ちない
-                rb.velocity = Vector3.zero;
             }
         }
     }
@@ -351,11 +354,11 @@ public class Box_PlayerController : MonoBehaviour
 
         if (B < Move_Aria_FRB.y + MoveRange)
         {
-            //   rb.isKinematic = true;
             bStandGround = true;
             var vely = rb.velocity;
-            vely.y *= 0.1f;
+            if (vely.y > 0.1) vely.y = 0.1f; else vely.y = 0;
             rb.velocity = vely;
+            Debug.Log(rb.velocity);
         }
         else
         {
@@ -598,12 +601,6 @@ public class Box_PlayerController : MonoBehaviour
                 else
                     if (BridgeObj)
                     BridgeObj.GetComponent<bridgeScript>().second_NoCollider();
-                //ここに下回転する前の下移動の処理を書く
-                if (sideState != SideState.left_right_bottom_wall &&
-                    sideState != SideState.left_bottom_wall &&
-                    sideState != SideState.right_bottom_wall &&
-                    sideState != SideState.bottom_wall)
-                    horizontalPlayerMovePoint -= Vector3.up * MoveRange;
             }
             rb.isKinematic = false;
         }
