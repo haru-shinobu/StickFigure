@@ -30,8 +30,8 @@ public class Inputmanager : MonoBehaviour
     }
     void Update()
     {
-        input[0] = (Input.GetAxis("Horizontal")!=0)? Input.GetAxis("Horizontal") : (Input.GetButton("Horizontal") == false) ? 0 : 1;
-        input[1] = (Input.GetAxis("Vertical")  !=0)? Input.GetAxis("Vertical") : (Input.GetButton("Vertical") == false) ? 0 : 1;
+        input[0] = (Input.GetAxis("Horizontal") != 0)? Input.GetAxis("Horizontal") : (Input.GetButton("Horizontal")) ? 1 : 0;
+        input[1] = (Input.GetAxis("Vertical") != 0)? Input.GetAxis("Vertical") : (Input.GetButton("Vertical")) ? 1 : 0;
         player_move_input = input;
         player_jump_input = Input.GetButton("Jump");
         menu_open = Input.GetButton("esc");
