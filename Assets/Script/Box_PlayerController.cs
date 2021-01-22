@@ -25,6 +25,7 @@ public class Box_PlayerController : MonoBehaviour
     bool _bBridgeMaking = false;
     bool OnBridge = false;
     bool bStandGround = false;
+    bool PushDownButton_Through = false;
 
     enum BridgeAriaState
     {
@@ -355,22 +356,25 @@ public class Box_PlayerController : MonoBehaviour
         if (B < Move_Aria_FRB.y + MoveRange)
         {
             bStandGround = true;
-            var vely = rb.velocity;
-            if (vely.y > 0.1f)
-                vely.y = 0.1f;
-            else
+            if (!PushDownButton_Through)
             {
-                vely.y = 0;
-                rb.isKinematic = true;
+                var vely = rb.velocity;
+                if (vely.y > 0.1f)
+                    vely.y = 0.1f;
+                else
+                {
+                    vely.y = 0;
+                    rb.isKinematic = true;
+                }
+                rb.velocity = vely;
             }
-            rb.velocity = vely;
         }
         else
         {
+            PushDownButton_Through = false;
             rb.isKinematic = false;
             bStandGround = false;
         }
-
         if (Front_LeftTop.x < L && R < Front_RightBottom.x)
             if (Front_RightBottom.y < B && T < Front_LeftTop.y)
             {
@@ -607,7 +611,12 @@ public class Box_PlayerController : MonoBehaviour
                     if (BridgeObj)
                     BridgeObj.GetComponent<bridgeScript>().second_NoCollider();
             }
+            
             rb.isKinematic = false;
+            bStandGround = false;
+            
+            PushDownButton_Through = true;
+            if (PushDownButton_Through) horizontalPlayerMovePoint -= DropSpeed * Vector3.up * 0.2f;
         }
     }
     //=======================================================================

@@ -106,13 +106,11 @@ public class GameManager : MonoBehaviour
     {
         //if (ControllerActivater[(int)Controll_Target.Player])
         //    player.Moving = true;
+        if(cooltime++ > 25)
         if(inputter.menu_open)
         {
-            if (cooltime++ > 20)
-            {
-                cooltime = 0;
-                b_menu = !b_menu;
-            }
+            cooltime = 0;
+            b_menu = !b_menu;
             if (!b_menu)
                 Time.timeScale = default_timeScale;
             else
