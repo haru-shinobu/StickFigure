@@ -10211,8 +10211,8 @@ MonoBehaviour:
   follSpeed: 1
   ChangeSpeed: 1
   Bridge: {fileID: 1487617690276569714, guid: 5f3032556189df34389b26e109575ec8, type: 3}
-  _Canvas: {fileID: 0}
-  _UIScript: {fileID: 0}
+  _Canvas: {fileID: 1782355177}
+  _UIScript: {fileID: 1782355176}
   nDCount: 5
   ParSys_Steppi: {fileID: 0}
   camM: {fileID: 1376365624}
@@ -10771,7 +10771,7 @@ PrefabInstance:
         type: 3}
       propertyPath: GM
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1668637903}
     - target: {fileID: -4453545850139233889, guid: 9ef2d10351237384f89730a4952aea42,
         type: 3}
       propertyPath: Menu_Steppirect
@@ -10781,7 +10781,7 @@ PrefabInstance:
         type: 3}
       propertyPath: inputter
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1668637904}
     - target: {fileID: 176726763329638281, guid: 9ef2d10351237384f89730a4952aea42,
         type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -10964,6 +10964,24 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9ef2d10351237384f89730a4952aea42, type: 3}
+--- !u!114 &1782355176 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: -4453545850139233889, guid: 9ef2d10351237384f89730a4952aea42,
+    type: 3}
+  m_PrefabInstance: {fileID: 1782355175}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1782355177}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6997146ee4be9b64b94580033c6feca7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &1782355177 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 176726763669539174, guid: 9ef2d10351237384f89730a4952aea42,
+    type: 3}
+  m_PrefabInstance: {fileID: 1782355175}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1800447603
 PrefabInstance:
   m_ObjectHideFlags: 0

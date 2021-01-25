@@ -30,7 +30,12 @@ public class ChangeMaterial : MonoBehaviour
 
     public void None()
     {
+        if (material == Serect_Material)
+        {
+            material.SetTextureOffset("_AddTex", new Vector2(_MaxOffset, 0.5f));
+        }
         material = Nolmal_Material;
+        material = this.GetComponent<Image>().material;
         h.sizeDelta = new Vector2(Normal, Normal);
         SerectFlag = false;
     }
@@ -38,6 +43,7 @@ public class ChangeMaterial : MonoBehaviour
     public void Flash()
     {
         material = Serect_Material;
+        material = this.GetComponent<Image>().material;
         h.sizeDelta = new Vector2(Serect, Serect);
         SerectFlag = true;
     }
@@ -46,9 +52,12 @@ public class ChangeMaterial : MonoBehaviour
     {
         _TexOffsetX += 0.01f;
 
-        if(SerectFlag)
+        if (SerectFlag)
         {
-            material.SetTextureOffset("_AddTex", new Vector2(_MaxOffset - (_TexOffsetX % _MaxOffset), 0.5f));
+            if (material == Serect_Material)
+            {
+                material.SetTextureOffset("_AddTex", new Vector2(_MaxOffset - (_TexOffsetX % _MaxOffset), 0.5f));
+            }
         }
     }
 }

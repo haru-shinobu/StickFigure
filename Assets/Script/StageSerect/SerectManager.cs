@@ -168,15 +168,15 @@ public class SerectManager : MonoBehaviour
                 {
                     case IMAGESelect.IMAGE_STAGE_01:
 
-                        SceneManager.LoadScene("STAGE01");
+                        SceneManager.LoadScene("Stage01");
                         break;
                     case IMAGESelect.IMAGE_STAGE_02:
 
-                        SceneManager.LoadScene("STAGE02");
+                        SceneManager.LoadScene("Stage02");
                         break;
                     case IMAGESelect.IMAGE_STAGE_03:
 
-                        SceneManager.LoadScene("STAGE03");
+                        SceneManager.LoadScene("Stage03");
                         break;
                 }
                 break;
