@@ -163,7 +163,7 @@ public class ClearFade : MonoBehaviour
 
         public void StringArgFunction(string s)
         {
-            Debug.Log("はいととる");
+            //Debug.Log("はいととる");
             sNext = s;
         }
 
