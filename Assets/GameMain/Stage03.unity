@@ -941,12 +941,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   overCanvas: {fileID: 1838807890}
-  countCanvas: {fileID: 0}
+  countCanvas: {fileID: 1782355178}
   UIButton:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 1265049386}
+  - {fileID: 1829074288}
+  - {fileID: 805116400}
+  - {fileID: 477084453}
 --- !u!20 &105403964
 Camera:
   m_ObjectHideFlags: 0
@@ -6212,7 +6212,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &979303249
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6244,7 +6244,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: 5a0e9086bd6bbf245bd506367fc008db, type: 2}
+  m_Material: {fileID: 2100000, guid: 37aa3623f311a9b479aef6408832eb0f, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
@@ -10979,6 +10979,12 @@ MonoBehaviour:
 --- !u!1 &1782355177 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 176726763669539174, guid: 9ef2d10351237384f89730a4952aea42,
+    type: 3}
+  m_PrefabInstance: {fileID: 1782355175}
+  m_PrefabAsset: {fileID: 0}
+--- !u!223 &1782355178 stripped
+Canvas:
+  m_CorrespondingSourceObject: {fileID: 176726763669539173, guid: 9ef2d10351237384f89730a4952aea42,
     type: 3}
   m_PrefabInstance: {fileID: 1782355175}
   m_PrefabAsset: {fileID: 0}
