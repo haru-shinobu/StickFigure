@@ -166,7 +166,7 @@ public class TitleManager : MonoBehaviour
 
     public void StringArgFunction(string s)
     {
-        Debug.Log("はいととる");
+        //Debug.Log("はいととる");
         sNext = s;
     }
 

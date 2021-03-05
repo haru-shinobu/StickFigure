@@ -38,10 +38,10 @@ public class G_WallScript : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        Debug.Log("IN coll");
+        //Debug.Log("IN coll");
         if (collision.transform.tag == "PlayerBase")
         {
-            Debug.Log("IN if");
+            //Debug.Log("IN if");
             var ex = transform.GetComponent<SpriteRenderer>().bounds.extents;
             if (ex.x < ex.y)
             {

@@ -15,10 +15,10 @@ public class DeepItem : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("InTrigger");
+        //Debug.Log("InTrigger");
         if (other.tag == "PlayerBase")
         {
-            Debug.Log("GetItem");
+            //Debug.Log("GetItem");
             _Manager.ndCountUp();
             Destroy(this.gameObject);
         }

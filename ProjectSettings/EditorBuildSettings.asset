@@ -29,4 +29,7 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/TESTSCENE/Nakahara/Scenes/Test_FadeIn.unity
     guid: d03ef3d9f69feb24fbc250010081db5b
+  - enabled: 1
+    path: Assets/GameMain/StageSerect.unity
+    guid: 57b5b1ae7f22db040a5eba85dff1582b
   m_configObjects: {}
